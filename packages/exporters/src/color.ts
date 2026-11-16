@@ -32,7 +32,7 @@ function hex(h: string, input: string): Rgba {
 function arg(token: string | undefined, percentScale: number, input: string): number {
   if (token === undefined) fail(input);
   if (token === "none") return 0;
-  const m = /^([+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?)(%|deg|turn|rad|grad)?$/i.exec(token);
+  const m = /^([+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?)(%|deg|turn|rad|grad)?$/i.exec(token);
   if (!m) fail(input);
   const value = Number(m[1]);
   switch (m[2]?.toLowerCase()) {
@@ -109,8 +109,9 @@ function func(name: string, body: string, input: string): Rgba {
   const [main = "", alphaPart, extra] = body.split("/");
   if (extra !== undefined) fail(input);
   let parts = main
+    .replace(/,/g, " ")
     .trim()
-    .split(/\s*,\s*|\s+/)
+    .split(/\s+/)
     .filter((p) => p !== "");
   let alphaToken = alphaPart?.trim();
   if (alphaToken === undefined && parts.length === 4) {

@@ -16,13 +16,24 @@ export interface SvgParts {
  * Split core output into root attributes and inner markup. Core escapes `"`, `<` and `>`
  * in every attribute value, so a simple scan is exact for its output.
  */
+/** Parse `name="value"` pairs with a linear scan (no backtracking regex). */
+function splitAttrs(source: string): (readonly [string, string])[] {
+  const attrs: (readonly [string, string])[] = [];
+  let i = 0;
+  for (;;) {
+    const eq = source.indexOf('="', i);
+    if (eq === -1) return attrs;
+    const end = source.indexOf('"', eq + 2);
+    if (end === -1) return attrs;
+    attrs.push([source.slice(i, eq).trim(), source.slice(eq + 2, end)]);
+    i = end + 1;
+  }
+}
+
 export function splitSvg(svg: string): SvgParts {
   const m = /^<svg ([^>]*)>([\s\S]*)<\/svg>$/.exec(svg);
   if (!m) throw new Error("not a Deq SVG document");
-  const attrs = [...(m[1] ?? "").matchAll(/([A-Za-z:-]+)="([^"]*)"/g)].map(
-    (a) => [a[1] ?? "", a[2] ?? ""] as const,
-  );
-  return { attrs, inner: m[2] ?? "" };
+  return { attrs: splitAttrs(m[1] ?? ""), inner: m[2] ?? "" };
 }
 
 const asItem = (item: ExportItem | Resolved): Resolved =>
@@ -151,14 +162,30 @@ export function toFigmaSvg(item: ExportItem | Resolved, currentColor: Rgba = BLA
     toHex(parseColor(o.layerColors[layer] ?? o.color, parseColor(o.color, currentColor)));
   const svg = svgDocument(p, { layerAttrs: (layer) => ` id="${escapeXml(layer)}"` });
   // Layer groups are flat (no nested <g>), so each match is one whole layer.
-  const withLayers = svg.replace(
-    /<g id="([^"]*)" data-layer="([^"]*)"([^>]*)>([\s\S]*?)<\/g>/g,
-    (_m, id: string, layer: string, rest: string, inner: string) => {
+  let withLayers = "";
+  let i = 0;
+  for (;;) {
+    const start = svg.indexOf('<g id="', i);
+    const open = start === -1 ? -1 : svg.indexOf(">", start);
+    const close = open === -1 ? -1 : svg.indexOf("</g>", open);
+    if (close === -1) break;
+    const head = /^<g id="([^"]*)" data-layer="([^"]*)"/.exec(svg.slice(start, open));
+    withLayers += svg.slice(i, start);
+    if (head) {
+      const [whole, id = "", layer = ""] = head;
       const c = layerHex(layer);
-      const attrs = rest.replace(/ color="[^"]*"/, "").replace(/ stroke="currentColor"/, "");
-      return `<g id="${id}" stroke="${c}"${attrs}>${inner.replace(/currentColor/g, c)}</g>`;
-    },
-  );
+      const attrs = svg
+        .slice(start + whole.length, open)
+        .replace(/ color="[^"]*"/, "")
+        .replace(/ stroke="currentColor"/, "");
+      const inner = svg.slice(open + 1, close).replace(/currentColor/g, c);
+      withLayers += `<g id="${id}" stroke="${c}"${attrs}>${inner}</g>`;
+    } else {
+      withLayers += svg.slice(start, close + 4);
+    }
+    i = close + 4;
+  }
+  withLayers += svg.slice(i);
   return withLayers
     .replace(/ color="[^"]*"/, "")
     .replace(/ role="img" aria-label="[^"]*"| aria-hidden="true"/, "")
