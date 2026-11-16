@@ -4,9 +4,9 @@
 
 **Traditional Kurdish tattoo shapes as an open, parametric design system.**
 
-[![CI](https://github.com/0xdolan/deq/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/0xdolan/deq/actions/workflows/ci.yml)
-[![CodeQL](https://github.com/0xdolan/deq/actions/workflows/codeql.yml/badge.svg?branch=develop)](https://github.com/0xdolan/deq/actions/workflows/codeql.yml)
-[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/0xdolan/deq/badge)](https://scorecard.dev/viewer/?uri=github.com/0xdolan/deq)
+[![CI](https://github.com/kanilabs/deq/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/kanilabs/deq/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/kanilabs/deq/actions/workflows/codeql.yml/badge.svg?branch=develop)](https://github.com/kanilabs/deq/actions/workflows/codeql.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/kanilabs/deq/badge)](https://scorecard.dev/viewer/?uri=github.com/kanilabs/deq)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 
 </div>

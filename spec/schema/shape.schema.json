@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://0xdolan.github.io/deq/spec/schema/shape.schema.json",
+  "$id": "https://kanilabs.github.io/deq/spec/schema/shape.schema.json",
   "title": "Deq shape",
   "description": "One Deq shape on the 24 x 24 grid. See docs/design/shape-spec.md. Semantic rules (bounds, decimals, references, symmetry, metrics) are checked by `uv run deq-spec lint`.",
   "type": "object",

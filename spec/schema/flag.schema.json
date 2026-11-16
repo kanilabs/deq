@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://0xdolan.github.io/deq/spec/schema/flag.schema.json",
+  "$id": "https://kanilabs.github.io/deq/spec/schema/flag.schema.json",
   "title": "Kurdish flag specification",
   "description": "Exact geometry and colors of the flag of Kurdistan, verified by `deq-spec lint` against the pinned Wikimedia Commons SVG in spec/reference/.",
   "type": "object",
