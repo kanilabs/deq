@@ -10,6 +10,7 @@
     },
     "test": {
       "dependsOn": ["^build"],
+      "env": ["DEQ_REQUIRE_TOOLS"],
       "outputs": ["coverage/**"]
     }
   }

@@ -109,6 +109,34 @@ jobs:
       - run: uv run deq-spec lint
       - run: cargo test --workspace --locked
 
+  exporter-tools:
+    name: Exporters in Inkscape and Ghostscript
+    # Inkscape imports PDF layers (OCGs) from 1.4 on; Ubuntu 26.04 ships 1.4.3.
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:26.04@sha256:d66b366dac61b575bee2aef07e9c26e8070096fbe84a3d4d3eb0da069b5d76db
+    permissions:
+      contents: read
+    env:
+      # Fail instead of skipping when a tool is missing.
+      DEQ_REQUIRE_TOOLS: "1"
+    steps:
+      - name: Install Inkscape and Ghostscript
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            ca-certificates git inkscape ghostscript
+          inkscape --version
+          gs --version
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+        with:
+          rust: "false"
+          python: "false"
+      - run: pnpm exec turbo run test --filter=@0xdolan/deq-exporters
+
   build:
     name: Build
     runs-on: ubuntu-latest

@@ -6,14 +6,17 @@ import {
   DEFAULT_OPTIONS,
   DeqError,
   compose,
+  composeShape,
   getShape,
   hasShape,
   listCategories,
   listShapes,
   packageName,
+  prepare,
   render,
   renderShapeData,
   resolveOptions,
+  svgDocument,
 } from "./index.js";
 
 const err = (fn: () => unknown): DeqError => {
@@ -255,5 +258,58 @@ describe("compose", () => {
     expect(err(() => compose([{ shape: "roj-half-sun", params: { rays: 0 } }])).code).toBe(
       "INVALID_PARAMETER",
     );
+  });
+});
+
+describe("svgDocument hooks", () => {
+  const layerAttrs = (l: string): string => ` id="L-${l}"`;
+
+  it("matches render with no hooks", () => {
+    const p = prepare(getShape("kurdish-sun"), { size: 48, rotation: 30 });
+    expect(svgDocument(p)).toBe(render("kurdish-sun", { size: 48, rotation: 30 }));
+  });
+
+  it("groups every layer and moves the transform onto each group", () => {
+    const p = prepare(getShape("kurdish-flag"), { flipX: true });
+    const svg = svgDocument(p, { rootAttrs: ' data-x="1"', layerAttrs });
+    expect(svg.startsWith('<svg xmlns="http://www.w3.org/2000/svg" data-x="1" ')).toBe(true);
+    const groups = svg.match(/<g id="L-[a-z-]+" data-layer="[a-z-]+"[^>]*>/g) ?? [];
+    expect(groups.length).toBe(new Set(p.items.map((i) => i.layer)).size);
+    for (const g of groups) expect(g).toContain(' transform="translate(24 0) scale(-1 1)"');
+    expect(svg).not.toMatch(/<g transform=/);
+  });
+
+  it("keeps layer colours inside hooked groups", () => {
+    const p = prepare(getShape("kurdish-flag"), { layerColors: { sun: "#FEBD11" } });
+    const svg = svgDocument(p, { layerAttrs });
+    expect(svg).toContain('<g id="L-sun" data-layer="sun" color="#FEBD11" stroke="currentColor">');
+  });
+
+  it("wraps colour groups in one transform group without hooks", () => {
+    const svg = render("kurdish-flag", { rotation: 90, layerColors: { sun: "#FEBD11" } });
+    expect(svg).toMatch(/<g transform="rotate\(90 12 12\)"><g data-layer=/);
+  });
+});
+
+describe("prepare and composeShape", () => {
+  it("prepare exposes options, geometry and layers", () => {
+    const p = prepare(getShape("kurdish-flag"));
+    expect(p.layers).toEqual(getShape("kurdish-flag").layers);
+    expect(p.defaultTitle).toBe(getShape("kurdish-flag").names.en);
+    expect(p.items.length).toBeGreaterThan(0);
+    expect(p.options.size).toBe(24);
+  });
+
+  it("composeShape builds one use primitive per part", () => {
+    const s = composeShape([{ shape: "kurdish-sun" }, { shape: "chevron", layer: "mark" }]);
+    expect(s.layers).toEqual(["kurdish-sun", "mark"]);
+    expect(s.primitives).toHaveLength(2);
+    expect(renderShapeData(s)).toBe(
+      compose([{ shape: "kurdish-sun" }, { shape: "chevron", layer: "mark" }]),
+    );
+  });
+
+  it("composeShape rejects bad parts", () => {
+    expect(err(() => composeShape([])).code).toBe("INVALID_OPTIONS");
   });
 });

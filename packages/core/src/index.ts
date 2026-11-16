@@ -12,6 +12,7 @@ export { DeqError } from "./errors.js";
 export type { DeqErrorCode } from "./errors.js";
 export { MAX_DEPTH, MAX_FLAT, expand, expandShape, resolveParams } from "./expand.js";
 export { escapeXml, num, roundHalfEven } from "./format.js";
+export { cosSin } from "./geometry.js";
 export type {
   Flat,
   FlatArc,
@@ -24,8 +25,16 @@ export type {
 export { DEFAULT_OPTIONS, resolveOptions } from "./options.js";
 export type { RenderOptions, ResolvedOptions } from "./options.js";
 export { getShape, hasShape, listCategories, listShapes } from "./registry.js";
-export { CANVAS, compose, render, renderShapeData } from "./svg.js";
-export type { CompositionPart } from "./svg.js";
+export {
+  CANVAS,
+  compose,
+  composeShape,
+  prepare,
+  render,
+  renderShapeData,
+  svgDocument,
+} from "./svg.js";
+export type { CompositionPart, Prepared, SvgHooks } from "./svg.js";
 export type * from "./types.js";
 
 /** The npm package name. */

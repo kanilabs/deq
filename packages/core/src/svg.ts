@@ -100,9 +100,25 @@ export function element(item: Flat, o: ResolvedOptions): string {
   }
 }
 
-function body(items: readonly Flat[], o: ResolvedOptions): string {
+/** Hooks for {@link svgDocument}; used by exporters that need named layer groups. */
+export interface SvgHooks {
+  /** Extra attributes on the root `<svg>`, starting with a space. */
+  readonly rootAttrs?: string;
+  /**
+   * Extra attributes for the group of `layer`, starting with a space. When given, every
+   * layer gets its own group and the rotation/flip transform moves onto each group.
+   */
+  readonly layerAttrs?: (layer: string) => string;
+}
+
+function body(items: readonly Flat[], o: ResolvedOptions, hooks: SvgHooks): string {
   const colored = Object.keys(o.layerColors).length > 0;
-  if (!colored) return items.map((item) => element(item, o)).join("");
+  const transform = groupTransform(o);
+  const { layerAttrs } = hooks;
+  if (!colored && !layerAttrs) {
+    const inner = items.map((item) => element(item, o)).join("");
+    return transform ? `<g transform="${transform}">${inner}</g>` : inner;
+  }
   // Group by layer in first-use order so each layer can carry its own colour.
   const layers = new Map<string, string[]>();
   for (const item of items) {
@@ -115,9 +131,14 @@ function body(items: readonly Flat[], o: ResolvedOptions): string {
     const c = o.layerColors[layer];
     // Re-declare stroke: SVG 1.1 renderers resolve currentColor where it is declared.
     const style = c === undefined ? "" : ` color="${escapeXml(c)}" stroke="currentColor"`;
-    out += `<g data-layer="${escapeXml(layer)}"${style}>${elements.join("")}</g>`;
+    if (layerAttrs) {
+      const t = transform ? ` transform="${transform}"` : "";
+      out += `<g${layerAttrs(layer)} data-layer="${escapeXml(layer)}"${style}${t}>${elements.join("")}</g>`;
+    } else {
+      out += `<g data-layer="${escapeXml(layer)}"${style}>${elements.join("")}</g>`;
+    }
   }
-  return out;
+  return !layerAttrs && transform ? `<g transform="${transform}">${out}</g>` : out;
 }
 
 function groupTransform(o: ResolvedOptions): string {
@@ -133,11 +154,27 @@ function groupTransform(o: ResolvedOptions): string {
   return parts.join(" ");
 }
 
-/** Build the SVG document for expanded items. */
-function document(items: readonly Flat[], o: ResolvedOptions, defaultTitle: string): string {
+/** A shape ready to draw: resolved options and flat geometry in canvas units. */
+export interface Prepared {
+  /** The validated options with every default filled in. */
+  readonly options: ResolvedOptions;
+  /** The geometry, in drawing order. */
+  readonly items: readonly Flat[];
+  /** The layer ids of the shape, in declaration order. */
+  readonly layers: readonly string[];
+  /** The title used when `options.title` is not set (the English name). */
+  readonly defaultTitle: string;
+}
+
+/**
+ * Build the SVG document for prepared geometry. With no hooks this is exactly what
+ * {@link render} returns.
+ */
+export function svgDocument(p: Prepared, hooks: SvgHooks = {}): string {
+  const o = p.options;
   const box = CANVAS + 2 * o.padding;
   const stroke = o.absoluteStrokeWidth ? (o.strokeWidth * box) / o.size : o.strokeWidth;
-  const title = o.title ?? defaultTitle;
+  const title = o.title ?? p.defaultTitle;
   const label = o.ariaLabel ?? title;
   const a11y =
     title === "" && label === ""
@@ -147,16 +184,14 @@ function document(items: readonly Flat[], o: ResolvedOptions, defaultTitle: stri
   const opacity = o.strokeOpacity === 1 ? "" : ` stroke-opacity="${num(o.strokeOpacity)}"`;
   const vb = `${num(-o.padding)} ${num(-o.padding)} ${num(box)} ${num(box)}`;
   let out =
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${num(o.size)}" height="${num(o.size)}" viewBox="${vb}"` +
+    `<svg xmlns="http://www.w3.org/2000/svg"${hooks.rootAttrs ?? ""} width="${num(o.size)}" height="${num(o.size)}" viewBox="${vb}"` +
     ` fill="none" stroke="currentColor" stroke-width="${num(stroke)}"` +
     ` stroke-linecap="${o.linecap}" stroke-linejoin="${o.linejoin}"${colorAttr}${opacity}${a11y}>`;
   if (title !== "") out += `<title>${escapeXml(title)}</title>`;
   if (o.background !== "none") {
     out += `<rect x="${num(-o.padding)}" y="${num(-o.padding)}" width="${num(box)}" height="${num(box)}" fill="${escapeXml(o.background)}" stroke="none"/>`;
   }
-  const transform = groupTransform(o);
-  const inner = body(items, o);
-  out += transform ? `<g transform="${transform}">${inner}</g>` : inner;
+  out += body(p.items, o, hooks);
   return `${out}</svg>`;
 }
 
@@ -170,11 +205,26 @@ function checkLayers(shape: ShapeData, o: ResolvedOptions): void {
   }
 }
 
-/** Render a shape description (already validated) to an SVG string. */
-export function renderShapeData(shape: ShapeData, options: RenderOptions = {}): string {
+/**
+ * Validate `options` for `shape` and expand its geometry, ready for {@link svgDocument}
+ * or another output format.
+ *
+ * @throws {DeqError} `INVALID_OPTIONS`, `INVALID_PARAMETER` or `LIMIT_EXCEEDED`.
+ */
+export function prepare(shape: ShapeData, options: RenderOptions = {}): Prepared {
   const o = resolveOptions(options);
   checkLayers(shape, o);
-  return document(expandShape(shape, o.params), o, shape.names.en);
+  return {
+    options: o,
+    items: expandShape(shape, o.params),
+    layers: shape.layers,
+    defaultTitle: shape.names.en,
+  };
+}
+
+/** Render a shape description (already validated) to an SVG string. */
+export function renderShapeData(shape: ShapeData, options: RenderOptions = {}): string {
+  return svgDocument(prepare(shape, options));
 }
 
 /**
@@ -228,12 +278,12 @@ function definedOnly<T extends object>(o: T): { [K in keyof T]: Exclude<T[K], un
 const PartsSchema = v.pipe(v.array(PartSchema), v.minLength(1), v.maxLength(64));
 
 /**
- * Render several catalog shapes placed on one 24 x 24 canvas. Stroke widths and dot radii
- * are not scaled. `options.params` is not used (give each part its own `params`).
+ * Build the shape description of a composition: one `use` primitive per part, each on its
+ * own layer. The result can be passed to {@link prepare} or saved as a shape spec.
  *
- * @throws {DeqError} `INVALID_OPTIONS`, `UNKNOWN_SHAPE` or `INVALID_PARAMETER`.
+ * @throws {DeqError} `INVALID_OPTIONS` or `UNKNOWN_SHAPE`.
  */
-export function compose(parts: readonly CompositionPart[], options: RenderOptions = {}): string {
+export function composeShape(parts: readonly CompositionPart[]): ShapeData {
   const result = v.safeParse(PartsSchema, parts);
   if (!result.success) {
     const lines = issueLines(result.issues);
@@ -249,7 +299,7 @@ export function compose(parts: readonly CompositionPart[], options: RenderOption
     };
   });
   const layers = [...new Set(primitives.map((p) => p.layer ?? ""))];
-  const shape: ShapeData = {
+  return {
     id: "composition",
     version: 1,
     category: "composition",
@@ -265,5 +315,14 @@ export function compose(parts: readonly CompositionPart[], options: RenderOption
     parameters: {},
     primitives,
   };
-  return renderShapeData(shape, { ...options, params: {} });
+}
+
+/**
+ * Render several catalog shapes placed on one 24 x 24 canvas. Stroke widths and dot radii
+ * are not scaled. `options.params` is not used (give each part its own `params`).
+ *
+ * @throws {DeqError} `INVALID_OPTIONS`, `UNKNOWN_SHAPE` or `INVALID_PARAMETER`.
+ */
+export function compose(parts: readonly CompositionPart[], options: RenderOptions = {}): string {
+  return renderShapeData(composeShape(parts), { ...options, params: {} });
 }
