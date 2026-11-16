@@ -18,6 +18,25 @@ are not scaled. `options.params` is not used (give each part its own `params`).
 
 **@throws** {DeqError} `INVALID_OPTIONS`, `UNKNOWN_SHAPE` or `INVALID_PARAMETER`.
 
+### `composeShape`
+
+```ts
+function composeShape(parts: readonly CompositionPart[]): ShapeData
+```
+
+Build the shape description of a composition: one `use` primitive per part, each on its
+own layer. The result can be passed to `prepare` or saved as a shape spec.
+
+**@throws** {DeqError} `INVALID_OPTIONS` or `UNKNOWN_SHAPE`.
+
+### `cosSin`
+
+```ts
+function cosSin(deg: number): Vec
+```
+
+Cosine and sine of `deg` degrees, exact at multiples of 90.
+
 ### `escapeXml`
 
 ```ts
@@ -83,6 +102,17 @@ function num(x: number): string
 Format a number with at most 3 decimals: `roundHalfEven(x * 1000)` thousandths, printed
 without trailing zeros, without a leading `+`, and with `-0` as `0`.
 
+### `prepare`
+
+```ts
+function prepare(shape: ShapeData, options?: RenderOptions): Prepared
+```
+
+Validate `options` for `shape` and expand its geometry, ready for `svgDocument`
+or another output format.
+
+**@throws** {DeqError} `INVALID_OPTIONS`, `INVALID_PARAMETER` or `LIMIT_EXCEEDED`.
+
 ### `render`
 
 ```ts
@@ -128,6 +158,15 @@ function roundHalfEven(v: number): number
 ```
 
 Round half to even (banker's rounding) on a finite double.
+
+### `svgDocument`
+
+```ts
+function svgDocument(p: Prepared, hooks?: SvgHooks): string
+```
+
+Build the SVG document for prepared geometry. With no hooks this is exactly what
+`render` returns.
 
 ## Classes
 
@@ -411,6 +450,19 @@ interface PolylinePrimitive
 - `layer?: string`
 - `when?: Readonly<Record<string, ParamValue | readonly (string | number)[]>>`: Draw only when every listed parameter has the value (or one of the values).
 
+### `Prepared`
+
+```ts
+interface Prepared
+```
+
+A shape ready to draw: resolved options and flat geometry in canvas units.
+
+- `options: ResolvedOptions`: The validated options with every default filled in.
+- `items: readonly Flat[]`: The geometry, in drawing order.
+- `layers: readonly string[]`: The layer ids of the shape, in declaration order.
+- `defaultTitle: string`: The title used when `options.title` is not set (the English name).
+
 ### `RadialPrimitive`
 
 ```ts
@@ -552,6 +604,17 @@ interface StarPrimitive
 - `id?: string`
 - `layer?: string`
 - `when?: Readonly<Record<string, ParamValue | readonly (string | number)[]>>`: Draw only when every listed parameter has the value (or one of the values).
+
+### `SvgHooks`
+
+```ts
+interface SvgHooks
+```
+
+Hooks for `svgDocument`; used by exporters that need named layer groups.
+
+- `rootAttrs?: string`: Extra attributes on the root `<svg>`, starting with a space.
+- `layerAttrs?: (layer: string) => string`: Extra attributes for the group of `layer`, starting with a space. When given, every layer gets its own group and the rotation/flip transform moves onto each group.
 
 ### `UsePrimitive`
 

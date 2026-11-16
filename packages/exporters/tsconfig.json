@@ -3,7 +3,8 @@
   "compilerOptions": {
     "noEmit": true,
     "allowImportingTsExtensions": true,
-    "types": ["node"]
+    "types": ["node"],
+    "customConditions": ["@0xdolan/source"]
   },
-  "include": ["src", "vitest.config.ts"]
+  "include": ["src", "test", "vitest.config.ts"]
 }

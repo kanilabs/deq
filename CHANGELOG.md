@@ -33,6 +33,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Deterministic SVG output contract (rounding half to even to 3 decimals, fixed attribute order, exact right angles) and 278 golden fixtures in `spec/fixtures/` for the Python and Rust renderers to match (ADR 0008).
 - Property tests with fast-check 4.10.2; core coverage is 100% of lines.
 - Generated API reference `docs/api/core.md`, built with the TypeScript compiler API. TypeDoc was not added, because it needs a minimatch version affected by GHSA-g3hv-75wg-m249.
+- Phase 4 `@0xdolan/deq-exporters` (ADR 0009):
+  - `exportShapes(format, items, options)` for 23 formats: SVG, layered SVG (Inkscape layers), sprite, HTML, JSX, TSX, Vue, Svelte, data URI, CSS background and mask, PDF and AI (one Optional Content Group per layer, RGB or CMYK), EPS, PNG, JPG, WebP, AVIF, ICO, a favicon pack, PSD (one pixel layer per shape layer), Figma copy-as-SVG and re-importable spec JSON;
+  - our own PDF and EPS writer instead of pdf-lib and svg2pdf.js; raster through `@resvg/resvg-wasm` 2.6.2 and the jSquash codecs; PSD through ag-psd 34.1.0;
+  - a CSS Color 4 parser for colours in non-SVG formats, and `copyToClipboard` for pasting into Figma;
+  - round-trip tests for every format: Ghostscript renders of PDF and EPS compared with resvg, Inkscape imports that check layer names, decoded raster images, PSD layers read back, and spec JSON checked against the schema.
+- Core exports `prepare`, `svgDocument`, `composeShape` and `cosSin` for exporters, and an `@0xdolan/source` export condition for workspace type checking.
+- CI job `exporter-tools` runs the exporter tests with Inkscape 1.4.3 and Ghostscript in Ubuntu 26.04, and `just test-tools` does the same locally.
 
 ### Changed
 

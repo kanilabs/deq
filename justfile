@@ -45,6 +45,10 @@ test:
     uv run deq-spec lint
     cargo test --workspace --locked
 
+# Exporter tests that need Inkscape 1.4+ and Ghostscript (fails if either is missing)
+test-tools:
+    DEQ_REQUIRE_TOOLS=1 pnpm exec turbo run test --filter=@0xdolan/deq-exporters
+
 # Build all packages
 build:
     pnpm build

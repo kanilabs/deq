@@ -33,5 +33,19 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
+  },
+  "dependencies": {
+    "@0xdolan/deq-core": "workspace:*",
+    "@jsquash/avif": "2.1.1",
+    "@jsquash/jpeg": "1.6.0",
+    "@jsquash/webp": "1.5.0",
+    "@resvg/resvg-wasm": "2.6.2",
+    "ag-psd": "34.1.0",
+    "valibot": "1.5.0"
+  },
+  "devDependencies": {
+    "@vue/compiler-sfc": "3.5.45",
+    "ajv": "8.20.0",
+    "svelte": "5.57.3"
   }
 }
