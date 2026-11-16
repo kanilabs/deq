@@ -6,7 +6,7 @@ Deq is pre-release. Until v1.0.0, only the latest commit on `main` receives secu
 
 ## Reporting a vulnerability
 
-Please **do not** open a public issue. Report privately through [GitHub Security Advisories](https://github.com/0xdolan/deq/security/advisories/new).
+Please **do not** open a public issue. Report privately through [GitHub Security Advisories](https://github.com/kanilabs/deq/security/advisories/new).
 
 Include what you found, how to reproduce it, and its impact. You will get an acknowledgement within 7 days and a status update within 14 days. Credit is given in the advisory unless you ask otherwise.
 

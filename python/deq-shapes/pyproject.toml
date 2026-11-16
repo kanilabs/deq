@@ -16,9 +16,9 @@ classifiers = [
 dependencies = []
 
 [project.urls]
-Homepage = "https://0xdolan.github.io/deq/"
-Repository = "https://github.com/0xdolan/deq"
-Issues = "https://github.com/0xdolan/deq/issues"
+Homepage = "https://kanilabs.github.io/deq/"
+Repository = "https://github.com/kanilabs/deq"
+Issues = "https://github.com/kanilabs/deq/issues"
 
 [build-system]
 requires = ["hatchling>=1.27"]

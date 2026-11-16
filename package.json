@@ -5,10 +5,10 @@
   "description": "Deq: traditional Kurdish tattoo shapes as an open, parametric design system.",
   "license": "GPL-3.0-or-later",
   "author": "0xdolan <0xdolan@gmail.com>",
-  "homepage": "https://0xdolan.github.io/deq/",
+  "homepage": "https://kanilabs.github.io/deq/",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/0xdolan/deq.git"
+    "url": "git+https://github.com/kanilabs/deq.git"
   },
   "type": "module",
   "packageManager": "pnpm@10.34.9",

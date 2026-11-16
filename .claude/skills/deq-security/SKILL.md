@@ -17,7 +17,7 @@ Apply to every change. Security is a requirement, not a phase.
 
 ## Web
 
-- Strict CSP via `<meta>` (GitHub Pages cannot set headers). `frame-src` only for `youtube-nocookie.com` and `0xdolan.github.io`.
+- Strict CSP via `<meta>` (GitHub Pages cannot set headers). `frame-src` only for `youtube-nocookie.com` and `kanilabs.github.io`.
 - SRI for any CDN asset; self-host fonts. Iframes are `sandbox`ed with minimum permissions.
 
 ## Supply chain
