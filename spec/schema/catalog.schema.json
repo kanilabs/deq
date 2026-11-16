@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://0xdolan.github.io/deq/spec/schema/catalog.schema.json",
+  "$id": "https://kanilabs.github.io/deq/spec/schema/catalog.schema.json",
   "title": "Deq shape catalog",
   "description": "Category definitions and the display order of shapes. Names, tags and aliases live in the shape files.",
   "type": "object",

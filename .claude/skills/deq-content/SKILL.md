@@ -18,7 +18,7 @@ description: Rules for writing Deq story, history, shape meanings and sources, a
 - CSL-JSON array. `id` is kebab-case (`<publisher>-<year>`, `yt-<slug>`, `instagram-<handle>`). Set `accessed` to the date you read the page.
 - `custom.group`: `articles`, `academic`, `photo-essays`, `video`, `social` or `archives` (the groups on the `/sources` page).
 - `custom.status`: `ok`, `archived` (read from Wayback, so set `custom.archiveUrl`), `partial` (metadata only), `blocked` (refused automated access; do not retry or work around it) or `to-verify` (a cited work not yet checked).
-- Fetch with an honest user agent (`deq-research/0.1 (+https://github.com/0xdolan/deq)`). Never spoof a browser.
+- Fetch with an honest user agent (`deq-research/0.1 (+https://github.com/kanilabs/deq)`). Never spoof a browser.
 - Research notes live in `docs/research/notes.md`, one cited fact per bullet, with disagreements listed rather than merged.
 
 ## Images (`assets/`)

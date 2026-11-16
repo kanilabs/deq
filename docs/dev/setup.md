@@ -23,7 +23,7 @@ Verify downloaded binaries against the release's published checksums before inst
 ## First run
 
 ```sh
-git clone https://github.com/0xdolan/deq.git
+git clone https://github.com/kanilabs/deq.git
 cd deq
 git switch develop
 just setup

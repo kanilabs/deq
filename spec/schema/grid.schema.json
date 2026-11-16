@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://0xdolan.github.io/deq/spec/schema/grid.schema.json",
+  "$id": "https://kanilabs.github.io/deq/spec/schema/grid.schema.json",
   "title": "Deq design grid",
   "type": "object",
   "additionalProperties": false,
