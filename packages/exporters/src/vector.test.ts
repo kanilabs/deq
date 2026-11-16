@@ -191,19 +191,24 @@ describe("PDF", () => {
     expect(flat).toContain("/GS1 gs");
   });
 
-  it.skipIf(!hasGs).each(CASES)("renders like the SVG in Ghostscript: %s", (_name, make) => {
+  it.each(CASES)("writes a valid file that renders like the SVG: %s", async (_name, make) => {
     const p = make();
     const size = 96;
     const sized: Prepared = { ...p, options: { ...p.options, size } };
     const d = buildDrawing(sized);
-    return rasterize(svgDocument(sized).replace(/currentColor/g, "#000"), size).then((bmp) => {
-      const want = rgbaToGray(bmp.width, bmp.height, bmp.data);
-      expect(meanDiff(gsRender(writePdf(d), "pdf", d.width, size), want)).toBeLessThan(5);
-      // Ghostscript maps CMYK through ICC profiles, so compare where ink is, not its tone.
-      expect(
-        inkDiff(gsRender(writePdf(d, { colorSpace: "cmyk" }), "pdf", d.width, size), want),
-      ).toBeLessThan(0.03);
-    });
+    const rgb = writePdf(d);
+    const cmyk = writePdf(d, { colorSpace: "cmyk" });
+    for (const pdf of [rgb, cmyk]) {
+      expect(pdfObjects(pdf).filter((o) => o.startsWith("<< /Type /OCG"))).toHaveLength(
+        d.layers.length + (d.background ? 1 : 0),
+      );
+    }
+    if (!hasGs) return;
+    const bmp = await rasterize(svgDocument(sized).replace(/currentColor/g, "#000"), size);
+    const want = rgbaToGray(bmp.width, bmp.height, bmp.data);
+    expect(meanDiff(gsRender(rgb, "pdf", d.width, size), want)).toBeLessThan(5);
+    // Ghostscript maps CMYK through ICC profiles, so compare where ink is, not its tone.
+    expect(inkDiff(gsRender(cmyk, "pdf", d.width, size), want)).toBeLessThan(0.03);
   });
 });
 
@@ -231,15 +236,19 @@ describe("EPS", () => {
     ).toContain("0 0 0 1 setcmykcolor");
   });
 
-  it.skipIf(!hasGs).each(CASES)("renders like the SVG in Ghostscript: %s", (_name, make) => {
+  it.each(CASES)("writes a valid file that renders like the SVG: %s", async (_name, make) => {
     const p = make();
     const size = 96;
     const sized: Prepared = { ...p, options: { ...p.options, size, fillOpacity: 1 } };
     const d = buildDrawing(sized);
-    return rasterize(svgDocument(sized).replace(/currentColor/g, "#000"), size).then((bmp) => {
-      const want = rgbaToGray(bmp.width, bmp.height, bmp.data);
-      expect(meanDiff(gsRender(writeEps(d), "eps", d.width, size), want)).toBeLessThan(5);
-    });
+    const eps = writeEps(d);
+    expect(eps.startsWith("%!PS-Adobe-3.0 EPSF-3.0\n")).toBe(true);
+    expect(eps.endsWith("showpage\n%%EOF\n")).toBe(true);
+    expect(writeEps(d, { colorSpace: "cmyk" })).toContain("setcmykcolor");
+    if (!hasGs) return;
+    const bmp = await rasterize(svgDocument(sized).replace(/currentColor/g, "#000"), size);
+    const want = rgbaToGray(bmp.width, bmp.height, bmp.data);
+    expect(meanDiff(gsRender(eps, "eps", d.width, size), want)).toBeLessThan(5);
   });
 });
 
