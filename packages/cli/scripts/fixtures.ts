@@ -6,8 +6,12 @@
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 
-import { main } from "../dist/cli.js";
+import type * as Cli from "../src/cli.ts";
 import { OUT_DIR, buildFixtures } from "./cases.ts";
+
+/** The built CLI; a computed specifier so typechecking does not need `dist/`. */
+const DIST: string = new URL("../dist/cli.js", import.meta.url).href;
+const { main } = (await import(DIST)) as typeof Cli;
 
 const { manifest, fixtures } = await buildFixtures(main);
 rmSync(OUT_DIR, { recursive: true, force: true });
