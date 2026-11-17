@@ -1,6 +1,20 @@
 /**
- * @0xdolan/deq-svelte: Deq shapes as typed Svelte components.
+ * @0xdolan/deq-svelte: Deq shapes as typed, tree-shakable Svelte 5 components.
  *
- * Placeholder created in Phase 0. The real implementation lands in Phase 5 (see PRD §15).
+ * ```svelte
+ * <script>
+ *   import { RojHalfSun, DeqIcon } from "@0xdolan/deq-svelte";
+ * </script>
+ * <RojHalfSun size={32} strokeWidth={1.5} absoluteStrokeWidth />
+ * <DeqIcon name="kurdish-sun" color="#ED2024" />
+ * ```
+ *
+ * @packageDocumentation
  */
+export * from "./generated/icons.js";
+export { default as DeqIcon } from "./DeqIcon.svelte";
+export { default as Icon } from "./Icon.svelte";
+export type { DeqIconByNameProps, DeqIconProps, IconProps } from "./types.js";
+
+/** The npm package name. */
 export const packageName = "@0xdolan/deq-svelte" as const;

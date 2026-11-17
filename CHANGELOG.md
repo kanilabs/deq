@@ -40,6 +40,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   - round-trip tests for every format: Ghostscript renders of PDF and EPS compared with resvg, Inkscape imports that check layer names, decoded raster images, PSD layers read back, and spec JSON checked against the schema.
 - Core exports `prepare`, `svgDocument`, `composeShape` and `cosSin` for exporters, and an `@0xdolan/source` export condition for workspace type checking.
 - CI job `exporter-tools` runs the exporter tests with Inkscape 1.4.3 and Ghostscript in Ubuntu 26.04, and `just test-tools` does the same locally.
+- Phase 5 icon packages (ADR 0010):
+  - `@0xdolan/deq-icons`: icon data for all 93 shapes, SVG strings, one SVG file per icon, `sprite.svg`, `icons.json` and `toSvg` with `size`, `color`, `strokeWidth`, `absoluteStrokeWidth` and `title`; default output equals core's `render` byte for byte;
+  - `@0xdolan/deq-react`, `@0xdolan/deq-vue` and `@0xdolan/deq-svelte`: a tree-shakeable component per icon and a dynamic `DeqIcon` by name;
+  - `@0xdolan/deq-elements`: the `<deq-icon>` custom element (light DOM, SSR-safe), a `/define` entry and a minified CDN bundle (about 9 kB gzipped);
+  - `integrity.json` with SHA-384 hashes in the icons and elements packages, and CDN docs with SRI (`docs/cdn.md`);
+  - example apps for React, Vue, Svelte and plain HTML in `examples/`, built and tested in CI.
+- Phase 5 icon fonts, built with fontTools by the private `scripts/deq-fonts` tool:
+  - Deq Icons (OTF, TTF, WOFF2), with a Private Use Area code point per icon from U+E000 and ligatures for ids, aliases and Kurmanji names (typing `roj` shows the half sun);
+  - Deq Icons variable font with a `wght` axis (stroke 0.5 to 3) and a `DOTS` axis (dot size 50% to 200%), nine named instances;
+  - Deq Icons Color: COLRv1 with Light, Dark and Monochrome CPAL palettes in the flag colours, plus an OT-SVG fallback;
+  - `deq-icons.css`, `fonts/codepoints.json` and the code point table `docs/fonts/codepoints.md`; usage and install guide in `docs/fonts/README.md`;
+  - licensed GPL-3.0-or-later with the GPL Font Exception (`fonts/LICENSE.md`);
+  - `just fonts` and `just fonts-check`, and a `fonts` CI job that runs fontbakery (with ots, no FAILs) and a fontconfig install check.
 
 ### Changed
 
@@ -51,3 +64,4 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - 51 new shapes split out of multi-design images, including `arch-dot-column` (the lower part of Drower's darek), `sun-rays`, `sun-double-ring`, `sun-forked-rays`, `sun-bar`, `cup-rays` and `bird`; the catalog now lists 93 shapes (97 with the brand concepts).
 - Removed `hand-composition`, `foot-composition` and `vertical-stack`: each mixed several designs, which are now separate shapes.
 - uv now refuses releases younger than 7 days (`exclude-newer`). The relock moved pip, platformdirs, py-serializable, Ruff and zizmor back to their previous releases.
+- The repository ESLint run gets a 6 GB heap, and `.svelte-kit/` is ignored, for the extra TypeScript projects.

@@ -1,7 +1,7 @@
 {
   "name": "@0xdolan/deq-vue",
   "version": "0.0.0",
-  "description": "Deq shapes as typed Vue components.",
+  "description": "Deq shapes as typed, tree-shakable Vue 3 components.",
   "license": "GPL-3.0-or-later",
   "author": "0xdolan <0xdolan@gmail.com>",
   "homepage": "https://kanilabs.github.io/deq/",
@@ -15,9 +15,11 @@
   "sideEffects": false,
   "exports": {
     ".": {
+      "@0xdolan/source": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "dist"
@@ -28,7 +30,18 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --coverage"
+    "test": "vitest run --coverage",
+    "generate": "node scripts/generate.ts"
+  },
+  "dependencies": {
+    "@0xdolan/deq-core": "workspace:*",
+    "@0xdolan/deq-icons": "workspace:*"
+  },
+  "peerDependencies": {
+    "vue": ">=3.5"
+  },
+  "devDependencies": {
+    "vue": "3.5.45"
   },
   "publishConfig": {
     "access": "public",

@@ -1,0 +1,144 @@
+"""``deq-fonts``: build and check the Deq icon fonts.
+
+    deq-fonts codepoints [--check]    assign code points, write the code point table
+    deq-fonts build                   build every font, the CSS and codepoints.json
+    deq-fonts install-check [DIR]     install the fonts into a private fontconfig and list them
+
+The geometry comes from ``pnpm --filter @0xdolan/deq-icons font-data fonts/build/geometry.json``
+(``just fonts`` runs both steps).
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import shutil
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+from deq_fonts.build import Shape, color_font, static_fonts, variable_font, write
+from deq_fonts.web import assign, codepoints_json, css, load_codepoints, table
+
+ROOT = Path.cwd()
+GEOMETRY = Path("fonts/build/geometry.json")
+CODEPOINTS = Path("fonts/codepoints.json")
+TABLE = Path("docs/fonts/codepoints.md")
+DIST = Path("fonts/dist")
+EXPECTED = {"Deq Icons", "Deq Icons Color"}
+
+
+def load_shapes(path: Path) -> list[Shape]:
+    if not path.exists():
+        raise SystemExit(
+            f"{path} not found: run `pnpm --filter @0xdolan/deq-icons font-data {path}`"
+        )
+    return [Shape.load(s) for s in json.loads(path.read_text(encoding="utf-8"))["shapes"]]
+
+
+def version() -> str:
+    """The font version from the monorepo version: 1.2.3 becomes 1.002."""
+    data = json.loads((ROOT / "package.json").read_text(encoding="utf-8"))
+    major, minor, *_ = str(data["version"]).split(".")
+    return f"{int(major)}.{int(minor):03d}"
+
+
+def cmd_codepoints(check: bool, geometry: Path) -> int:
+    shapes = load_shapes(geometry)
+    current = load_codepoints(CODEPOINTS)
+    cps = assign([s.id for s in shapes], current)
+    files = {CODEPOINTS: codepoints_json(cps), TABLE: table(shapes, cps)}
+    stale = [p for p, text in files.items() if not p.exists() or p.read_text("utf-8") != text]
+    if check:
+        for p in stale:
+            print(f"{p} is out of date: run `uv run deq-fonts codepoints`", file=sys.stderr)
+        return 1 if stale else 0
+    for p in stale:
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(files[p], encoding="utf-8")
+        print(f"wrote {p}")
+    return 0
+
+
+def cmd_build(geometry: Path, out: Path) -> int:
+    shapes = load_shapes(geometry)
+    cps = load_codepoints(CODEPOINTS)
+    ver = version()
+    fonts = static_fonts(shapes, cps, ver)
+    fonts["DeqIcons[DOTS,wght].ttf"] = variable_font(shapes, cps, ver)
+    fonts["DeqIconsColor-Regular.ttf"] = color_font(shapes, cps, ver)
+    for path in write(fonts, out):
+        print(f"wrote {path}")
+    (out / "deq-icons.css").write_text(css(shapes, cps), encoding="utf-8")
+    used = {s.id: cps[s.id] for s in shapes}
+    (out / "codepoints.json").write_text(codepoints_json(used), encoding="utf-8")
+    return 0
+
+
+def _tool(name: str) -> str:
+    path = shutil.which(name)
+    if path is None:
+        raise SystemExit(f"{name} not found: install fontconfig")
+    return path
+
+
+def cmd_install_check(fonts: Path) -> int:
+    """Copy the fonts into a temporary font directory with its own fontconfig file and check
+    that fontconfig finds every family."""
+    files = sorted(p for p in fonts.iterdir() if p.suffix in {".otf", ".ttf"})
+    if not files:
+        raise SystemExit(f"no fonts in {fonts}")
+    with tempfile.TemporaryDirectory() as tmp:
+        home = Path(tmp)
+        target = home / "fonts"
+        target.mkdir()
+        for f in files:
+            shutil.copy2(f, target / f.name)
+        conf = home / "fonts.conf"
+        conf.write_text(
+            '<?xml version="1.0"?>\n<!DOCTYPE fontconfig SYSTEM "fonts.dtd">\n'
+            f"<fontconfig><dir>{target}</dir><cachedir>{home / 'cache'}</cachedir></fontconfig>\n",
+            encoding="utf-8",
+        )
+        env = {"FONTCONFIG_FILE": str(conf), "HOME": tmp, "PATH": "/usr/bin:/bin"}
+        subprocess.run([_tool("fc-cache"), "-f"], env=env, check=True, capture_output=True)  # noqa: S603
+        listed = subprocess.run(  # noqa: S603
+            [_tool("fc-list"), "--format", "%{family[0]}|%{style[0]}|%{file}\n"],
+            env=env,
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.splitlines()
+    found = {line.split("|")[0] for line in listed}
+    for line in sorted(listed):
+        print(line)
+    missing = EXPECTED - found
+    if missing or len(listed) < len(files):
+        print(f"fontconfig did not find: {sorted(missing) or 'every file'}", file=sys.stderr)
+        return 1
+    print(f"install-check: {len(files)} fonts found by fontconfig")
+    return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(prog="deq-fonts", description=__doc__.splitlines()[0])
+    sub = parser.add_subparsers(dest="command", required=True)
+    p = sub.add_parser("codepoints", help="assign code points and write the table")
+    p.add_argument("--check", action="store_true", help="fail if a file is out of date")
+    p.add_argument("--geometry", type=Path, default=GEOMETRY)
+    p = sub.add_parser("build", help="build the fonts and CSS")
+    p.add_argument("--geometry", type=Path, default=GEOMETRY)
+    p.add_argument("--out", type=Path, default=DIST)
+    p = sub.add_parser("install-check", help="check that fontconfig finds the fonts")
+    p.add_argument("fonts", nargs="?", type=Path, default=DIST)
+    args = parser.parse_args(argv)
+    if args.command == "codepoints":
+        return cmd_codepoints(args.check, args.geometry)
+    if args.command == "build":
+        return cmd_build(args.geometry, args.out)
+    return cmd_install_check(args.fonts)
+
+
+if __name__ == "__main__":  # pragma: no cover
+    raise SystemExit(main())

@@ -1,7 +1,7 @@
 {
   "name": "@0xdolan/deq-icons",
   "version": "0.0.0",
-  "description": "Deq shapes as raw SVG, ESM strings and a sprite.",
+  "description": "Deq shapes as icon data, SVG strings, raw SVG files and a sprite.",
   "license": "GPL-3.0-or-later",
   "author": "0xdolan <0xdolan@gmail.com>",
   "homepage": "https://kanilabs.github.io/deq/",
@@ -15,9 +15,20 @@
   "sideEffects": false,
   "exports": {
     ".": {
+      "@0xdolan/source": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
-    }
+    },
+    "./svg": {
+      "@0xdolan/source": "./src/strings.ts",
+      "types": "./dist/strings.d.ts",
+      "import": "./dist/strings.js"
+    },
+    "./svg/*.svg": "./dist/svg/*.svg",
+    "./sprite.svg": "./dist/sprite.svg",
+    "./icons.json": "./dist/icons.json",
+    "./integrity.json": "./dist/integrity.json",
+    "./package.json": "./package.json"
   },
   "files": [
     "dist"
@@ -26,9 +37,17 @@
     "node": ">=24"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json && node scripts/files.ts",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --coverage"
+    "test": "vitest run --coverage",
+    "generate": "node scripts/generate.ts",
+    "font-data": "node scripts/font-data.ts"
+  },
+  "dependencies": {
+    "@0xdolan/deq-core": "workspace:*"
+  },
+  "devDependencies": {
+    "@0xdolan/deq-exporters": "workspace:*"
   },
   "publishConfig": {
     "access": "public",
