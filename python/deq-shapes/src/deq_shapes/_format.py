@@ -33,7 +33,7 @@ def num(x: float) -> str:
 
 
 _ESCAPES = {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}
-_NOT_XML = re.compile("[\u0000-\u0008\u000b\u000c\u000e-\u001f￾￿]")
+_NOT_XML = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\ufffe\uffff]")
 _SPECIAL = re.compile("[&<>\"']")
 
 
