@@ -13,10 +13,14 @@ import { DeqIcon, Icon, RojHalfSun, packageName } from "./index.js";
 import { iconOptions } from "./options.js";
 
 /** Svelte's hydration markers and `<line ...></line>` become core's plain markup. */
-const plain = (markup: string): string =>
-  markup
-    .replace(/<!--(?:\[-?\d*|\]|)-->/g, "")
-    .replace(/><\/(?:circle|ellipse|line|path|polygon|polyline)>/g, "/>");
+const plain = (markup: string): string => {
+  let out = markup;
+  for (let prev = ""; prev !== out;) {
+    prev = out;
+    out = out.replace(/<!--(?:\[-?\d*|\]|)-->/g, "");
+  }
+  return out.replace(/><\/(?:circle|ellipse|line|path|polygon|polyline)>/g, "/>");
+};
 
 const html = (c: Component<never>, props: Record<string, unknown> = {}): string =>
   plain(render(c as Component<Record<string, unknown>>, { props }).body);

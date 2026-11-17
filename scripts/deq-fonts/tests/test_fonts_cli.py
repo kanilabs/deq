@@ -58,7 +58,7 @@ def test_build(repo: Path, capsys: pytest.CaptureFixture[str]) -> None:
         "codepoints.json",
         "deq-icons.css",
     ]
-    assert "wrote dist/DeqIcons-Regular.ttf" in capsys.readouterr().out
+    assert f"wrote {Path('dist', 'DeqIcons-Regular.ttf')}" in capsys.readouterr().out
 
 
 def test_install_check_needs_fonts(tmp_path: Path) -> None:

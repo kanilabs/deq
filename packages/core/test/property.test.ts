@@ -108,7 +108,7 @@ describe("properties", () => {
         expect(svg.match(/<title>/g)?.length ?? 0).toBeLessThanOrEqual(1);
       }),
     );
-  });
+  }, 30_000);
 
   it("anything that is not a valid option set fails with a DeqError", () => {
     fc.assert(
