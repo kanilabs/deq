@@ -1,0 +1,1 @@
+{"id": "x", "version": 1, "category": "test", "names": {"en": "X", "ckb": {"text": null, "status": "none"}, "kmr": {"text": null, "status": "none"}}, "layers": ["main"], "parameters": {}, "primitives": [{"type": "dot", "cx": 12, "cy": 12, "size": 2}]}

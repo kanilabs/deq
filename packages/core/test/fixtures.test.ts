@@ -6,11 +6,11 @@ import { describe, expect, it } from "vitest";
 
 import { API_DOC, generateApiDocs } from "../scripts/api-docs.ts";
 import { fixtureCases, manifest, renderCase } from "../scripts/fixture-cases.ts";
-import { OUT_FILE, SPEC_DIR, generateShapes, readText } from "../scripts/generate-shapes.ts";
-import { compose, listShapes, render } from "../src/index.js";
+import { SPEC_DIR, generatedFiles, readText } from "../scripts/generate-shapes.ts";
+import { compose, listFlagVariants, listShapes, render, renderFlag } from "../src/index.js";
 
 const FIXTURES = join(SPEC_DIR, "fixtures");
-const cases = fixtureCases(listShapes());
+const cases = fixtureCases(listShapes(), listFlagVariants());
 
 describe("readText", () => {
   const dir = mkdtempSync(join(tmpdir(), "deq-core-"));
@@ -35,9 +35,12 @@ describe("readText", () => {
 });
 
 describe("generated data", () => {
-  it("src/generated/shapes.ts matches spec/ (run `pnpm --filter @0xdolan/deq-core generate`)", () => {
-    expect(readFileSync(OUT_FILE, "utf8")).toBe(generateShapes());
-  });
+  it.each(generatedFiles().map(([file, text]) => [file, text] as const))(
+    "%s matches spec/ (run `pnpm --filter @0xdolan/deq-core generate`)",
+    (file, text) => {
+      expect(readFileSync(file, "utf8")).toBe(text);
+    },
+  );
 });
 
 describe("golden fixtures (run `pnpm --filter @0xdolan/deq-core fixtures` after a change)", () => {
@@ -46,7 +49,9 @@ describe("golden fixtures (run `pnpm --filter @0xdolan/deq-core fixtures` after 
     expect(new Set(cases.map((c) => c.name)).size).toBe(cases.length);
   });
   it.each(cases.map((c) => [c.name, c] as const))("%s", (_name, c) => {
-    expect(renderCase(c, { render, compose })).toBe(readFileSync(join(FIXTURES, c.file), "utf8"));
+    expect(renderCase(c, { render, compose, renderFlag })).toBe(
+      readFileSync(join(FIXTURES, c.file), "utf8"),
+    );
   });
 });
 

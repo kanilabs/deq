@@ -16,6 +16,8 @@ export default defineConfig(
       "**/.venv/**",
       "**/.svelte-kit/**",
       "temp/**",
+      // Recorded CLI output (generated), compared byte for byte, not source code.
+      "spec/fixtures/**",
     ],
   },
   js.configs.recommended,

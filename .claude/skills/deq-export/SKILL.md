@@ -31,3 +31,4 @@ description: Export formats and the exporter contract for Deq shapes (SVG, layer
 - Ghostscript and Inkscape tests skip when the tools are missing; `just test-tools` and the `exporter-tools` CI job set `DEQ_REQUIRE_TOOLS=1` (Inkscape 1.4+ needed for PDF layers).
 - After changing core, run `pnpm --filter @0xdolan/deq-core build`: Vitest resolves core from `dist`.
 - Illustrator and Photoshop are checked by hand by the owner (README "Opening the layered files").
+- Ports: Python and Rust write the core subset (svg, svg-layered, svg-sprite, pdf, png, jpg, webp, ico) and must stay byte-identical for SVG and PDF; see `deq-ports-cli`.

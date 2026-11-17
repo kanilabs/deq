@@ -11,7 +11,7 @@ pre-commit:
       run: pnpm exec prettier --check {staged_files}
     eslint:
       glob: "*.{js,ts,tsx}"
-      run: pnpm exec eslint --max-warnings 0 {staged_files}
+      run: pnpm exec eslint --max-warnings 0 --no-warn-ignored {staged_files}
     ruff:
       glob: "*.py"
       run: uv run ruff check {staged_files} && uv run ruff format --check {staged_files}

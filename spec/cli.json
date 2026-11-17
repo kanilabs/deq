@@ -1,0 +1,361 @@
+{
+  "$comment": "The shared interface of the three deq CLIs (Node, Python, Rust; PRD 8.9, ADR 0011). packages/cli/scripts/generate.ts turns it into help texts and shell completions for every port. Flag types: bool, string, number, int, choice, list (comma separated), intlist, pair (name=value, repeatable).",
+  "name": "deq",
+  "summary": "Draw Deq shapes, traditional Kurdish tattoo motifs, as SVG, PDF and images.",
+  "globalFlags": [
+    { "name": "help", "short": "h", "type": "bool", "help": "Show help." },
+    { "name": "version", "short": "V", "type": "bool", "help": "Print the version." }
+  ],
+  "exitCodes": [
+    { "code": 0, "meaning": "success" },
+    { "code": 1, "meaning": "a shape, option or spec file is invalid" },
+    { "code": 2, "meaning": "the command line is wrong" },
+    { "code": 3, "meaning": "a file could not be read or written (or exists without --force)" },
+    { "code": 4, "meaning": "the format is only available in the Node CLI" }
+  ],
+  "formats": {
+    "all": [
+      "svg",
+      "svg-layered",
+      "svg-sprite",
+      "html",
+      "jsx",
+      "tsx",
+      "vue",
+      "svelte",
+      "data-uri",
+      "css-background",
+      "css-mask",
+      "pdf",
+      "ai",
+      "eps",
+      "png",
+      "jpg",
+      "webp",
+      "avif",
+      "ico",
+      "favicon",
+      "psd",
+      "figma",
+      "spec-json"
+    ],
+    "ports": ["svg", "svg-layered", "svg-sprite", "pdf", "png", "jpg", "webp", "ico"],
+    "flag": ["svg", "png", "jpg", "webp"]
+  },
+  "flagSets": {
+    "render": [
+      {
+        "name": "color",
+        "type": "string",
+        "value": "color",
+        "option": "color",
+        "help": "Stroke and dot colour (any CSS colour). Default currentColor."
+      },
+      {
+        "name": "stroke-width",
+        "type": "number",
+        "value": "n",
+        "option": "strokeWidth",
+        "help": "Stroke width in grid units, 0.05 to 12. Default 2."
+      },
+      {
+        "name": "absolute-stroke-width",
+        "type": "bool",
+        "option": "absoluteStrokeWidth",
+        "help": "Keep the stroke the same width in px at any size."
+      },
+      {
+        "name": "fill",
+        "type": "string",
+        "value": "color",
+        "option": "fill",
+        "help": "Fill for closed outlines, or none. Default none."
+      },
+      {
+        "name": "fill-opacity",
+        "type": "number",
+        "value": "0-1",
+        "option": "fillOpacity",
+        "help": "Opacity of the fill. Default 1."
+      },
+      {
+        "name": "stroke-opacity",
+        "type": "number",
+        "value": "0-1",
+        "option": "strokeOpacity",
+        "help": "Opacity of strokes and dots. Default 1."
+      },
+      {
+        "name": "linecap",
+        "type": "choice",
+        "choices": ["round", "butt", "square"],
+        "option": "linecap",
+        "help": "Line ends. Default round."
+      },
+      {
+        "name": "linejoin",
+        "type": "choice",
+        "choices": ["round", "miter", "bevel"],
+        "option": "linejoin",
+        "help": "Line corners. Default round."
+      },
+      {
+        "name": "dot-scale",
+        "type": "number",
+        "value": "n",
+        "option": "dotScale",
+        "help": "Multiply every dot radius, 0.1 to 4. Default 1."
+      },
+      {
+        "name": "rotation",
+        "type": "number",
+        "value": "deg",
+        "option": "rotation",
+        "help": "Rotate clockwise about the centre. Default 0."
+      },
+      { "name": "flip-x", "type": "bool", "option": "flipX", "help": "Mirror left to right." },
+      { "name": "flip-y", "type": "bool", "option": "flipY", "help": "Mirror top to bottom." },
+      {
+        "name": "padding",
+        "type": "number",
+        "value": "n",
+        "option": "padding",
+        "help": "Space around the 24 x 24 canvas in grid units, 0 to 24. Default 0."
+      },
+      {
+        "name": "background",
+        "type": "string",
+        "value": "color",
+        "option": "background",
+        "help": "Background colour, or none. Default none."
+      },
+      {
+        "name": "layer-color",
+        "type": "pair",
+        "value": "layer=color",
+        "option": "layerColors",
+        "help": "Colour of one layer, for example sun=#FEBD11 (repeatable)."
+      },
+      {
+        "name": "title",
+        "type": "string",
+        "value": "text",
+        "option": "title",
+        "help": "Accessible title. Default the English name; \"\" marks the image decorative."
+      },
+      {
+        "name": "param",
+        "type": "pair",
+        "value": "name=value",
+        "option": "params",
+        "help": "Shape parameter, for example rays=9 (repeatable; see deq info)."
+      },
+      {
+        "name": "current-color",
+        "type": "string",
+        "value": "color",
+        "help": "What currentColor means in PDF and image formats. Default black."
+      },
+      {
+        "name": "matte",
+        "type": "string",
+        "value": "color",
+        "help": "JPG background behind transparent pixels. Default white."
+      },
+      {
+        "name": "quality",
+        "type": "int",
+        "value": "0-100",
+        "help": "JPG and WebP quality. Default 90."
+      }
+    ],
+    "write": [
+      {
+        "name": "force",
+        "type": "bool",
+        "help": "Overwrite existing files."
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "list",
+      "summary": "List the shapes in the catalog.",
+      "args": [],
+      "flags": [
+        {
+          "name": "category",
+          "type": "string",
+          "value": "id",
+          "help": "Only shapes in this category."
+        },
+        { "name": "json", "type": "bool", "help": "Print JSON." }
+      ]
+    },
+    {
+      "name": "info",
+      "summary": "Show a shape's names, layers and parameters.",
+      "args": [{ "name": "shape", "help": "Shape id (see deq list).", "complete": "shape" }],
+      "flags": [{ "name": "json", "type": "bool", "help": "Print JSON." }]
+    },
+    {
+      "name": "render",
+      "summary": "Render shapes to files.",
+      "args": [
+        {
+          "name": "shape",
+          "variadic": true,
+          "help": "Shape ids (see deq list).",
+          "complete": "shape"
+        }
+      ],
+      "flags": [
+        {
+          "name": "format",
+          "type": "choice",
+          "choices": "formats.all",
+          "default": "svg",
+          "help": "Output format. Default svg."
+        },
+        {
+          "name": "size",
+          "type": "number",
+          "value": "px",
+          "option": "size",
+          "help": "Width and height in px, 1 to 8192. Default 24."
+        },
+        {
+          "name": "layered",
+          "type": "bool",
+          "help": "SVG with one Inkscape layer per shape layer (same as --format svg-layered)."
+        },
+        {
+          "name": "out",
+          "type": "string",
+          "value": "path",
+          "complete": "file",
+          "help": "Output file, or a directory for several files; - writes one file to stdout. Default: the current directory."
+        }
+      ],
+      "use": ["render", "write"]
+    },
+    {
+      "name": "export",
+      "summary": "Export shapes in several formats and sizes.",
+      "args": [
+        {
+          "name": "shape",
+          "variadic": true,
+          "optional": true,
+          "help": "Shape ids; or use --all.",
+          "complete": "shape"
+        }
+      ],
+      "flags": [
+        { "name": "all", "type": "bool", "help": "Export every shape in the catalog." },
+        {
+          "name": "format",
+          "type": "list",
+          "choices": "formats.all",
+          "default": "svg",
+          "value": "list",
+          "help": "Comma-separated formats. Default svg."
+        },
+        {
+          "name": "sizes",
+          "type": "intlist",
+          "value": "list",
+          "default": "24",
+          "help": "Comma-separated sizes in px. Default 24."
+        },
+        {
+          "name": "out",
+          "type": "string",
+          "value": "dir",
+          "default": ".",
+          "complete": "dir",
+          "help": "Output directory; files go to <dir>/<format>/<size>/. Default the current directory."
+        }
+      ],
+      "use": ["render", "write"]
+    },
+    {
+      "name": "flag",
+      "summary": "Draw the flag of Kurdistan.",
+      "args": [],
+      "flags": [
+        {
+          "name": "variant",
+          "type": "choice",
+          "choices": "flag.variants",
+          "default": "full-color",
+          "help": "Flag variant. Default full-color."
+        },
+        {
+          "name": "width",
+          "type": "int",
+          "value": "px",
+          "default": "900",
+          "help": "Width in px, 1 to 8192; the height follows. Default 900."
+        },
+        {
+          "name": "format",
+          "type": "choice",
+          "choices": "formats.flag",
+          "default": "svg",
+          "help": "Output format. Default svg."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "value": "text",
+          "help": "Accessible title. Default \"Flag of Kurdistan\"."
+        },
+        {
+          "name": "current-color",
+          "type": "string",
+          "value": "color",
+          "help": "What currentColor means in image formats. Default black."
+        },
+        {
+          "name": "matte",
+          "type": "string",
+          "value": "color",
+          "help": "JPG background behind transparent pixels. Default white."
+        },
+        {
+          "name": "quality",
+          "type": "int",
+          "value": "0-100",
+          "help": "JPG and WebP quality. Default 90."
+        },
+        {
+          "name": "out",
+          "type": "string",
+          "value": "path",
+          "complete": "file",
+          "help": "Output file or directory; - writes to stdout. Default: the current directory."
+        }
+      ],
+      "use": ["write"]
+    },
+    {
+      "name": "validate",
+      "summary": "Check a shape spec file and render every parameter variant.",
+      "args": [{ "name": "file", "help": "Shape spec JSON file.", "complete": "file" }],
+      "flags": []
+    },
+    {
+      "name": "completion",
+      "summary": "Print a shell completion script.",
+      "args": [
+        {
+          "name": "shell",
+          "choices": ["bash", "zsh", "fish", "powershell"],
+          "help": "bash, zsh, fish or powershell."
+        }
+      ],
+      "flags": []
+    }
+  ]
+}

@@ -53,9 +53,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   - `deq-icons.css`, `fonts/codepoints.json` and the code point table `docs/fonts/codepoints.md`; usage and install guide in `docs/fonts/README.md`;
   - licensed GPL-3.0-or-later with the GPL Font Exception (`fonts/LICENSE.md`);
   - `just fonts` and `just fonts-check`, and a `fonts` CI job that runs fontbakery (with ots, no FAILs) and a fontconfig install check.
+- Phase 6 ports and CLIs (ADR 0011):
+  - `renderFlag`, `flagSize`, `listFlagVariants` and `FLAG` in `@0xdolan/deq-core`, with flag cases in the golden fixtures;
+  - Python `deq-shapes` (import `deq_shapes`) and the Rust crate `deq-shapes`: the full renderer (`render`, `compose`, `render_flag`, registry, options and errors), matching all 287 golden fixtures byte for byte, plus exporters for `svg`, `svg-layered`, `svg-sprite`, `pdf`, `png`, `jpg`, `webp` and `ico`;
+  - the `deq` CLI in Node (`@0xdolan/deq-cli`, every format), Python (script `deq`) and Rust (crate `deq-cli`), with `list`, `info`, `render`, `export`, `flag`, `validate` and `completion`; formats outside the core subset exit with code 4 in Python and Rust and point to the Node CLI;
+  - `spec/cli.json`, the shared CLI interface, generating help texts and bash, zsh, fish and PowerShell completions for all three CLIs;
+  - 84 shared CLI cases (`spec/fixtures/cli-cases.json`) recorded from the Node CLI in `spec/fixtures/cli/` and run by the Python and Rust tests on Linux, macOS and Windows.
 
 ### Changed
 
+- cargo-deny allows the IJG licence for the `jpeg-encoder` crate only (permissive and GPL-compatible).
 - The repository moved to the `kanilabs` organisation: repository, issue, badge and security links now point to `github.com/kanilabs/deq`, and the site, schema `$id`s and CSP allowlist to `kanilabs.github.io`. The npm scope stays `@0xdolan`.
 - CI scans for secrets with the pinned, checksum-verified gitleaks CLI instead of `gitleaks-action`, which needs a paid licence for organisation repositories.
 - Shape redesign after owner review: every shape is rebuilt from shared modules (circle, ring and bead radii, small and large dots, rays, small and large Vs drawn as two strokes, 45-degree pitch, teeth), with one layer and id per part, auto-centred. The modules are listed in `spec/grid.json`, and lint rejects circle or dot radii outside them.

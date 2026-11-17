@@ -1,0 +1,93 @@
+roj-half-sun           celestial          Half sun
+roj-sun-circle         celestial          Sun disc
+heyv-crescent          celestial          Crescent moon
+sterk-star             celestial          Star
+cup-rays               celestial          Cup with rays
+moon-dome              celestial          Moon (dome)
+star-dense             celestial          Double asterisk
+star-flower            celestial          Flower star
+sun-arch-dotted        celestial          Arch with rays and dot
+sun-bar                celestial          Sun with bar
+sun-dome-comb          celestial          Rayed dome
+sun-double-ring        celestial          Sun with inner ring
+sun-forked-rays        celestial          Sun with forked rays
+sun-rays               celestial          Sun with long rays
+sun-spiral             celestial          Spiral sun
+tree-branch            nature             Tree of life
+wheat-arrow            nature             Wheat ear
+fork                   nature             Fork
+spike                  nature             Spike
+ring-stem              nature             Ring on a stem
+arrow-down             nature             Arrow down
+arrow-herringbone      nature             Herringbone arrow
+arrow-line             nature             Arrow
+crow-foot              nature             Three-toed foot
+cup                    nature             Cup
+dome-stem              nature             Arch with stem
+fork-cross             nature             Double fork
+fork-down-dotted       nature             Inverted fork with dots
+fork-down              nature             Inverted fork
+root                   nature             Root
+tree-comb              nature             Comb tree
+tree-cup               nature             Tree in a cup
+trefoil                nature             Trefoil
+cross                  geometric          Cross
+cross-dotted           geometric          Dotted cross
+x-mark                 geometric          Diagonal cross
+lozenge                geometric          Lozenge
+lozenge-nested         geometric          Nested lozenges
+triangle-dotted        geometric          Triangle
+chevron                geometric          Chevron
+chevron-stack          geometric          Stacked chevrons
+crossed-chevrons       geometric          Crossed chevrons
+comb                   geometric          Comb
+ladder                 geometric          Ladder
+spindle                geometric          Spindle
+dimlich                geometric          Dimlich
+arch-dot               geometric          Shrine
+cross-forked-dotted    geometric          Forked cross with dots
+cross-forked           geometric          Cross with forked ends
+crossed-chevrons-wide  geometric          Wide crossed chevrons
+dome-comb              geometric          Dome with comb
+star-chain             geometric          Star chain
+t-mark                 geometric          T
+tent-cross             geometric          X on feet
+tent-double            geometric          Double tent
+tent                   geometric          Tent
+tree-row               geometric          Branch row
+x-chain                geometric          X chain
+x-comb                 geometric          Toothed X
+dot                    dots               Dot
+dot-trio               dots               Three dots
+dot-row                dots               Row of dots
+dot-quincunx           dots               Five dots
+dot-rosette            dots               Dot rosette
+dot-cluster            dots               Dot cluster
+chain                  dots               Chain
+dot-diamond            dots               Four dots
+dot-flower             dots               Dot flower
+ring-chain-shaft       dots               Rings on a shaft
+ring-stem-double       dots               Double ring stem
+ring                   dots               Ring
+zigzag                 lines-and-borders  Zigzag
+arrow-row              lines-and-borders  Row of arrowheads
+band-border            lines-and-borders  Band border
+comb-dotted            lines-and-borders  Comb with dots
+comb-forked            lines-and-borders  Forked comb
+comb-x                 lines-and-borders  Comb ending in an X
+fork-pair              lines-and-borders  Fork pair
+tick-bar               lines-and-borders  Tick bar
+gazelle                human-and-animal   Gazelle
+fish                   human-and-animal   Fish
+sandgrouse-foot        human-and-animal   Sandgrouse foot
+doll                   human-and-animal   Doll
+darek                  human-and-animal   Darek
+arch-dot-column        human-and-animal   Arch and dot column
+bird                   human-and-animal   Bird
+dancer                 human-and-animal   Dancer
+chin-composition       compositions       Chin composition
+forehead-composition   compositions       Forehead composition
+circle-over-comb       compositions       Circle over comb
+drower-union           compositions       Union of symbols
+kurdish-sun            kurdish-symbols    Kurdish Sun
+kurdish-flag           kurdish-symbols    Flag of Kurdistan

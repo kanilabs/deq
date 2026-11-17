@@ -1,0 +1,2 @@
+deq: error: option --variant: "striped" is not one of full-color, mono-black, mono-white, outline, high-contrast, square
+Run "deq flag --help" for usage.

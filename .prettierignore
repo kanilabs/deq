@@ -29,3 +29,9 @@ packages/svelte/src/generated/
 # Written by `uv run deq-fonts codepoints` (checked by `deq-fonts codepoints --check`)
 fonts/codepoints.json
 docs/fonts/codepoints.md
+# Generated for the ports by packages/core and packages/cli (checked by tests)
+python/deq-shapes/src/deq_shapes/data/
+rust/deq-shapes/data/
+rust/deq-cli/data/
+packages/cli/src/generated/
+spec/fixtures/cli/

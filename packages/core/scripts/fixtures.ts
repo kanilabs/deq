@@ -15,16 +15,18 @@ import { readText } from "./generate-shapes.ts";
 
 /** The built library; a computed specifier so typechecking does not need `dist/`. */
 const DIST: string = new URL("../dist/index.js", import.meta.url).href;
-const { compose, listShapes, render } = (await import(DIST)) as typeof Core;
+const { compose, listFlagVariants, listShapes, render, renderFlag } = (await import(
+  DIST
+)) as typeof Core;
 
 const here = dirname(fileURLToPath(import.meta.url));
 const OUT = join(here, "..", "..", "..", "spec", "fixtures");
-const SUBDIRS = ["shapes", "params", "options", "compose"];
+const SUBDIRS = ["shapes", "params", "options", "compose", "flag"];
 
 const check = process.argv.includes("--check");
-const cases = fixtureCases(listShapes());
+const cases = fixtureCases(listShapes(), listFlagVariants());
 const expected = new Map<string, string>([["manifest.json", manifest(cases)]]);
-for (const c of cases) expected.set(c.file, renderCase(c, { render, compose }));
+for (const c of cases) expected.set(c.file, renderCase(c, { render, compose, renderFlag }));
 
 function existing(): string[] {
   const out: string[] = [];

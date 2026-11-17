@@ -1,0 +1,10 @@
+Usage: deq validate <file> [options]
+
+Check a shape spec file and render every parameter variant.
+
+Arguments:
+  <file>  Shape spec JSON file.
+
+Options:
+  -h, --help     Show help.
+  -V, --version  Print the version.
