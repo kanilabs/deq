@@ -1,6 +1,18 @@
 /**
- * @0xdolan/deq-icons: Deq shapes as raw SVG, ESM strings and a sprite.
+ * @0xdolan/deq-icons: Deq shapes as icon data, SVG strings, raw SVG files and a sprite.
  *
- * Placeholder created in Phase 0. The real implementation lands in Phase 5 (see PRD §15).
+ * ```ts
+ * import { rojHalfSun, toSvg } from "@0xdolan/deq-icons";
+ * const svg = toSvg(rojHalfSun, { size: 32 });
+ * ```
+ *
+ * @packageDocumentation
  */
+export * from "./generated/icons.js";
+export { iconComponentName, iconExportName } from "./names.js";
+export { nodeMarkup, rootAttributes, toSvg } from "./svg.js";
+export type { Attribute } from "./svg.js";
+export type { DeqIcon, IconElement, IconNode, IconOptions } from "./types.js";
+
+/** The npm package name. */
 export const packageName = "@0xdolan/deq-icons" as const;

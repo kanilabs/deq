@@ -15,6 +15,7 @@
   "sideEffects": false,
   "exports": {
     ".": {
+      "@0xdolan/source": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     }

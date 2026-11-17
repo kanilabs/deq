@@ -14,6 +14,7 @@ export default defineConfig(
       "**/.turbo/**",
       "**/target/**",
       "**/.venv/**",
+      "**/.svelte-kit/**",
       "temp/**",
     ],
   },

@@ -49,6 +49,18 @@ test:
 test-tools:
     DEQ_REQUIRE_TOOLS=1 pnpm exec turbo run test --filter=@0xdolan/deq-exporters
 
+# Build the icon fonts into fonts/dist (checks that the code point table is fresh)
+fonts:
+    pnpm exec turbo run build --filter=@0xdolan/deq-core
+    pnpm --filter @0xdolan/deq-icons font-data fonts/build/geometry.json
+    uv run deq-fonts codepoints --check
+    uv run deq-fonts build
+
+# Check the fonts with fontbakery (including ots) and install them into a private fontconfig
+fonts-check: fonts
+    for f in fonts/dist/*.ttf fonts/dist/*.otf; do uv run --group fonts fontbakery check-universal --loglevel WARN --succinct "$f"; done
+    uv run deq-fonts install-check
+
 # Build all packages
 build:
     pnpm build
@@ -64,7 +76,7 @@ audit:
 # Scan git history and the working tree for secrets
 secrets:
     gitleaks git --redact --no-banner .
-    gitleaks dir --redact --no-banner packages python rust scripts docs .github spec content assets
+    gitleaks dir --redact --no-banner packages python rust scripts docs .github spec content assets examples fonts
 
 # Fail if files that must never be committed are tracked or staged
 forbidden:

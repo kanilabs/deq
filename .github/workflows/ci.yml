@@ -137,6 +137,35 @@ jobs:
           python: "false"
       - run: pnpm exec turbo run test --filter=@0xdolan/deq-exporters
 
+  fonts:
+    name: Fonts (fontbakery, ots, fontconfig)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Install fontconfig
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends fontconfig
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+        with:
+          rust: "false"
+      - run: uv sync --frozen --group fonts
+      - run: pnpm exec turbo run build --filter=@0xdolan/deq-core
+      - run: pnpm --filter @0xdolan/deq-icons font-data fonts/build/geometry.json
+      - run: uv run --frozen deq-fonts codepoints --check
+      - run: uv run --frozen deq-fonts build
+      # One run per file: the static, variable and colour fonts are separate families.
+      - name: fontbakery (fails on any FAIL)
+        run: |
+          for f in fonts/dist/*.ttf fonts/dist/*.otf; do
+            uv run --frozen --group fonts fontbakery check-universal --loglevel WARN --succinct "$f"
+          done
+      - run: uv run --frozen deq-fonts install-check
+
   build:
     name: Build
     runs-on: ubuntu-latest

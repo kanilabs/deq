@@ -1,0 +1,26 @@
+{
+  "name": "@0xdolan/deq-example-svelte",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Example: Deq icons in a Svelte app.",
+  "license": "GPL-3.0-or-later",
+  "author": "0xdolan <0xdolan@gmail.com>",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "typecheck": "svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@0xdolan/deq-svelte": "workspace:*",
+    "svelte": "5.57.3"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "7.3.1",
+    "svelte-check": "4.7.8",
+    "@types/node": "24.19.2",
+    "vite": "8.3.5",
+    "vitest": "5.0.5"
+  }
+}

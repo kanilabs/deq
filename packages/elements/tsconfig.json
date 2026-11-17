@@ -3,7 +3,9 @@
   "compilerOptions": {
     "noEmit": true,
     "allowImportingTsExtensions": true,
+    "customConditions": ["@0xdolan/source"],
+    "lib": ["es2023", "dom", "dom.iterable"],
     "types": ["node"]
   },
-  "include": ["src", "vitest.config.ts"]
+  "include": ["src", "scripts", "vitest.config.ts", "vite.cdn.config.ts"]
 }

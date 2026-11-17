@@ -1,6 +1,7 @@
 packages:
   - "packages/*"
   - "apps/*"
+  - "examples/*"
 
 # Supply-chain hardening
 # Only these packages may run install scripts.

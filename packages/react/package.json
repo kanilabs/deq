@@ -1,7 +1,7 @@
 {
   "name": "@0xdolan/deq-react",
   "version": "0.0.0",
-  "description": "Deq shapes as typed React components.",
+  "description": "Deq shapes as typed, tree-shakable React components.",
   "license": "GPL-3.0-or-later",
   "author": "0xdolan <0xdolan@gmail.com>",
   "homepage": "https://kanilabs.github.io/deq/",
@@ -15,9 +15,11 @@
   "sideEffects": false,
   "exports": {
     ".": {
+      "@0xdolan/source": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "dist"
@@ -28,7 +30,21 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --coverage"
+    "test": "vitest run --coverage",
+    "generate": "node scripts/generate.ts"
+  },
+  "dependencies": {
+    "@0xdolan/deq-core": "workspace:*",
+    "@0xdolan/deq-icons": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": ">=19"
+  },
+  "devDependencies": {
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
   },
   "publishConfig": {
     "access": "public",

@@ -1,6 +1,6 @@
 # Deq: project rules for AI agents
 
-Deq turns traditional Kurdish tattoo (deq) motifs into an open, parametric design system: shape spec, renderers in TS/Python/Rust, exporters, icon packages, fonts, a website with Studio, and a cited cultural story. The full plan is in `PRD-detailed.md` (local only, never committed). Current phase: **4 done** (Phase 2: shape spec, flag, logo concept A, 93 shapes approved with all variations, small fixes may follow. Phase 3: `@0xdolan/deq-core` reference renderer with all render options, golden fixtures in `spec/fixtures/` and the generated API reference. Phase 4: `@0xdolan/deq-exporters` with 23 formats, layered PDF/AI/PSD/SVG verified in Inkscape and Ghostscript (ADR 0009); next is Phase 5).
+Deq turns traditional Kurdish tattoo (deq) motifs into an open, parametric design system: shape spec, renderers in TS/Python/Rust, exporters, icon packages, fonts, a website with Studio, and a cited cultural story. The full plan is in `PRD-detailed.md` (local only, never committed). Current phase: **5 done** (Phase 2: shape spec, flag, logo concept A, 93 shapes approved with all variations, small fixes may follow. Phase 3: `@0xdolan/deq-core` reference renderer with all render options, golden fixtures in `spec/fixtures/` and the generated API reference. Phase 4: `@0xdolan/deq-exporters` with 23 formats, layered PDF/AI/PSD/SVG verified in Inkscape and Ghostscript (ADR 0009). Phase 5: icon packages (icons, react, vue, svelte, elements with a CDN build and SRI), example apps, and the static, variable and COLRv1 icon fonts passing fontbakery (ADR 0010); next is Phase 6, the Python and Rust ports and the CLIs).
 
 ## Hard rules
 
@@ -23,6 +23,9 @@ Deq turns traditional Kurdish tattoo (deq) motifs into an open, parametric desig
 | Shape spec                       | `uv run deq-spec {lint,fmt,render,sheet}` (guide: `docs/design/shape-spec.md`)         |
 | Core data, fixtures, API docs    | `pnpm --filter @0xdolan/deq-core {generate,fixtures,docs}` (ADR 0008)                  |
 | Exporter tests with Inkscape/gs  | `just test-tools` (needs Inkscape 1.4+ and Ghostscript)                                |
+| Icon data and components         | `pnpm --filter @0xdolan/deq-{icons,react,vue,svelte} generate`                         |
+| Fonts                            | `just fonts`; `just fonts-check` adds fontbakery, ots and a fontconfig install check   |
+| New shape code points            | `uv run deq-fonts codepoints` (never change or reuse one)                              |
 | CI in Docker                     | `just docker-ci`                                                                       |
 
 ## Layout
@@ -37,6 +40,9 @@ Deq turns traditional Kurdish tattoo (deq) motifs into an open, parametric desig
 - `assets/brand/concepts/`: logo concepts in the shape format (category `brand`).
 - `packages/exporters`: `exportShapes(format, items, options)`; own PDF/EPS writer, resvg + jSquash WASM raster, ag-psd. Tests needing Ghostscript or Inkscape skip unless installed (`DEQ_REQUIRE_TOOLS=1` in the `exporter-tools` CI job).
 - `packages/core` is the reference renderer: `src/generated/shapes.ts` (built from `spec/`), valibot option validation, `DeqError` codes. Generated files (`src/generated/`, `spec/fixtures/`, `docs/api/`) are Prettier-ignored and checked fresh by tests.
+- `packages/icons` (data, SVG strings, sprite), `react`, `vue`, `svelte` (generated per-icon components), `elements` (`<deq-icon>`, CDN bundle and `integrity.json`). Default output equals core's `render` byte for byte (ADR 0010).
+- `examples/<fw>`: private Vite apps that build and test against the packages' `dist`.
+- `scripts/deq-fonts`: the private font builder (fontTools). `fonts/codepoints.json` (committed, PUA from U+E000), `fonts/LICENSE.md` (GPL + Font Exception); built fonts go to the gitignored `fonts/dist/`. Guide: `docs/fonts/README.md`.
 - `apps/site` (Astro site, Phase 7+), `docs/` (guides, `api/` generated reference, ADRs in `docs/decisions/`).
 - `.github/actions/setup` is the shared toolchain setup for workflows.
 
@@ -50,4 +56,4 @@ Deq turns traditional Kurdish tattoo (deq) motifs into an open, parametric desig
 
 ## Skills
 
-`deq-security`, `deq-release`, `deq-shape-design`, `deq-export`, `deq-content`, `deq-i18n`, `deq-brand` in `.claude/skills/`.
+`deq-security`, `deq-release`, `deq-shape-design`, `deq-export`, `deq-icons-fonts`, `deq-content`, `deq-i18n`, `deq-brand` in `.claude/skills/`.
