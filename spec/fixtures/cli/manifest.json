@@ -985,7 +985,7 @@
         "--sizes",
         "16,48",
         "--out",
-        "dist",
+        "icons",
         "--color",
         "#ED2024"
       ],
@@ -996,68 +996,68 @@
       "stderr": null,
       "files": [
         {
-          "path": "dist/pdf/16/kurdish-sun.pdf",
+          "path": "icons/pdf/16/kurdish-sun.pdf",
           "check": "bytes",
-          "fixture": "export/files/dist/pdf/16/kurdish-sun.pdf"
+          "fixture": "export/files/icons/pdf/16/kurdish-sun.pdf"
         },
         {
-          "path": "dist/pdf/16/roj-half-sun.pdf",
+          "path": "icons/pdf/16/roj-half-sun.pdf",
           "check": "bytes",
-          "fixture": "export/files/dist/pdf/16/roj-half-sun.pdf"
+          "fixture": "export/files/icons/pdf/16/roj-half-sun.pdf"
         },
         {
-          "path": "dist/pdf/48/kurdish-sun.pdf",
+          "path": "icons/pdf/48/kurdish-sun.pdf",
           "check": "bytes",
-          "fixture": "export/files/dist/pdf/48/kurdish-sun.pdf"
+          "fixture": "export/files/icons/pdf/48/kurdish-sun.pdf"
         },
         {
-          "path": "dist/pdf/48/roj-half-sun.pdf",
+          "path": "icons/pdf/48/roj-half-sun.pdf",
           "check": "bytes",
-          "fixture": "export/files/dist/pdf/48/roj-half-sun.pdf"
+          "fixture": "export/files/icons/pdf/48/roj-half-sun.pdf"
         },
         {
-          "path": "dist/png/16/kurdish-sun.png",
+          "path": "icons/png/16/kurdish-sun.png",
           "check": "png",
           "width": 16,
           "height": 16
         },
         {
-          "path": "dist/png/16/roj-half-sun.png",
+          "path": "icons/png/16/roj-half-sun.png",
           "check": "png",
           "width": 16,
           "height": 16
         },
         {
-          "path": "dist/png/48/kurdish-sun.png",
+          "path": "icons/png/48/kurdish-sun.png",
           "check": "png",
           "width": 48,
           "height": 48
         },
         {
-          "path": "dist/png/48/roj-half-sun.png",
+          "path": "icons/png/48/roj-half-sun.png",
           "check": "png",
           "width": 48,
           "height": 48
         },
         {
-          "path": "dist/svg/16/kurdish-sun.svg",
+          "path": "icons/svg/16/kurdish-sun.svg",
           "check": "bytes",
-          "fixture": "export/files/dist/svg/16/kurdish-sun.svg"
+          "fixture": "export/files/icons/svg/16/kurdish-sun.svg"
         },
         {
-          "path": "dist/svg/16/roj-half-sun.svg",
+          "path": "icons/svg/16/roj-half-sun.svg",
           "check": "bytes",
-          "fixture": "export/files/dist/svg/16/roj-half-sun.svg"
+          "fixture": "export/files/icons/svg/16/roj-half-sun.svg"
         },
         {
-          "path": "dist/svg/48/kurdish-sun.svg",
+          "path": "icons/svg/48/kurdish-sun.svg",
           "check": "bytes",
-          "fixture": "export/files/dist/svg/48/kurdish-sun.svg"
+          "fixture": "export/files/icons/svg/48/kurdish-sun.svg"
         },
         {
-          "path": "dist/svg/48/roj-half-sun.svg",
+          "path": "icons/svg/48/roj-half-sun.svg",
           "check": "bytes",
-          "fixture": "export/files/dist/svg/48/roj-half-sun.svg"
+          "fixture": "export/files/icons/svg/48/roj-half-sun.svg"
         }
       ]
     },
