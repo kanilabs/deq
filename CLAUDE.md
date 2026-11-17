@@ -1,6 +1,6 @@
 # Deq: project rules for AI agents
 
-Deq turns traditional Kurdish tattoo (deq) motifs into an open, parametric design system: shape spec, renderers in TS/Python/Rust, exporters, icon packages, fonts, a website with Studio, and a cited cultural story. The full plan is in `PRD-detailed.md` (local only, never committed). Current phase: **5 done** (Phase 2: shape spec, flag, logo concept A, 93 shapes approved with all variations, small fixes may follow. Phase 3: `@0xdolan/deq-core` reference renderer with all render options, golden fixtures in `spec/fixtures/` and the generated API reference. Phase 4: `@0xdolan/deq-exporters` with 23 formats, layered PDF/AI/PSD/SVG verified in Inkscape and Ghostscript (ADR 0009). Phase 5: icon packages (icons, react, vue, svelte, elements with a CDN build and SRI), example apps, and the static, variable and COLRv1 icon fonts passing fontbakery (ADR 0010); next is Phase 6, the Python and Rust ports and the CLIs).
+Deq turns traditional Kurdish tattoo (deq) motifs into an open, parametric design system: shape spec, renderers in TS/Python/Rust, exporters, icon packages, fonts, a website with Studio, and a cited cultural story. The full plan is in `PRD-detailed.md` (local only, never committed). Current phase: **6 done** (Phase 2: shape spec, flag, logo concept A, 93 shapes approved with all variations, small fixes may follow. Phase 3: `@0xdolan/deq-core` reference renderer with all render options, golden fixtures in `spec/fixtures/` and the generated API reference. Phase 4: `@0xdolan/deq-exporters` with 23 formats, layered PDF/AI/PSD/SVG verified in Inkscape and Ghostscript (ADR 0009). Phase 5: icon packages (icons, react, vue, svelte, elements with a CDN build and SRI), example apps, and the static, variable and COLRv1 icon fonts passing fontbakery (ADR 0010); Phase 6: Python and Rust `deq-shapes` ports matching all golden fixtures, and the `deq` CLI in Node, Python and Rust from the shared `spec/cli.json`, replaying 84 shared CLI cases on three OSes (ADR 0011); next is Phase 7, the website foundation).
 
 ## Hard rules
 
@@ -26,12 +26,15 @@ Deq turns traditional Kurdish tattoo (deq) motifs into an open, parametric desig
 | Icon data and components         | `pnpm --filter @0xdolan/deq-{icons,react,vue,svelte} generate`                         |
 | Fonts                            | `just fonts`; `just fonts-check` adds fontbakery, ots and a fontconfig install check   |
 | New shape code points            | `uv run deq-fonts codepoints` (never change or reuse one)                              |
+| CLI help/completions, CLI cases  | `pnpm --filter @0xdolan/deq-cli {generate,fixtures}` (ADR 0011)                        |
 | CI in Docker                     | `just docker-ci`                                                                       |
 
 ## Layout
 
 - `packages/<name>` → npm `@0xdolan/deq-<name>` (core, icons, react, vue, svelte, elements, exporters, generator, cli). TS 6.0 strict, built with `tsc`, tested with Vitest (coverage ≥ 95% lines).
-- `python/deq-shapes` → PyPI `deq-shapes`, import `deq_shapes`. uv workspace, mypy --strict, Ruff, pytest (coverage ≥ 95%).
+- `python/deq-shapes` → PyPI `deq-shapes`, import `deq_shapes`, script `deq`. uv workspace, mypy --strict, Ruff, pytest (coverage ≥ 95%).
+- Ports (ADR 0011): Python and Rust re-implement core and must match `spec/fixtures/` byte for byte; they export `svg`, `svg-layered`, `svg-sprite`, `pdf`, `png`, `jpg`, `webp`, `ico` and exit 4 for other formats. Data comes from generated `data/*.json` files.
+- `spec/cli.json` is the shared CLI interface; `spec/fixtures/cli-cases.json` → `spec/fixtures/cli/` (recorded from the Node CLI) is replayed by every CLI.
 - `rust/deq-shapes`, `rust/deq-cli` (binary `deq`) → crates.io. Edition 2024, MSRV 1.85, toolchain pinned 1.99.1, `unsafe` forbidden, clippy pedantic, no unwrap/expect/panic.
 - `assets/`: WebP masters in `images/` and `video/`, plus `source-manifest.json` (provenance of every image). Variants go to the gitignored `assets/.generated/`.
 - `content/sources.json`: the bibliography (CSL-JSON). `docs/research/`: notes, URL status, attribution review and the motif catalog.
@@ -56,4 +59,4 @@ Deq turns traditional Kurdish tattoo (deq) motifs into an open, parametric desig
 
 ## Skills
 
-`deq-security`, `deq-release`, `deq-shape-design`, `deq-export`, `deq-icons-fonts`, `deq-content`, `deq-i18n`, `deq-brand` in `.claude/skills/`.
+`deq-security`, `deq-release`, `deq-shape-design`, `deq-export`, `deq-icons-fonts`, `deq-ports-cli`, `deq-content`, `deq-i18n`, `deq-brand` in `.claude/skills/`.

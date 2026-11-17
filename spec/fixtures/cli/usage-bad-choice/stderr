@@ -1,0 +1,2 @@
+deq: error: option --linecap: "flat" is not one of round, butt, square
+Run "deq render --help" for usage.

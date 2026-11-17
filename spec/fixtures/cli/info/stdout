@@ -1,0 +1,11 @@
+roj-half-sun  Half sun
+Category:    celestial
+Sorani:      خۆر (needs-native-review)
+Kurmanji:    roj (needs-native-review)
+Aliases:     -
+Tags:        sun, roj, rays, forehead, chin
+Layers:      arc, rays, center
+Symmetry:    mirror-x
+Parameters:
+  rays       integer 3 to 11, default 7: Number of rays, spread from one end of the arc to the other.
+  centerDot  boolean, default true: The large dot on the base line at the arc's centre.

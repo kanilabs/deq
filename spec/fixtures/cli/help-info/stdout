@@ -1,0 +1,11 @@
+Usage: deq info <shape> [options]
+
+Show a shape's names, layers and parameters.
+
+Arguments:
+  <shape>  Shape id (see deq list).
+
+Options:
+      --json     Print JSON.
+  -h, --help     Show help.
+  -V, --version  Print the version.

@@ -12,5 +12,14 @@ authors.workspace = true
 repository.workspace = true
 homepage.workspace = true
 
+include = ["src/**/*.rs", "data/*.json", "README.md", "LICENSE"]
+
+[dependencies]
+image-webp = "=0.2.4"
+jpeg-encoder = "=0.6.1"
+regex = "=1.13.1"
+resvg = { version = "=0.49.0", default-features = false }
+serde_json = { version = "=1.0.154", features = ["preserve_order"] }
+
 [lints]
 workspace = true

@@ -1,0 +1,23 @@
+Usage: deq flag [options]
+
+Draw the flag of Kurdistan.
+
+Options:
+      --variant <variant>      Flag variant. Default full-color. Values:
+                               full-color, mono-black, mono-white, outline,
+                               high-contrast, square.
+      --width <px>             Width in px, 1 to 8192; the height follows.
+                               Default 900.
+      --format <format>        Output format. Default svg. Values: svg, png,
+                               jpg, webp.
+      --title <text>           Accessible title. Default "Flag of Kurdistan".
+      --current-color <color>  What currentColor means in image formats. Default
+                               black.
+      --matte <color>          JPG background behind transparent pixels. Default
+                               white.
+      --quality <0-100>        JPG and WebP quality. Default 90.
+      --out <path>             Output file or directory; - writes to stdout.
+                               Default: the current directory.
+      --force                  Overwrite existing files.
+  -h, --help                   Show help.
+  -V, --version                Print the version.

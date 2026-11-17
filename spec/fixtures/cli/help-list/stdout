@@ -1,0 +1,9 @@
+Usage: deq list [options]
+
+List the shapes in the catalog.
+
+Options:
+      --category <id>  Only shapes in this category.
+      --json           Print JSON.
+  -h, --help           Show help.
+  -V, --version        Print the version.

@@ -2361,6 +2361,82 @@
         }
       },
       "file": "compose/compose--scaled-rotated.svg"
+    },
+    {
+      "name": "flag--full-color",
+      "flag": {
+        "variant": "full-color"
+      },
+      "options": {},
+      "file": "flag/full-color.svg"
+    },
+    {
+      "name": "flag--mono-black",
+      "flag": {
+        "variant": "mono-black"
+      },
+      "options": {},
+      "file": "flag/mono-black.svg"
+    },
+    {
+      "name": "flag--mono-white",
+      "flag": {
+        "variant": "mono-white"
+      },
+      "options": {},
+      "file": "flag/mono-white.svg"
+    },
+    {
+      "name": "flag--outline",
+      "flag": {
+        "variant": "outline"
+      },
+      "options": {},
+      "file": "flag/outline.svg"
+    },
+    {
+      "name": "flag--high-contrast",
+      "flag": {
+        "variant": "high-contrast"
+      },
+      "options": {},
+      "file": "flag/high-contrast.svg"
+    },
+    {
+      "name": "flag--square",
+      "flag": {
+        "variant": "square"
+      },
+      "options": {},
+      "file": "flag/square.svg"
+    },
+    {
+      "name": "flag--full-color--width-1920",
+      "flag": {
+        "variant": "full-color",
+        "width": 1920
+      },
+      "options": {},
+      "file": "flag/full-color--width-1920.svg"
+    },
+    {
+      "name": "flag--square--width-512",
+      "flag": {
+        "variant": "square",
+        "width": 512
+      },
+      "options": {},
+      "file": "flag/square--width-512.svg"
+    },
+    {
+      "name": "flag--outline--decorative",
+      "flag": {
+        "variant": "outline",
+        "width": 48,
+        "title": ""
+      },
+      "options": {},
+      "file": "flag/outline--decorative.svg"
     }
   ]
 }

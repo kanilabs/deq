@@ -1,0 +1,2 @@
+deq: error: option --size: "1e3" is not a number
+Run "deq render --help" for usage.

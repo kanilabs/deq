@@ -12,12 +12,15 @@ authors.workspace = true
 repository.workspace = true
 homepage.workspace = true
 
+include = ["src/**/*.rs", "data/*.json", "README.md", "LICENSE"]
+
 [[bin]]
 name = "deq"
 path = "src/main.rs"
 
 [dependencies]
 deq-shapes = { path = "../deq-shapes", version = "0.0.0" }
+serde_json = { version = "=1.0.154", features = ["preserve_order"] }
 
 [lints]
 workspace = true

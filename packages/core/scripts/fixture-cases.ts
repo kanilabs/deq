@@ -2,7 +2,13 @@
  * The golden fixture cases in `spec/fixtures/`. Every renderer (TS, Python, Rust) must
  * reproduce each case byte for byte (ADR 0008).
  */
-import type { CompositionPart, ParamValue, RenderOptions, ShapeData } from "../src/index.ts";
+import type {
+  CompositionPart,
+  FlagOptions,
+  ParamValue,
+  RenderOptions,
+  ShapeData,
+} from "../src/index.ts";
 
 export interface FixtureCase {
   /** Unique, file-safe name. */
@@ -11,6 +17,8 @@ export interface FixtureCase {
   readonly shape?: string;
   /** Parts, for composition cases. */
   readonly compose?: readonly CompositionPart[];
+  /** Flag options, for flag cases (`renderFlag`). */
+  readonly flag?: FlagOptions;
   readonly options: RenderOptions;
   /** Path of the expected SVG, relative to `spec/fixtures/`. */
   readonly file: string;
@@ -20,6 +28,7 @@ export interface FixtureCase {
 export interface Renderer {
   render(id: string, options?: RenderOptions): string;
   compose(parts: readonly CompositionPart[], options?: RenderOptions): string;
+  renderFlag(options?: FlagOptions): string;
 }
 
 /** One value per parameter variant to test: integer min and max, the other booleans, every enum value. */
@@ -94,8 +103,27 @@ const COMPOSE_CASES: readonly (readonly [string, readonly CompositionPart[], Ren
   ],
 ];
 
-/** Every fixture case, for the given shape list (in catalog order). */
-export function fixtureCases(shapes: readonly ShapeData[]): FixtureCase[] {
+/** Flag cases: every variant at the default width, plus a width and a title case. */
+function flagCases(variants: readonly string[]): FixtureCase[] {
+  const cases: [string, FlagOptions][] = variants.map((variant) => [variant, { variant }]);
+  cases.push(
+    ["full-color--width-1920", { variant: "full-color", width: 1920 }],
+    ["square--width-512", { variant: "square", width: 512 }],
+    ["outline--decorative", { variant: "outline", width: 48, title: "" }],
+  );
+  return cases.map(([suffix, flag]) => ({
+    name: `flag--${suffix}`,
+    flag,
+    options: {},
+    file: `flag/${suffix}.svg`,
+  }));
+}
+
+/** Every fixture case, for the given shape list (in catalog order) and flag variants. */
+export function fixtureCases(
+  shapes: readonly ShapeData[],
+  flagVariants: readonly string[] = [],
+): FixtureCase[] {
   const cases: FixtureCase[] = [];
   for (const shape of shapes) {
     cases.push({ name: shape.id, shape: shape.id, options: {}, file: `shapes/${shape.id}.svg` });
@@ -121,11 +149,13 @@ export function fixtureCases(shapes: readonly ShapeData[]): FixtureCase[] {
   for (const [name, parts, options] of COMPOSE_CASES) {
     cases.push({ name, compose: parts, options, file: `compose/${name}.svg` });
   }
+  cases.push(...flagCases(flagVariants));
   return cases;
 }
 
 /** Render one case. */
 export function renderCase(c: FixtureCase, r: Renderer): string {
+  if (c.flag) return r.renderFlag(c.flag);
   return c.compose ? r.compose(c.compose, c.options) : r.render(c.shape ?? "", c.options);
 }
 

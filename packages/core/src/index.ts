@@ -12,6 +12,9 @@ export { DeqError } from "./errors.js";
 export type { DeqErrorCode } from "./errors.js";
 export { MAX_DEPTH, MAX_FLAT, expand, expandShape, resolveParams } from "./expand.js";
 export { escapeXml, num, roundHalfEven } from "./format.js";
+export { flagSize, listFlagVariants, renderFlag } from "./flag.js";
+export type { FlagData, FlagOptions, FlagVariant } from "./flag.js";
+export { FLAG } from "./generated/flag.js";
 export { cosSin } from "./geometry.js";
 export type {
   Flat,

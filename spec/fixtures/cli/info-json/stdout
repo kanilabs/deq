@@ -1,0 +1,46 @@
+{
+  "id": "kurdish-sun",
+  "version": 1,
+  "category": "kurdish-symbols",
+  "names": {
+    "en": "Kurdish Sun",
+    "ckb": {
+      "text": "ڕۆژ",
+      "status": "needs-native-review"
+    },
+    "kmr": {
+      "text": "Roj",
+      "status": "needs-native-review"
+    }
+  },
+  "aliases": [],
+  "tags": [
+    "sun",
+    "roj",
+    "kurdistan",
+    "emblem",
+    "21"
+  ],
+  "layers": [
+    "sun"
+  ],
+  "symmetry": "rotational-21",
+  "parameters": {
+    "rays": {
+      "type": "integer",
+      "min": 5,
+      "max": 24,
+      "default": 21,
+      "description": "Number of rays. The national emblem has 21; other counts are for design use only."
+    },
+    "variant": {
+      "type": "enum",
+      "values": [
+        "filled",
+        "outline"
+      ],
+      "default": "filled",
+      "description": "A filled star, or its outline (stroked 1 unit inside the filled edge)."
+    }
+  }
+}

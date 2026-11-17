@@ -61,6 +61,14 @@ function expandShape(shape: ShapeData, params?: Readonly<Record<string, ParamVal
 
 Expand `shape` into flat geometry with the given parameter values.
 
+### `flagSize`
+
+```ts
+function flagSize(variant: FlagVariant, width: number): [number, number]
+```
+
+The pixel size of the flag at `width` px for a variant.
+
 ### `getShape`
 
 ```ts
@@ -84,6 +92,14 @@ function listCategories(): readonly string[]
 ```
 
 Category ids in catalog order.
+
+### `listFlagVariants`
+
+```ts
+function listFlagVariants(): readonly string[]
+```
+
+Variant ids in spec order.
 
 ### `listShapes`
 
@@ -126,6 +142,20 @@ render("roj-half-sun", { size: 48, strokeWidth: 1.5, color: "#ED2024", params: {
 ```
 
 **@throws** {DeqError} `UNKNOWN_SHAPE`, `INVALID_OPTIONS` or `INVALID_PARAMETER`.
+
+### `renderFlag`
+
+```ts
+function renderFlag(options?: FlagOptions): string
+```
+
+Render the Kurdish flag as a standalone SVG string.
+
+```ts
+renderFlag({ variant: "outline", width: 300 });
+```
+
+**@throws** {DeqError} `INVALID_OPTIONS` for an unknown variant or a bad width.
 
 ### `renderShapeData`
 
@@ -199,6 +229,14 @@ const DEFAULT_OPTIONS: ResolvedOptions
 ```
 
 The documented default of every option (used by "reset" controls).
+
+### `FLAG`
+
+```ts
+const FLAG: FlagData
+```
+
+The render-relevant part of spec/flag.json, paint resolved to colours.
 
 ### `MAX_DEPTH`
 
@@ -314,6 +352,51 @@ interface EllipsePrimitive
 - `id?: string`
 - `layer?: string`
 - `when?: Readonly<Record<string, ParamValue | readonly (string | number)[]>>`: Draw only when every listed parameter has the value (or one of the values).
+
+### `FlagData`
+
+```ts
+interface FlagData
+```
+
+The render-relevant part of `spec/flag.json`.
+
+- `name: string`
+- `viewBox: readonly [number, number]`
+- `bands: readonly { readonly y: number; readonly height: number; readonly color: string; }[]`
+- `sun: { readonly rays: number; readonly rotation: number; readonly center: readonly [number, number]; readonly outerRadius: number; readonly innerRadius: number; }`
+- `variants: readonly FlagVariant[]`
+
+### `FlagOptions`
+
+```ts
+interface FlagOptions
+```
+
+Options of `renderFlag`.
+
+- `variant?: string`: Variant id from `spec/flag.json`. Default `full-color`.
+- `width?: number`: Output width in px (an integer); the height follows the aspect ratio. Default 900.
+- `title?: string`: Accessible title. Default "Flag of Kurdistan". `""` marks the image decorative.
+
+### `FlagVariant`
+
+```ts
+interface FlagVariant
+```
+
+One flag variant with its paint resolved to colours (`null` = not drawn).
+
+- `id: string`
+- `description: string`
+- `crop: readonly [number, number]`: Visible part of the 900 x 600 field: left edge and width.
+- `field: string | null`
+- `bands: boolean`: Paint the red, white and green bands.
+- `dividers: string | null`
+- `frame: string | null`
+- `sun: string | null`
+- `sunOutline: string | null`
+- `strokeWidth: number`: Width of frame, divider and outline strokes, in field units.
 
 ### `FlatArc`
 

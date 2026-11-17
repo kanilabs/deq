@@ -1,0 +1,2 @@
+deq: error: --out - writes one file, but this makes 2
+Run "deq render --help" for usage.

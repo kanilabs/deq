@@ -1,0 +1,2 @@
+deq: error: argument <shell>: "tcsh" is not one of bash, zsh, fish, powershell
+Run "deq completion --help" for usage.

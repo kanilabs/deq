@@ -1,0 +1,97 @@
+# bash completion for deq. Generated from spec/cli.json; do not edit.
+# Install: deq completion bash > ~/.local/share/bash-completion/completions/deq
+_deq() {
+  local cur prev
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  prev="${COMP_WORDS[COMP_CWORD-1]}"
+  if [[ $COMP_CWORD -eq 1 ]]; then
+    COMPREPLY=($(compgen -W "list info render export flag validate completion --help --version" -- "$cur"))
+    return
+  fi
+  case "${COMP_WORDS[1]}" in
+    list)
+      case "$prev" in
+        --category) return ;;
+      esac
+      if [[ $cur == -* ]]; then COMPREPLY=($(compgen -W "--category --json --help" -- "$cur")); return; fi
+      ;;
+    info)
+      if [[ $cur == -* ]]; then COMPREPLY=($(compgen -W "--json --help" -- "$cur")); return; fi
+      COMPREPLY=($(compgen -W "roj-half-sun roj-sun-circle heyv-crescent sterk-star cup-rays moon-dome star-dense star-flower sun-arch-dotted sun-bar sun-dome-comb sun-double-ring sun-forked-rays sun-rays sun-spiral tree-branch wheat-arrow fork spike ring-stem arrow-down arrow-herringbone arrow-line crow-foot cup dome-stem fork-cross fork-down-dotted fork-down root tree-comb tree-cup trefoil cross cross-dotted x-mark lozenge lozenge-nested triangle-dotted chevron chevron-stack crossed-chevrons comb ladder spindle dimlich arch-dot cross-forked-dotted cross-forked crossed-chevrons-wide dome-comb star-chain t-mark tent-cross tent-double tent tree-row x-chain x-comb dot dot-trio dot-row dot-quincunx dot-rosette dot-cluster chain dot-diamond dot-flower ring-chain-shaft ring-stem-double ring zigzag arrow-row band-border comb-dotted comb-forked comb-x fork-pair tick-bar gazelle fish sandgrouse-foot doll darek arch-dot-column bird dancer chin-composition forehead-composition circle-over-comb drower-union kurdish-sun kurdish-flag" -- "$cur"))
+      ;;
+    render)
+      case "$prev" in
+        --format) COMPREPLY=($(compgen -W "svg svg-layered svg-sprite html jsx tsx vue svelte data-uri css-background css-mask pdf ai eps png jpg webp avif ico favicon psd figma spec-json" -- "$cur")); return ;;
+        --size) return ;;
+        --out) COMPREPLY=($(compgen -f -- "$cur")); return ;;
+        --color) return ;;
+        --stroke-width) return ;;
+        --fill) return ;;
+        --fill-opacity) return ;;
+        --stroke-opacity) return ;;
+        --linecap) COMPREPLY=($(compgen -W "round butt square" -- "$cur")); return ;;
+        --linejoin) COMPREPLY=($(compgen -W "round miter bevel" -- "$cur")); return ;;
+        --dot-scale) return ;;
+        --rotation) return ;;
+        --padding) return ;;
+        --background) return ;;
+        --layer-color) return ;;
+        --title) return ;;
+        --param) return ;;
+        --current-color) return ;;
+        --matte) return ;;
+        --quality) return ;;
+      esac
+      if [[ $cur == -* ]]; then COMPREPLY=($(compgen -W "--format --size --layered --out --color --stroke-width --absolute-stroke-width --fill --fill-opacity --stroke-opacity --linecap --linejoin --dot-scale --rotation --flip-x --flip-y --padding --background --layer-color --title --param --current-color --matte --quality --force --help" -- "$cur")); return; fi
+      COMPREPLY=($(compgen -W "roj-half-sun roj-sun-circle heyv-crescent sterk-star cup-rays moon-dome star-dense star-flower sun-arch-dotted sun-bar sun-dome-comb sun-double-ring sun-forked-rays sun-rays sun-spiral tree-branch wheat-arrow fork spike ring-stem arrow-down arrow-herringbone arrow-line crow-foot cup dome-stem fork-cross fork-down-dotted fork-down root tree-comb tree-cup trefoil cross cross-dotted x-mark lozenge lozenge-nested triangle-dotted chevron chevron-stack crossed-chevrons comb ladder spindle dimlich arch-dot cross-forked-dotted cross-forked crossed-chevrons-wide dome-comb star-chain t-mark tent-cross tent-double tent tree-row x-chain x-comb dot dot-trio dot-row dot-quincunx dot-rosette dot-cluster chain dot-diamond dot-flower ring-chain-shaft ring-stem-double ring zigzag arrow-row band-border comb-dotted comb-forked comb-x fork-pair tick-bar gazelle fish sandgrouse-foot doll darek arch-dot-column bird dancer chin-composition forehead-composition circle-over-comb drower-union kurdish-sun kurdish-flag" -- "$cur"))
+      ;;
+    export)
+      case "$prev" in
+        --format) COMPREPLY=($(compgen -W "svg svg-layered svg-sprite html jsx tsx vue svelte data-uri css-background css-mask pdf ai eps png jpg webp avif ico favicon psd figma spec-json" -- "$cur")); return ;;
+        --sizes) return ;;
+        --out) COMPREPLY=($(compgen -d -- "$cur")); return ;;
+        --color) return ;;
+        --stroke-width) return ;;
+        --fill) return ;;
+        --fill-opacity) return ;;
+        --stroke-opacity) return ;;
+        --linecap) COMPREPLY=($(compgen -W "round butt square" -- "$cur")); return ;;
+        --linejoin) COMPREPLY=($(compgen -W "round miter bevel" -- "$cur")); return ;;
+        --dot-scale) return ;;
+        --rotation) return ;;
+        --padding) return ;;
+        --background) return ;;
+        --layer-color) return ;;
+        --title) return ;;
+        --param) return ;;
+        --current-color) return ;;
+        --matte) return ;;
+        --quality) return ;;
+      esac
+      if [[ $cur == -* ]]; then COMPREPLY=($(compgen -W "--all --format --sizes --out --color --stroke-width --absolute-stroke-width --fill --fill-opacity --stroke-opacity --linecap --linejoin --dot-scale --rotation --flip-x --flip-y --padding --background --layer-color --title --param --current-color --matte --quality --force --help" -- "$cur")); return; fi
+      COMPREPLY=($(compgen -W "roj-half-sun roj-sun-circle heyv-crescent sterk-star cup-rays moon-dome star-dense star-flower sun-arch-dotted sun-bar sun-dome-comb sun-double-ring sun-forked-rays sun-rays sun-spiral tree-branch wheat-arrow fork spike ring-stem arrow-down arrow-herringbone arrow-line crow-foot cup dome-stem fork-cross fork-down-dotted fork-down root tree-comb tree-cup trefoil cross cross-dotted x-mark lozenge lozenge-nested triangle-dotted chevron chevron-stack crossed-chevrons comb ladder spindle dimlich arch-dot cross-forked-dotted cross-forked crossed-chevrons-wide dome-comb star-chain t-mark tent-cross tent-double tent tree-row x-chain x-comb dot dot-trio dot-row dot-quincunx dot-rosette dot-cluster chain dot-diamond dot-flower ring-chain-shaft ring-stem-double ring zigzag arrow-row band-border comb-dotted comb-forked comb-x fork-pair tick-bar gazelle fish sandgrouse-foot doll darek arch-dot-column bird dancer chin-composition forehead-composition circle-over-comb drower-union kurdish-sun kurdish-flag" -- "$cur"))
+      ;;
+    flag)
+      case "$prev" in
+        --variant) COMPREPLY=($(compgen -W "full-color mono-black mono-white outline high-contrast square" -- "$cur")); return ;;
+        --width) return ;;
+        --format) COMPREPLY=($(compgen -W "svg png jpg webp" -- "$cur")); return ;;
+        --title) return ;;
+        --current-color) return ;;
+        --matte) return ;;
+        --quality) return ;;
+        --out) COMPREPLY=($(compgen -f -- "$cur")); return ;;
+      esac
+      if [[ $cur == -* ]]; then COMPREPLY=($(compgen -W "--variant --width --format --title --current-color --matte --quality --out --force --help" -- "$cur")); return; fi
+      ;;
+    validate)
+      if [[ $cur == -* ]]; then COMPREPLY=($(compgen -W "--help" -- "$cur")); return; fi
+      COMPREPLY=($(compgen -f -- "$cur"))
+      ;;
+    completion)
+      if [[ $cur == -* ]]; then COMPREPLY=($(compgen -W "--help" -- "$cur")); return; fi
+      COMPREPLY=($(compgen -W "bash zsh fish powershell" -- "$cur"))
+      ;;
+  esac
+}
+complete -F _deq deq

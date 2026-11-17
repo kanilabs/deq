@@ -1,0 +1,2 @@
+deq: error: option --format lists "svg" twice
+Run "deq export --help" for usage.

@@ -1,0 +1,10 @@
+Usage: deq completion <shell> [options]
+
+Print a shell completion script.
+
+Arguments:
+  <shell>  bash, zsh, fish or powershell.
+
+Options:
+  -h, --help     Show help.
+  -V, --version  Print the version.

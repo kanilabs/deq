@@ -1,0 +1,57 @@
+# PowerShell completion for deq. Generated from spec/cli.json; do not edit.
+# Install: deq completion powershell | Out-String | Invoke-Expression
+Register-ArgumentCompleter -Native -CommandName deq -ScriptBlock {
+    param($wordToComplete, $commandAst, $cursorPosition)
+    $shapes = @('roj-half-sun', 'roj-sun-circle', 'heyv-crescent', 'sterk-star', 'cup-rays', 'moon-dome', 'star-dense', 'star-flower', 'sun-arch-dotted', 'sun-bar', 'sun-dome-comb', 'sun-double-ring', 'sun-forked-rays', 'sun-rays', 'sun-spiral', 'tree-branch', 'wheat-arrow', 'fork', 'spike', 'ring-stem', 'arrow-down', 'arrow-herringbone', 'arrow-line', 'crow-foot', 'cup', 'dome-stem', 'fork-cross', 'fork-down-dotted', 'fork-down', 'root', 'tree-comb', 'tree-cup', 'trefoil', 'cross', 'cross-dotted', 'x-mark', 'lozenge', 'lozenge-nested', 'triangle-dotted', 'chevron', 'chevron-stack', 'crossed-chevrons', 'comb', 'ladder', 'spindle', 'dimlich', 'arch-dot', 'cross-forked-dotted', 'cross-forked', 'crossed-chevrons-wide', 'dome-comb', 'star-chain', 't-mark', 'tent-cross', 'tent-double', 'tent', 'tree-row', 'x-chain', 'x-comb', 'dot', 'dot-trio', 'dot-row', 'dot-quincunx', 'dot-rosette', 'dot-cluster', 'chain', 'dot-diamond', 'dot-flower', 'ring-chain-shaft', 'ring-stem-double', 'ring', 'zigzag', 'arrow-row', 'band-border', 'comb-dotted', 'comb-forked', 'comb-x', 'fork-pair', 'tick-bar', 'gazelle', 'fish', 'sandgrouse-foot', 'doll', 'darek', 'arch-dot-column', 'bird', 'dancer', 'chin-composition', 'forehead-composition', 'circle-over-comb', 'drower-union', 'kurdish-sun', 'kurdish-flag')
+    $commands = [ordered]@{
+        'list' = @{
+            Flags = @('--category', '--json', '--help')
+            Values = @{ '--category' = @() }
+            Args = @()
+        }
+        'info' = @{
+            Flags = @('--json', '--help')
+            Values = @{  }
+            Args = $shapes
+        }
+        'render' = @{
+            Flags = @('--format', '--size', '--layered', '--out', '--color', '--stroke-width', '--absolute-stroke-width', '--fill', '--fill-opacity', '--stroke-opacity', '--linecap', '--linejoin', '--dot-scale', '--rotation', '--flip-x', '--flip-y', '--padding', '--background', '--layer-color', '--title', '--param', '--current-color', '--matte', '--quality', '--force', '--help')
+            Values = @{ '--format' = @('svg', 'svg-layered', 'svg-sprite', 'html', 'jsx', 'tsx', 'vue', 'svelte', 'data-uri', 'css-background', 'css-mask', 'pdf', 'ai', 'eps', 'png', 'jpg', 'webp', 'avif', 'ico', 'favicon', 'psd', 'figma', 'spec-json'); '--size' = @(); '--out' = @(); '--color' = @(); '--stroke-width' = @(); '--fill' = @(); '--fill-opacity' = @(); '--stroke-opacity' = @(); '--linecap' = @('round', 'butt', 'square'); '--linejoin' = @('round', 'miter', 'bevel'); '--dot-scale' = @(); '--rotation' = @(); '--padding' = @(); '--background' = @(); '--layer-color' = @(); '--title' = @(); '--param' = @(); '--current-color' = @(); '--matte' = @(); '--quality' = @() }
+            Args = $shapes
+        }
+        'export' = @{
+            Flags = @('--all', '--format', '--sizes', '--out', '--color', '--stroke-width', '--absolute-stroke-width', '--fill', '--fill-opacity', '--stroke-opacity', '--linecap', '--linejoin', '--dot-scale', '--rotation', '--flip-x', '--flip-y', '--padding', '--background', '--layer-color', '--title', '--param', '--current-color', '--matte', '--quality', '--force', '--help')
+            Values = @{ '--format' = @('svg', 'svg-layered', 'svg-sprite', 'html', 'jsx', 'tsx', 'vue', 'svelte', 'data-uri', 'css-background', 'css-mask', 'pdf', 'ai', 'eps', 'png', 'jpg', 'webp', 'avif', 'ico', 'favicon', 'psd', 'figma', 'spec-json'); '--sizes' = @(); '--out' = @(); '--color' = @(); '--stroke-width' = @(); '--fill' = @(); '--fill-opacity' = @(); '--stroke-opacity' = @(); '--linecap' = @('round', 'butt', 'square'); '--linejoin' = @('round', 'miter', 'bevel'); '--dot-scale' = @(); '--rotation' = @(); '--padding' = @(); '--background' = @(); '--layer-color' = @(); '--title' = @(); '--param' = @(); '--current-color' = @(); '--matte' = @(); '--quality' = @() }
+            Args = $shapes
+        }
+        'flag' = @{
+            Flags = @('--variant', '--width', '--format', '--title', '--current-color', '--matte', '--quality', '--out', '--force', '--help')
+            Values = @{ '--variant' = @('full-color', 'mono-black', 'mono-white', 'outline', 'high-contrast', 'square'); '--width' = @(); '--format' = @('svg', 'png', 'jpg', 'webp'); '--title' = @(); '--current-color' = @(); '--matte' = @(); '--quality' = @(); '--out' = @() }
+            Args = @()
+        }
+        'validate' = @{
+            Flags = @('--help')
+            Values = @{  }
+            Args = @()
+        }
+        'completion' = @{
+            Flags = @('--help')
+            Values = @{  }
+            Args = @('bash', 'zsh', 'fish', 'powershell')
+        }
+    }
+    $before = @($commandAst.CommandElements | Where-Object { $_.Extent.EndOffset -lt $cursorPosition } | ForEach-Object { $_.ToString() })
+    $candidates = @()
+    if ($before.Count -le 1) {
+        $candidates = @($commands.Keys) + @('--help', '--version')
+    } elseif ($commands.Contains($before[1])) {
+        $spec = $commands[$before[1]]
+        $prev = $before[-1]
+        if ($spec.Values.ContainsKey($prev)) { $candidates = $spec.Values[$prev] }
+        elseif ($wordToComplete.StartsWith('-')) { $candidates = $spec.Flags }
+        else { $candidates = $spec.Args }
+    }
+    $candidates | Where-Object { $_ -like "$wordToComplete*" } | ForEach-Object {
+        [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
+    }
+}
