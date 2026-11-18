@@ -22,3 +22,10 @@ overrides:
   # glob 11 (from workbox-build) finds no files with minimatch 11 (above); glob 14 is built for it.
   # Remove when workbox-build depends on glob 14+.
   "workbox-build>glob": "14.0.4"
+
+auditConfig:
+  ignoreGhsas:
+    # GHSA-fc5q-39xc-vjpf (picomatch ReDoS): no patched release. Reached only by build tools
+    # (typescript-eslint, astro > unstorage > anymatch), never shipped to the site (ADR 0004).
+    # Remove when a fixed picomatch is released; mirrored in ci.yml dependency review.
+    - GHSA-fc5q-39xc-vjpf

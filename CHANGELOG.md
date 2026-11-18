@@ -83,3 +83,4 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - The repository ESLint run gets a 6 GB heap, and `.svelte-kit/` is ignored, for the extra TypeScript projects.
 - ESLint and Prettier ignore Astro's generated `.astro/` folder and Playwright output; `pnpm lint` runs `astro sync` first so the site's types exist on a clean checkout.
 - pnpm override `workbox-build>glob` to 14.0.4: glob 11 finds no files with the `minimatch` 11.0.3 override. Remove it when `workbox-build` depends on glob 14+.
+- `pnpm audit` and dependency review allow GHSA-fc5q-39xc-vjpf (picomatch ReDoS, no patched release, build tools only); remove when a fix ships (ADR 0004).
