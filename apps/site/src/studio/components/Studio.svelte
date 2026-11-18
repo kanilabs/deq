@@ -7,6 +7,7 @@
   import { Studio } from "../store.svelte.ts";
   import Canvas from "./Canvas.svelte";
   import Inspector from "./Inspector.svelte";
+  import Layers from "./Layers.svelte";
   import Library from "./Library.svelte";
   import Shortcuts from "./Shortcuts.svelte";
   import Toolbar from "./Toolbar.svelte";
@@ -27,6 +28,8 @@
   let shortcuts: Shortcuts | undefined = $state();
   /** Which panel shows on narrow screens. */
   let panel = $state<"library" | "canvas" | "inspector">("canvas");
+  /** Which list the left pane shows. */
+  let side = $state<"library" | "layers">("library");
   let ready = $state(false);
 
   function safeStorage(): Storage | undefined {
@@ -132,8 +135,39 @@
       case "toggleSnap":
         studio.toggle("snap");
         break;
+      case "group":
+        act(() => studio.group(t("studio.act.group")), "studio.act.group");
+        break;
+      case "ungroup":
+        act(() => studio.ungroup(t("studio.act.ungroup")), "studio.act.ungroup");
+        break;
+      case "bringForward":
+      case "sendBackward":
+      case "bringToFront":
+      case "sendToBack":
+        act(() => studio.arrange(ORDERS[action], t("studio.act.order")), "studio.act.order");
+        break;
+      case "toggleLock":
+        act(() => studio.setFlag(sel, "locked", t("studio.act.lock")), "studio.act.lock");
+        break;
+      case "toggleHide":
+        act(() => studio.setFlag(sel, "hidden", t("studio.act.hide")), "studio.act.hide");
+        break;
+      case "alignLeft":
+      case "alignHCenter":
+      case "alignRight":
+      case "alignTop":
+      case "alignVCenter":
+      case "alignBottom":
+        act(() => studio.align(EDGES[action], t("studio.act.align")), "studio.act.align");
+        break;
+      case "distributeH":
+      case "distributeV":
+        act(() => studio.distribute(action === "distributeH" ? "x" : "y", t("studio.act.distribute")), "studio.act.distribute");
+        break;
       case "search":
         panel = "library";
+        side = "library";
         queueMicrotask(() => library?.focusSearch());
         break;
       case "help":
@@ -141,6 +175,25 @@
         break;
     }
   }
+
+  const ORDERS = { bringForward: "forward", sendBackward: "backward", bringToFront: "front", sendToBack: "back" } as const;
+  const EDGES = {
+    alignLeft: "left", alignHCenter: "hcenter", alignRight: "right",
+    alignTop: "top", alignVCenter: "vcenter", alignBottom: "bottom",
+  } as const;
+
+  /** Run an edit and announce it when it changed the design. */
+  function act(edit: () => void, key: "studio.act.group" | "studio.act.ungroup" | "studio.act.order" | "studio.act.lock" | "studio.act.hide" | "studio.act.align" | "studio.act.distribute"): void {
+    const before = studio.doc;
+    edit();
+    if (studio.doc !== before) studio.announce(t(key));
+  }
+
+  /** Actions that need a selection. */
+  const NEEDS_SELECTION = new Set<Action>([
+    "group", "ungroup", "bringForward", "sendBackward", "bringToFront", "sendToBack", "toggleLock", "toggleHide",
+    "alignLeft", "alignHCenter", "alignRight", "alignTop", "alignVCenter", "alignBottom", "distributeH", "distributeV",
+  ]);
 
   const NUDGES = new Set<Action>([
     "nudgeLeft", "nudgeRight", "nudgeUp", "nudgeDown",
@@ -155,7 +208,7 @@
     if (!action) return;
     // Arrow keys and Delete act on the canvas only, so they keep working in lists and dialogs.
     if (NUDGES.has(action) && target && target !== document.body && !target.closest(".studio-canvas")) return;
-    if (studio.selection.length === 0 && NUDGES.has(action)) return;
+    if (studio.selection.length === 0 && (NUDGES.has(action) || NEEDS_SELECTION.has(action))) return;
     e.preventDefault();
     run(action);
   }
@@ -172,13 +225,25 @@
   <Toolbar {studio} {t} {apple} {bindings} {run} />
   <div class="panes">
     <div class="pane pane-library" id="studio-pane-library">
-      <Library bind:this={library} {t} {locale} onadd={(id) => add(id)} />
+      <div class="side-tabs" role="group" aria-label={t("studio.panels")}>
+        {#each [["library", "studio.tab.library"], ["layers", "studio.tab.layers"]] as const as [id, key] (id)}
+          <button type="button" data-side={id} aria-pressed={side === id} onclick={() => (side = id)}>{t(key)}</button>
+        {/each}
+      </div>
+      <div class="side-body" hidden={side !== "library"}>
+        <Library bind:this={library} {t} {locale} onadd={(id) => add(id)} />
+      </div>
+      {#if side === "layers"}
+        <div class="side-body">
+          <Layers {studio} {t} {locale} />
+        </div>
+      {/if}
     </div>
     <div class="pane pane-canvas studio-canvas" id="studio-pane-canvas">
       <Canvas bind:this={canvas} {studio} {t} onadd={(id, at) => add(id, at)} />
     </div>
     <div class="pane pane-inspector" id="studio-pane-inspector">
-      <Inspector {studio} {t} />
+      <Inspector {studio} {t} {run} />
     </div>
   </div>
   <nav class="tabs" aria-label={t("studio.view")}>
@@ -213,6 +278,20 @@
   }
   .pane-library {
     border-inline-end: 1px solid var(--sl-color-gray-5);
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  .side-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.25rem;
+    padding: 0.5rem 0.75rem 0;
+  }
+  .side-body {
+    min-height: 0;
+  }
+  .side-body[hidden] {
+    display: none;
   }
   .pane-inspector {
     border-inline-start: 1px solid var(--sl-color-gray-5);
@@ -291,7 +370,9 @@
       display: none;
       border: 0;
     }
-    .studio[data-panel="library"] .pane-library,
+    .studio[data-panel="library"] .pane-library {
+      display: grid;
+    }
     .studio[data-panel="canvas"] .pane-canvas,
     .studio[data-panel="inspector"] .pane-inspector {
       display: block;

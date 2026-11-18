@@ -20,6 +20,14 @@ Phase 8 adds Studio to the website: a canvas editor that places shapes, edits ev
 - **Pull requests.** 8a: canvas, library, inspector, history, view, overlays and shortcuts. 8b: multi-select, batch editing and layers. 8c: custom shapes, the path editor and boolean operations. 8d: import, share links, export in every format, and the full end-to-end suite.
 - **Later decisions recorded now.** Boolean operations (8c) keep curves through a curve-aware library (paper.js), loaded only when first used. Raster export in the browser (8d) runs resvg and jSquash as WebAssembly. That needs `'wasm-unsafe-eval'` in `script-src` on the Studio page only, and 8d will confirm it in an amendment to this ADR. Imported SVG (8d) is sanitised with DOMPurify before parsing.
 
+## Phase 8b amendment
+
+- **Flat groups.** An item may carry `group: "g<n>"`. Items that share it select, move, align, distribute and reorder as one unit. There is no nesting. Grouping moves the members next to each other, just below the topmost selected item. Ungrouping only removes the id. Duplicating a group gives the copies a new group id. `parseDoc` accepts `group` only as `g` followed by up to six digits.
+- **Layer order is document order.** Later items are drawn on top. The layers panel lists items top first. Ordering moves runs of neighbouring group members as one block.
+- **Batch editing.** Option, parameter and layer-colour edits take the selected ids. Core validates the result for every unlocked item before the edit is committed, so either all items change or none do. Parameters and layer colours only show when every selected item is the same shape. Fields where the items differ show "Mixed", and checkboxes are indeterminate.
+- **Marquee and pan.** A mouse or pen drag on the background draws a marquee that selects every visible shape it touches; Shift adds to the selection. Touch drags, the middle button and Space-drag pan. The wheel pans and Ctrl+wheel zooms, as before.
+- **Shortcuts.** Group (Mod+G), ungroup (Mod+Shift+G), layer order (Mod+Arrow Up/Down, with Shift to the front or back), lock (Mod+Shift+L) and hide (Mod+Shift+H) have defaults. The six align and two distribute actions have none, because Alt+letter types characters on some keyboard layouts. They can be bound in the shortcuts dialog and are always available in the inspector.
+
 ## Consequences
 
 - Studio's state code is not React-shaped. Contributors familiar with the PRD should read this ADR first.

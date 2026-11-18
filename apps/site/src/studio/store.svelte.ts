@@ -4,6 +4,19 @@
  */
 import { DEFAULT_OPTIONS, getShape, prepare } from "@0xdolan/deq-core";
 
+import {
+  align,
+  distribute,
+  expandGroups,
+  group,
+  nextGroupId,
+  reorder,
+  ungroup,
+  unitsOf,
+  type AlignEdge,
+  type Axis,
+  type Order,
+} from "./arrange.ts";
 import { History } from "./history.ts";
 import {
   EMPTY_DOC,
@@ -183,10 +196,20 @@ export class Studio {
     const set = new Set(ids);
     let doc = this.doc;
     const copies: string[] = [];
+    const groups = new Map<string, string>();
     for (const item of this.doc.items) {
       if (!set.has(item.id) || doc.items.length >= LIMITS.items) continue;
-      const copy: Item = { ...item, id: nextId(doc), x: item.x + GRID * 2, y: item.y + GRID * 2 };
-      delete (copy as { locked?: boolean }).locked;
+      let copy: Item = {
+        ...omit(item, "locked"),
+        id: nextId(doc),
+        x: item.x + GRID * 2,
+        y: item.y + GRID * 2,
+      };
+      if (item.group) {
+        const g = groups.get(item.group) ?? nextGroupId(doc.items);
+        groups.set(item.group, g);
+        copy = { ...copy, group: g };
+      }
       doc = { ...doc, items: [...doc.items, copy] };
       copies.push(copy.id);
     }
@@ -217,21 +240,31 @@ export class Studio {
     label: string,
     coalesce?: string,
   ): string | undefined {
+    return this.#patch(ids, () => patch, label, coalesce);
+  }
+
+  /** Apply a per-item option patch to unlocked items, after core accepts every result. */
+  #patch(
+    ids: readonly string[],
+    patchOf: (item: Item) => Partial<ItemOptions>,
+    label: string,
+    coalesce?: string,
+  ): string | undefined {
     const set = new Set(ids);
     const items = this.doc.items.filter((i) => set.has(i.id) && !i.locked);
+    const next = new Map<string, ItemOptions>();
     for (const item of items) {
+      const options = { ...item.options, ...patchOf(item) };
       try {
-        prepare(getShape(item.shape), { ...item.options, ...patch });
+        prepare(getShape(item.shape), options);
       } catch (error) {
         return (error as Error).message;
       }
+      next.set(item.id, compactOptions(options));
     }
     if (items.length === 0) return undefined;
     this.commit(
-      this.#map(new Set(items.map((i) => i.id)), (i) => ({
-        ...i,
-        options: compactOptions({ ...i.options, ...patch }),
-      })),
+      this.#map(new Set(next.keys()), (i) => ({ ...i, options: next.get(i.id) ?? i.options })),
       label,
       coalesce,
     );
@@ -267,39 +300,95 @@ export class Studio {
     );
   }
 
+  /** Set a shape parameter on items (all of the same shape in the inspector). */
   setParam(
-    id: string,
+    ids: readonly string[],
     name: string,
     value: number | boolean | string,
     label: string,
   ): string | undefined {
-    const item = this.doc.items.find((i) => i.id === id);
-    if (!item) return undefined;
-    return this.setOptions(
-      [id],
-      { params: { ...item.options.params, [name]: value } },
+    return this.#patch(
+      ids,
+      (i) => ({ params: { ...i.options.params, [name]: value } }),
       label,
-      `param:${id}:${name}`,
+      `param:${ids.join(",")}:${name}`,
     );
   }
 
-  resetParam(id: string, name: string, label: string): void {
-    const item = this.doc.items.find((i) => i.id === id);
-    if (!item?.options.params || !(name in item.options.params)) return;
-    this.setOptions([id], { params: omit(item.options.params, name) }, label);
+  resetParam(ids: readonly string[], name: string, label: string): void {
+    const set = new Set(ids);
+    if (!this.doc.items.some((i) => set.has(i.id) && i.options.params && name in i.options.params))
+      return;
+    this.#patch(ids, (i) => ({ params: omit(i.options.params ?? {}, name) }), label);
   }
 
   setLayerColor(
-    id: string,
+    ids: readonly string[],
     layer: string,
     color: string | undefined,
     label: string,
   ): string | undefined {
-    const item = this.doc.items.find((i) => i.id === id);
-    if (!item) return undefined;
-    const rest = omit(item.options.layerColors ?? {}, layer);
-    const layerColors = color === undefined ? rest : { ...rest, [layer]: color };
-    return this.setOptions([id], { layerColors }, label, `layer:${id}:${layer}`);
+    return this.#patch(
+      ids,
+      (i) => {
+        const rest = omit(i.options.layerColors ?? {}, layer);
+        return { layerColors: color === undefined ? rest : { ...rest, [layer]: color } };
+      },
+      label,
+      `layer:${ids.join(",")}:${layer}`,
+    );
+  }
+
+  // Arrange (Phase 8b) -----------------------------------------------------------------
+
+  /** Number of units (groups or lone items) in the selection. */
+  get units(): number {
+    return unitsOf(this.selected).length;
+  }
+
+  #offset(moves: ReadonlyMap<string, { dx: number; dy: number }>, label: string): void {
+    if (moves.size === 0) return;
+    this.commit(
+      this.#map(new Set(moves.keys()), (i) => {
+        const m = moves.get(i.id) ?? { dx: 0, dy: 0 };
+        return { ...i, x: i.x + m.dx, y: i.y + m.dy };
+      }),
+      label,
+    );
+  }
+
+  align(edge: AlignEdge, label: string): void {
+    this.#offset(align(this.selected, edge), label);
+  }
+
+  distribute(axis: Axis, label: string): void {
+    this.#offset(distribute(this.selected, axis), label);
+  }
+
+  /** Change the layer order of `ids` (the selection by default). */
+  arrange(order: Order, label: string, ids: readonly string[] = this.selection): void {
+    const items = reorder(this.doc.items, new Set(ids), order);
+    if (items !== this.doc.items) this.commit({ ...this.doc, items }, label);
+  }
+
+  group(label: string): void {
+    this.commit(group(this.doc, new Set(this.selection)), label);
+  }
+
+  ungroup(label: string): void {
+    this.commit(ungroup(this.doc, new Set(this.selection)), label);
+  }
+
+  /** Set a flag on items; `undefined` toggles: on unless every item already has it. */
+  setFlag(ids: readonly string[], flag: "locked" | "hidden", label: string, value?: boolean): void {
+    const set = new Set(ids);
+    const items = this.doc.items.filter((i) => set.has(i.id));
+    if (items.length === 0) return;
+    const on = value ?? !items.every((i) => i[flag]);
+    this.commit(
+      this.#map(set, (i) => (on ? { ...i, [flag]: true } : omit(i, flag))),
+      label,
+    );
   }
 
   setName(id: string, name: string, label: string): void {
@@ -316,10 +405,17 @@ export class Studio {
 
   // Selection --------------------------------------------------------------------------
 
+  /** Select an item and its group; `additive` toggles them in the selection. */
   select(id: string, additive = false): void {
-    if (!additive) this.selection = [id];
-    else if (this.selection.includes(id)) this.selection = this.selection.filter((s) => s !== id);
-    else this.selection = [...this.selection, id];
+    const ids = expandGroups(this.doc.items, [id]);
+    if (!additive) this.selection = ids;
+    else if (this.selection.includes(id))
+      this.selection = this.selection.filter((s) => !ids.includes(s));
+    else this.selection = expandGroups(this.doc.items, [...this.selection, ...ids]);
+  }
+  /** Select these items and their groups (marquee); `additive` adds to the selection. */
+  selectIds(ids: readonly string[], additive = false): void {
+    this.selection = expandGroups(this.doc.items, additive ? [...this.selection, ...ids] : ids);
   }
   selectAll(): void {
     this.selection = this.doc.items.filter((i) => !i.hidden).map((i) => i.id);

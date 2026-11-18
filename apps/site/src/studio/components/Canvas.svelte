@@ -1,9 +1,10 @@
 <script lang="ts">
   import grid from "../../../../../spec/grid.json";
+  import { unitsOf } from "../arrange.ts";
   import type { Translate } from "../i18n.ts";
   import { DRAG_TYPE, itemBox, optionValue, renderOptions, type Item, type StudioDoc } from "../model.ts";
   import { renderCached } from "../render.ts";
-  import { GRID, rulerStep, rulerTicks, snapBox, toCanvas } from "../snap.ts";
+  import { GRID, rulerStep, rulerTicks, snapBox, toCanvas, unionBox } from "../snap.ts";
   import type { Studio } from "../store.svelte.ts";
   import { svgMarkup } from "../svg.ts";
 
@@ -30,6 +31,10 @@
   const selectedIds = $derived(new Set(studio.selection));
   const visible = $derived(studio.doc.items.filter((i) => !i.hidden));
   const current = $derived(studio.current);
+  const shown = $derived(studio.selected.filter((i) => !i.hidden));
+  /** Boxes of selected groups, and of the whole selection when it has several units. */
+  const groupBoxes = $derived(unitsOf(shown).filter((u) => u.ids.length > 1).map((u) => u.box));
+  const bounds = $derived(unitsOf(shown).length > 1 ? unionBox(shown.map(itemBox)) : undefined);
   const px = $derived(1 / view.zoom);
   const showGrid = $derived(studio.overlays.grid && GRID * view.zoom >= 6);
 
@@ -86,8 +91,15 @@
 
   type Drag =
     | { kind: "move"; id: number; before: StudioDoc; ids: string[]; start: { x: number; y: number }; origin: Map<string, { x: number; y: number }> }
-    | { kind: "pan"; id: number; last: { x: number; y: number } };
+    | { kind: "pan"; id: number; last: { x: number; y: number } }
+    | { kind: "marquee"; id: number; start: { x: number; y: number }; base: readonly string[] };
   let drag: Drag | undefined;
+  /** The marquee rectangle in canvas px while dragging. */
+  let marquee = $state<{ x: number; y: number; w: number; h: number } | undefined>();
+  /** Space is held: a drag pans instead of selecting or moving. */
+  let space = $state(false);
+  /** A pointer press is focusing an item: do not let focus change the selection again. */
+  let pressing = false;
   const pointers = new Map<number, { x: number; y: number }>();
   let pinch: { dist: number; zoom: number } | undefined;
 
@@ -97,8 +109,10 @@
   }
 
   function itemDown(e: PointerEvent, item: Item): void {
-    if (e.button !== 0) return;
+    // Middle button, Space and a second finger fall through to the background (pan, pinch).
+    if (e.button !== 0 || space || pointers.size > 0) return;
     e.stopPropagation();
+    pressing = true;
     pointers.set(e.pointerId, local(e));
     if (!selectedIds.has(item.id) || e.shiftKey) studio.select(item.id, e.shiftKey);
     if (e.shiftKey) return;
@@ -115,12 +129,20 @@
     if (pointers.size === 2) {
       const [a, b] = [...pointers.values()] as [{ x: number; y: number }, { x: number; y: number }];
       pinch = { dist: Math.hypot(a.x - b.x, a.y - b.y), zoom: view.zoom };
-      drag = undefined;
+      finish();
       return;
     }
-    if (e.button === 0 && !e.shiftKey) studio.deselect();
     (e.currentTarget as Element).setPointerCapture(e.pointerId);
-    drag = { kind: "pan", id: e.pointerId, last: local(e) };
+    const p = local(e);
+    // Touch, the middle button and Space pan; a mouse or pen drag draws a marquee.
+    if (e.pointerType === "touch" || e.button === 1 || space) {
+      if (e.button === 0 && e.pointerType === "touch" && !space) studio.deselect();
+      drag = { kind: "pan", id: e.pointerId, last: p };
+      return;
+    }
+    if (e.button !== 0) return;
+    if (!e.shiftKey) studio.deselect();
+    drag = { kind: "marquee", id: e.pointerId, start: toCanvas(view, p.x, p.y), base: studio.selection };
   }
 
   function move(e: PointerEvent): void {
@@ -136,6 +158,26 @@
     if (drag.kind === "pan") {
       studio.panBy(p.x - drag.last.x, p.y - drag.last.y);
       drag.last = p;
+      return;
+    }
+    if (drag.kind === "marquee") {
+      const at = toCanvas(view, p.x, p.y);
+      const r = {
+        x: Math.min(at.x, drag.start.x),
+        y: Math.min(at.y, drag.start.y),
+        w: Math.abs(at.x - drag.start.x),
+        h: Math.abs(at.y - drag.start.y),
+      };
+      // Ignore a jitter of a few screen pixels: that is a click.
+      if (!marquee && Math.max(r.w, r.h) * view.zoom < 4) return;
+      marquee = r;
+      const hit = visible
+        .filter((i) => {
+          const b = itemBox(i);
+          return b.x < r.x + r.w && b.x + b.w > r.x && b.y < r.y + r.h && b.y + b.h > r.y;
+        })
+        .map((i) => i.id);
+      studio.selectIds([...drag.base, ...hit]);
       return;
     }
     const at = toCanvas(view, p.x, p.y);
@@ -162,13 +204,26 @@
     });
   }
 
+  /** End the current drag, recording a move for undo. */
+  function finish(): void {
+    if (drag?.kind === "move") studio.commitPreview(drag.before, t("studio.act.move"));
+    drag = undefined;
+    marquee = undefined;
+    guides = { v: [], h: [] };
+  }
+
   function up(e: PointerEvent): void {
     pointers.delete(e.pointerId);
     if (pointers.size < 2) pinch = undefined;
-    if (!drag || drag.id !== e.pointerId) return;
-    if (drag.kind === "move") studio.commitPreview(drag.before, t("studio.act.move"));
-    drag = undefined;
-    guides = { v: [], h: [] };
+    if (pointers.size === 0) pressing = false;
+    if (drag?.id === e.pointerId) finish();
+  }
+
+  const typing = (e: KeyboardEvent) =>
+    e.target instanceof Element && !!e.target.closest("input, textarea, select, [contenteditable]");
+  function spaceKey(e: KeyboardEvent, down: boolean): void {
+    if (e.key !== " " || (down && typing(e))) return;
+    space = down;
   }
 
   function wheel(e: WheelEvent): void {
@@ -215,7 +270,9 @@
   const fmt = (n: number) => String(Math.round(n * 100) / 100);
 </script>
 
-<div class="wrap" class:rulers={studio.overlays.rulers}>
+<svelte:window onkeydown={(e) => spaceKey(e, true)} onkeyup={(e) => spaceKey(e, false)} onblur={() => (space = false)} />
+
+<div class="wrap" class:rulers={studio.overlays.rulers} class:panning={space}>
   {#if studio.overlays.rulers}
     <svg class="ruler ruler-x" aria-hidden="true" height={RULER} width={width}>
       {#each ticksX as x (x)}
@@ -285,7 +342,7 @@
           onpointerdown={(e) => itemDown(e, item)}
           onkeydown={(e) => itemKey(e, item)}
           onfocus={() => {
-            if (!selectedIds.has(item.id)) studio.select(item.id);
+            if (!pressing && !selectedIds.has(item.id)) studio.select(item.id);
           }}
         >
           <rect class="hit" width={s} height={s} />
@@ -321,10 +378,19 @@
         </g>
       {/if}
 
-      {#each studio.selected.filter((i) => !i.hidden) as item (item.id)}
+      {#each shown as item (item.id)}
         {@const b = itemBox(item)}
         <rect class="selection" x={b.x} y={b.y} width={b.w} height={b.h} stroke-width={px * 1.5} pointer-events="none" />
       {/each}
+      {#each groupBoxes as b, k (k)}
+        <rect class="group-box" x={b.x - 2 * px} y={b.y - 2 * px} width={b.w + 4 * px} height={b.h + 4 * px} stroke-width={px} stroke-dasharray={`${String(2 * px)} ${String(2 * px)}`} pointer-events="none" />
+      {/each}
+      {#if bounds}
+        <rect class="bounds" x={bounds.x - 5 * px} y={bounds.y - 5 * px} width={bounds.w + 10 * px} height={bounds.h + 10 * px} stroke-width={px} stroke-dasharray={`${String(6 * px)} ${String(4 * px)}`} pointer-events="none" />
+      {/if}
+      {#if marquee}
+        <rect class="marquee" x={marquee.x} y={marquee.y} width={marquee.w} height={marquee.h} stroke-width={px} pointer-events="none" />
+      {/if}
       {#each guides.v as gx (gx)}
         <line class="guide" x1={gx} x2={gx} y1={view.y} y2={view.y + height / view.zoom} stroke-width={px} />
       {/each}
@@ -397,8 +463,12 @@
     position: absolute;
     inset: 0;
     display: block;
-    cursor: grab;
+    cursor: default;
     user-select: none;
+  }
+  .panning .surface,
+  .panning .item {
+    cursor: grab;
   }
   .grid-line {
     fill: none;
@@ -432,6 +502,16 @@
   }
   .selection {
     fill: none;
+    stroke: var(--sl-color-accent);
+  }
+  .group-box,
+  .bounds {
+    fill: none;
+    stroke: var(--sl-color-accent);
+  }
+  .marquee {
+    fill: var(--sl-color-accent-low);
+    fill-opacity: 0.35;
     stroke: var(--sl-color-accent);
   }
   .guide {

@@ -75,6 +75,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   - an inspector for every render option, shape parameter and layer colour, with previews at 16 to 96 px, per-option reset, reset shape and reset all;
   - undo and redo with merged edits, autosave to local storage, and 25 documented, remappable keyboard shortcuts;
   - a tab bar on narrow screens, unit tests and Playwright tests on desktop and a Pixel 7 viewport.
+- Phase 8b Studio multi-select, batch editing and layers (ADR 0014):
+  - select several shapes with Shift-click, a marquee drag on the background, the layers panel or select all; Space-drag, the middle button and touch pan;
+  - batch editing in the inspector: one edit changes every selected shape in one undo step, and fields where the shapes differ show "Mixed";
+  - align to six edges, distribute horizontally or vertically, bring forward, send backward, bring to front, send to back, group, ungroup, lock and hide;
+  - a layers panel beside the library: rows top first, with select, lock, hide, move up and move down;
+  - 16 new shortcut actions (41 in total), with defaults for group, ungroup, layer order, lock and hide.
 
 ### Changed
 
