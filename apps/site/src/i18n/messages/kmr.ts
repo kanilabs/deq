@@ -128,7 +128,7 @@ export const kmr = {
   "brand.description": "Nîşana Deqê, rengên wê û rêzikên bikaranîna alayê û roja kurdî.",
   "brand.logo": "Nîşan",
   "brand.logo.body":
-    "Nîşana Deqê nîşana çenê ye: V-yek ber bi jêr bi xalekê li ser, li ser heman tora hemû şikilan hatiye xêzkirin. Hêj nîşana nivîskî tune.",
+    "Nîşana Deqê gulxala ji katalogê ye: xelekek û heşt xal li dora wê, ji danasîna şikil di nav dîska Kanî Labs de hatiye xêzkirin, bi keskê mûrekeba deqê û zerê roja kurdî. Hêj nîşana nivîskî tune.",
   "brand.colors": "Reng",
   "brand.rules": "Rêzik",
   "brand.rule.contrast": "Nivîs û wate divê kontrasta WCAG AA bi cih bînin.",

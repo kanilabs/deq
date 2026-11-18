@@ -83,6 +83,14 @@ build:
     cargo build --workspace --locked
     uv build --all-packages --out-dir target/python-dist --quiet
 
+# Brand SVGs from the Dot rosette, plus PNGs for GitHub and social media (needs Inkscape)
+brand:
+    uv run deq-spec brand
+    mkdir -p assets/.generated/brand
+    inkscape assets/brand/social-preview.svg -w 1280 -h 640 -o assets/.generated/brand/social-preview.png
+    inkscape assets/brand/logo.svg -w 1024 -h 1024 -o assets/.generated/brand/logo-1024.png
+    inkscape assets/brand/logo.svg -w 500 -h 500 -o assets/.generated/brand/logo-500.png
+
 # Dependency audits (npm, PyPI, crates)
 audit:
     pnpm audit --audit-level moderate

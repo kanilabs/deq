@@ -127,7 +127,7 @@ export const en = {
     "The Deq mark, its colours and the rules for using the flag and the Kurdish sun.",
   "brand.logo": "The mark",
   "brand.logo.body":
-    "The Deq mark is the chin mark: a V pointing down with a dot above it, drawn on the same grid as every shape. There is no wordmark yet.",
+    "The Deq mark is the dot rosette from the catalog: a ring with eight dots round it, drawn from the shape spec inside the Kanî Labs disc, in deq-ink green and the yellow of the Kurdish sun. There is no wordmark yet.",
   "brand.colors": "Colours",
   "brand.rules": "Rules",
   "brand.rule.contrast": "Text and meaning must meet WCAG AA contrast.",

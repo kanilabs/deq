@@ -2,6 +2,7 @@
 
 - Status: accepted
 - Date: 2026-11-17
+- Amended by: [ADR 0013](0013-logo-dot-rosette.md) (the logo is now the Dot rosette, not the chin mark)
 
 ## Context
 

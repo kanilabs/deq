@@ -1,4 +1,4 @@
-"""``deq-spec``: lint, format, render and contact sheets for spec/."""
+"""``deq-spec``: lint, format, render, contact sheets and brand SVGs for spec/."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
-from deq_spec import SpecError, jsonfmt, lint, metrics, render, sheet
+from deq_spec import SpecError, brand, jsonfmt, lint, metrics, render, sheet
 from deq_spec.spec import ParamValue, expand, read_json
 
 SHEETS = {
@@ -93,6 +93,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     p_sheet.add_argument("--set", choices=sorted(SHEETS), default="shapes")
     p_sheet.add_argument("--out", type=Path, help="default: the committed sheet under docs/design/")
     p_sheet.add_argument("--force", action="store_true")
+    sub.add_parser("brand", help="write the brand SVGs in assets/brand/ from the Dot rosette")
     args = parser.parse_args(argv)
     root: Path = args.root.resolve()
 
@@ -108,6 +109,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                         str(rel),
                         f"stale or missing: run `uv run deq-spec sheet --set {name} --force`",
                     )
+            for stale in brand.stale(root):
+                report.add(stale, "stale or missing: run `uv run deq-spec brand`")
             for e in report.errors:
                 print(e, file=sys.stderr)
             if report.errors:
@@ -129,6 +132,10 @@ def main(argv: Sequence[str] | None = None) -> int:
                 sys.stdout.write(text)
             else:
                 _write(args.out, text, force=args.force)
+            return 0
+        if args.command == "brand":
+            for path in brand.write(root):
+                print(path.relative_to(root).as_posix())
             return 0
         out = args.out if args.out is not None else root / SHEETS[args.set]
         _write(out, build_sheet(root, args.set), force=args.force)
