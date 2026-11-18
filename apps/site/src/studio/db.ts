@@ -74,7 +74,9 @@ export function downloadFile(name: string, data: string | Uint8Array, type: stri
   document.body.append(a);
   a.click();
   a.remove();
+  // Browsers start a blob download asynchronously; revoking at once can drop it on a slow
+  // device, so the URL lives for a minute.
   setTimeout(() => {
     URL.revokeObjectURL(url);
-  }, 0);
+  }, 60_000);
 }
