@@ -4,7 +4,8 @@ import { expect, test, type Page } from "@playwright/test";
 /**
  * Studio. Phase 8a: canvas, library, inspector, history, view, overlays and shortcuts.
  * Phase 8b: multi-select, batch editing, align and distribute, groups, layer order, lock
- * and hide, and the layers panel.
+ * and hide, and the layers panel. Phase 8c: the shape editor (parts, booleans, mirror,
+ * arrays, the path editor) and "My shapes" (save, place, export, import, edit, delete).
  */
 const LOCALES = [
   { prefix: "", lang: "en", dir: "ltr" },
@@ -499,4 +500,205 @@ test("the layers panel selects, reorders, locks and hides shapes", async ({ page
   expect(axe.violations.filter((v) => v.impact === "serious" || v.impact === "critical")).toEqual(
     [],
   );
+});
+
+// Phase 8c: custom shapes ---------------------------------------------------------------
+
+const editor = (page: Page) => page.getByRole("dialog");
+const parts = (page: Page) => editor(page).locator(".parts button");
+const mine = (page: Page) => page.locator(".mine-tile");
+
+async function newShape(page: Page): Promise<void> {
+  await show(page, "library");
+  await page.locator('[data-action="new-shape"]').click();
+  await expect(editor(page)).toBeVisible();
+}
+
+/** Page coordinates of grid point (gx, gy) on the editor's 24-unit grid. */
+async function gridPoint(page: Page, gx: number, gy: number): Promise<{ x: number; y: number }> {
+  const box = await editor(page).locator(".overlay").boundingBox();
+  if (!box) throw new Error("no editor grid");
+  return { x: box.x + ((gx + 0.5) / 25) * box.width, y: box.y + ((gy + 0.5) / 25) * box.height };
+}
+
+test("the shape editor combines parts and saves a shape that persists", async ({ page }) => {
+  const problems = await watchCsp(page);
+  await open(page);
+  await newShape(page);
+  const axe = await new AxeBuilder({ page })
+    .include(".editor")
+    .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+    .analyze();
+  expect(
+    axe.violations
+      .filter((v) => v.impact === "serious" || v.impact === "critical")
+      .map((v) => v.id),
+  ).toEqual([]);
+
+  // A circle moved off-centre, then a square: unite them into one path.
+  await editor(page).locator('[data-part="circle"]').click();
+  await expect(parts(page)).toHaveCount(1);
+  await page.keyboard.press("Shift+ArrowRight");
+  await page.keyboard.press("Shift+ArrowRight");
+  await expect(editor(page).locator('[data-field="cx"]')).toHaveValue("16");
+  await editor(page).locator('[data-part="rect"]').click();
+  await page.keyboard.press("ControlOrMeta+a");
+  await expect(editor(page).locator('.parts [aria-pressed="true"]')).toHaveCount(2);
+  await editor(page).locator('[data-bool="unite"]').click();
+  await expect(parts(page)).toHaveCount(1);
+  await expect(parts(page).first()).toHaveText("Path");
+
+  // The path editor: pick a point, add one after it, undo.
+  const anchors = editor(page).locator('.overlay [data-k="end"]');
+  const before = await anchors.count();
+  expect(before).toBeGreaterThan(3);
+  // Corners of a boolean result can stack two anchors; either one will do.
+  await anchors.nth(1).click({ force: true });
+  await editor(page).locator('[data-tool="addPoint"]').click();
+  await expect(anchors).toHaveCount(before + 1);
+  await editor(page).getByRole("button", { name: "Undo" }).click();
+  await expect(anchors).toHaveCount(before);
+
+  // Booleans need closed parts.
+  await editor(page).locator('[data-part="line"]').click();
+  await page.keyboard.press("ControlOrMeta+a");
+  await editor(page).locator('[data-bool="subtract"]').click();
+  await expect(editor(page).locator(".note")).toContainText("closed parts");
+  await page.keyboard.press("Delete");
+  await expect(parts(page)).toHaveCount(0);
+  await editor(page).getByRole("button", { name: "Undo" }).click();
+  await expect(parts(page)).toHaveCount(2);
+
+  // Mirror a copy and wrap one part into a radial array, then unwrap it.
+  await parts(page).last().click();
+  await editor(page).locator('[data-tool="mirrorH"]').click();
+  await expect(parts(page)).toHaveCount(3);
+  await editor(page).locator('[data-part="dot"]').click();
+  await editor(page).locator('[data-tool="radial"]').click();
+  await expect(parts(page).first()).toHaveText("Radial array");
+  await editor(page).locator('[data-tool="unwrap"]').click();
+  await expect(parts(page).first()).toHaveText("Dot");
+
+  await editor(page).getByLabel("Name").fill("Moon gate");
+  await editor(page).getByRole("button", { name: "Save" }).click();
+  await expect(editor(page)).toBeHidden();
+  await expect(mine(page)).toHaveCount(1);
+  await expect(mine(page).locator(".name")).toHaveText("Moon gate");
+  await expect(mine(page).locator(".glyph svg")).toHaveCount(1);
+
+  // Place it like a catalog shape; both the library and the design survive a reload.
+  await mine(page).locator(".tile").click();
+  await show(page, "canvas");
+  await expect(items(page)).toHaveCount(1);
+  await page.reload();
+  await expect(page.locator(".studio.ready")).toBeVisible();
+  await show(page, "library");
+  await expect(mine(page)).toHaveCount(1);
+  await show(page, "canvas");
+  await expect(items(page)).toHaveCount(1);
+  await expect(items(page).first().locator("svg")).toHaveCount(1);
+  expect(problems).toEqual([]);
+});
+
+test("custom shapes export, import, edit and delete", async ({ page }) => {
+  await open(page);
+  await newShape(page);
+  await editor(page).locator('[data-part="dot"]').click();
+  await editor(page).getByRole("button", { name: "Save" }).click();
+  await expect(mine(page)).toHaveCount(1);
+
+  const download = page.waitForEvent("download");
+  await mine(page).locator('[data-action="export"]').click();
+  const file = await (await download).path();
+  const { readFile } = await import("node:fs/promises");
+  const json = await readFile(file, "utf8");
+  const spec = JSON.parse(json) as { id: string; category: string; primitives: unknown[] };
+  expect(spec.id).toMatch(/^u-[a-z0-9]+$/u);
+  expect(spec.category).toBe("compositions");
+  expect(spec.primitives).toHaveLength(1);
+
+  // Re-importing the same file adds a copy under a fresh id; bad files are refused.
+  const input = page.locator('.mine input[type="file"]');
+  await input.setInputFiles({
+    name: "shape.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(json),
+  });
+  await expect(mine(page)).toHaveCount(2);
+  await input.setInputFiles({
+    name: "bad.json",
+    mimeType: "application/json",
+    buffer: Buffer.from("{"),
+  });
+  await expect(page.locator(".studio > [role=status]")).toContainText("Could not import");
+  await expect(mine(page)).toHaveCount(2);
+
+  // Edit the first shape: placed copies follow the saved version.
+  await mine(page).first().locator(".tile").click();
+  await show(page, "library");
+  await mine(page).first().locator('[data-action="edit"]').click();
+  await expect(editor(page).getByRole("heading", { level: 2 })).toHaveText("Edit shape");
+  await editor(page).locator('[data-part="line"]').click();
+  await editor(page).getByRole("button", { name: "Save" }).click();
+  await expect(editor(page)).toBeHidden();
+  await expect(mine(page)).toHaveCount(2);
+
+  // Deleting it from the library keeps the design's own copy.
+  page.once("dialog", (d) => void d.accept());
+  await show(page, "library");
+  await mine(page).first().locator('[data-action="delete"]').click();
+  await expect(mine(page)).toHaveCount(1);
+  await show(page, "canvas");
+  await expect(items(page)).toHaveCount(1);
+  await expect(items(page).first().locator("svg")).toHaveCount(1);
+});
+
+test("the shape editor drags parts and points and edits properties", async ({ page }) => {
+  test.skip(
+    mobile(page),
+    "pointer drags are a desktop interaction; mobile uses taps, fields and arrow keys",
+  );
+  await open(page);
+  await newShape(page);
+  await editor(page).locator('[data-part="line"]').click();
+  const x1 = editor(page).locator('[data-field="x1"]');
+  await expect(x1).toHaveValue("6");
+
+  // Drag the line by its middle, then drag its end point.
+  const from = await gridPoint(page, 12, 12);
+  const to = await gridPoint(page, 14, 10);
+  await page.mouse.move(from.x, from.y);
+  await page.mouse.down();
+  await page.mouse.move(to.x, to.y, { steps: 5 });
+  await page.mouse.up();
+  await expect(x1).toHaveValue("8");
+  await expect(editor(page).locator('[data-field="y1"]')).toHaveValue("10");
+  const end = await gridPoint(page, 20, 10);
+  const target = await gridPoint(page, 22, 4);
+  await page.mouse.move(end.x, end.y);
+  await page.mouse.down();
+  await page.mouse.move(target.x, target.y, { steps: 5 });
+  await page.mouse.up();
+  await expect(editor(page).locator('[data-field="x2"]')).toHaveValue("22");
+  await expect(editor(page).locator('[data-field="y2"]')).toHaveValue("4");
+
+  // Fields validate like the spec: off the grid is refused.
+  await x1.fill("3");
+  await x1.press("Tab");
+  await expect(x1).toHaveValue("3");
+  await x1.fill("40");
+  await x1.press("Tab");
+  await expect(editor(page).locator(".note")).toContainText("break the shape");
+
+  // Escape clears the selection, then asks before discarding changes.
+  await editor(page)
+    .locator(".overlay")
+    .click({ position: { x: 2, y: 2 } });
+  page.once("dialog", (d) => void d.dismiss());
+  await page.keyboard.press("Escape");
+  await expect(editor(page)).toBeVisible();
+  page.once("dialog", (d) => void d.accept());
+  await editor(page).getByRole("button", { name: "Cancel" }).click();
+  await expect(editor(page)).toBeHidden();
+  await expect(mine(page)).toHaveCount(0);
 });

@@ -1,7 +1,9 @@
 <script lang="ts">
-  import { getShape } from "@0xdolan/deq-core";
   import { onMount } from "svelte";
 
+  import type { CustomDef } from "../custom.ts";
+  import { openShapeStore } from "../db.ts";
+  import { shapeOf } from "../shapes.ts";
   import { translator, type StudioMessages } from "../i18n.ts";
   import { actionFor, loadBindings, saveBindings, type Action, type Bindings } from "../shortcuts.ts";
   import { Studio } from "../store.svelte.ts";
@@ -9,6 +11,7 @@
   import Inspector from "./Inspector.svelte";
   import Layers from "./Layers.svelte";
   import Library from "./Library.svelte";
+  import ShapeEditor from "./ShapeEditor.svelte";
   import Shortcuts from "./Shortcuts.svelte";
   import Toolbar from "./Toolbar.svelte";
 
@@ -31,6 +34,13 @@
   /** Which list the left pane shows. */
   let side = $state<"library" | "layers">("library");
   let ready = $state(false);
+  /** The shape editor: closed, or open on a shape (null for a new one). */
+  let editing = $state<{ def: CustomDef | undefined; n: number } | undefined>();
+  let edits = 0;
+
+  function openEditor(def?: CustomDef): void {
+    editing = { def, n: ++edits };
+  }
 
   function safeStorage(): Storage | undefined {
     try {
@@ -42,13 +52,14 @@
 
   onMount(() => {
     studio.load();
+    void openShapeStore().then((store) => studio.useShapeStore(store));
     ready = true;
   });
 
   const viewport = () => canvas?.size() ?? { w: 800, h: 600 };
 
   function add(shape: string, at?: { x: number; y: number }): void {
-    const names = getShape(shape).names;
+    const names = shapeOf(shape).names;
     const name = (locale === "en" ? null : names[locale].text) ?? names.en;
     const item = studio.add(shape, t("studio.act.add", { name }), at, viewport());
     if (item) {
@@ -201,7 +212,7 @@
   ]);
 
   function keydown(e: KeyboardEvent): void {
-    if (e.defaultPrevented || shortcuts?.isOpen()) return;
+    if (e.defaultPrevented || editing || shortcuts?.isOpen()) return;
     const target = e.target as HTMLElement | null;
     const inField = !!target?.closest("input, textarea, select, [contenteditable]");
     const action = actionFor(bindings, e, apple, inField);
@@ -231,7 +242,7 @@
         {/each}
       </div>
       <div class="side-body" hidden={side !== "library"}>
-        <Library bind:this={library} {t} {locale} onadd={(id) => add(id)} />
+        <Library bind:this={library} {t} {locale} {studio} onadd={(id) => add(id)} onedit={openEditor} />
       </div>
       {#if side === "layers"}
         <div class="side-body">
@@ -252,11 +263,17 @@
     {/each}
   </nav>
   <p class="sr-only" role="status" aria-live="polite">{studio.announcement}</p>
+  {#if editing}
+    {#key editing.n}
+      <ShapeEditor {studio} {t} {locale} def={editing.def} onclose={() => (editing = undefined)} />
+    {/key}
+  {/if}
   <Shortcuts bind:this={shortcuts} {t} {bindings} {apple} onchange={changeBindings} />
 </div>
 
 <style>
   .studio {
+    position: relative;
     --studio-h: calc(100dvh - var(--sl-nav-height, 3.5rem) - 2rem);
     display: grid;
     grid-template-rows: auto 1fr auto;

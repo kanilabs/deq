@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getShape } from "@0xdolan/deq-core";
+  import { shapeOf } from "../shapes.ts";
 
   import type { Translate } from "../i18n.ts";
   import type { Item } from "../model.ts";
@@ -23,7 +23,7 @@
 
   function nameOf(item: Item): string {
     if (item.name) return item.name;
-    const names = getShape(item.shape).names;
+    const names = shapeOf(item.shape).names;
     return (locale === "en" ? null : names[locale].text) ?? names.en;
   }
 

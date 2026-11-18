@@ -28,6 +28,13 @@ Phase 8 adds Studio to the website: a canvas editor that places shapes, edits ev
 - **Marquee and pan.** A mouse or pen drag on the background draws a marquee that selects every visible shape it touches; Shift adds to the selection. Touch drags, the middle button and Space-drag pan. The wheel pans and Ctrl+wheel zooms, as before.
 - **Shortcuts.** Group (Mod+G), ungroup (Mod+Shift+G), layer order (Mod+Arrow Up/Down, with Shift to the front or back), lock (Mod+Shift+L) and hide (Mod+Shift+H) have defaults. The six align and two distribute actions have none, because Alt+letter types characters on some keyboard layouts. They can be bound in the shortcuts dialog and are always available in the inspector.
 
+## Phase 8c amendment
+
+- **Custom shapes are spec shapes.** The "New shape" editor builds a real shape spec on the 24 × 24 grid: `path`, `line`, `circle`, `polygon`, `rect` and `dot` primitives, `use` of a catalog shape, and `radial` and `repeat` arrays. Core, Python and Rust are unchanged. Booleans and mirroring bake the affected parts into `path` primitives. The inspector shows spec field names (`cx`, `r`, `d`) as code identifiers, so they are not translated.
+- **Ids and limits.** Custom ids are `u-` followed by 1 to 24 lowercase letters or digits, so they never collide with catalog ids. `parseCustomDef` validates every shape from storage, files or designs with valibot and then renders it once through core. Limits: 100 shapes, 64 parts, 64 points per part, 2000 characters of path data, 64 array copies, names of up to 80 characters, and a cap on the flattened size.
+- **Storage and embedding.** "My shapes" are saved in IndexedDB (`deq-studio`, store `shapes`). If IndexedDB is missing or blocked, they stay in memory for the session and the library says so. A design embeds a copy of every custom shape it uses (`shapes` in the document), so it renders anywhere. The design's copies win over the library. Shapes are exported as spec JSON and imported from files of up to 256 KB.
+- **Booleans.** Unite, subtract, intersect and exclude run on paper.js `paper-core`, imported only when first used. Paper is pinned to 0.12.18. Releases after it came out in an unusual burst in late 2026, so they are not trusted until reviewed. Only closed parts can be combined. Results with too many segments are refused.
+
 ## Consequences
 
 - Studio's state code is not React-shaped. Contributors familiar with the PRD should read this ADR first.

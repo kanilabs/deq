@@ -81,6 +81,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   - align to six edges, distribute horizontally or vertically, bring forward, send backward, bring to front, send to back, group, ungroup, lock and hide;
   - a layers panel beside the library: rows top first, with select, lock, hide, move up and move down;
   - 16 new shortcut actions (41 in total), with defaults for group, ungroup, layer order, lock and hide.
+- Phase 8c Studio custom shapes (ADR 0014):
+  - a full-pane shape editor on the 24-unit grid with path, line, circle, polygon, rect, dot and catalog-shape parts, a parts list, properties and its own undo;
+  - a path editor to drag, add and delete points, curve segments and close paths, plus move, duplicate, flip, mirror, rotate, scale and layer order;
+  - unite, subtract, intersect and exclude on closed parts with paper.js 0.12.18, loaded on first use;
+  - radial and repeat arrays that can be unwrapped into parts;
+  - a "My shapes" library section saved in IndexedDB, with spec JSON export and import, edit and delete; designs embed the custom shapes they use.
 
 ### Changed
 

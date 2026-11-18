@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { DEFAULT_OPTIONS, getShape, type ParameterDecl } from "@0xdolan/deq-core";
+  import { DEFAULT_OPTIONS, type ParameterDecl } from "@0xdolan/deq-core";
+  import { shapeOf } from "../shapes.ts";
 
   import type { StudioKey, Translate } from "../i18n.ts";
   import { ALIGN_EDGES } from "../arrange.ts";
@@ -55,7 +56,7 @@
   const item = $derived(sel[0]);
   const single = $derived(sel.length === 1);
   /** Parameters and layer colours only show when every selected item is the same shape. */
-  const shape = $derived(item && sel.every((i) => i.shape === item.shape) ? getShape(item.shape) : undefined);
+  const shape = $derived(item && sel.every((i) => i.shape === item.shape) ? shapeOf(item.shape) : undefined);
   const box = $derived(unionBox(sel.map(itemBox)));
   const units = $derived(studio.units);
   let errors = $state<Record<string, string>>({});
@@ -202,7 +203,7 @@
             type="text"
             maxlength="80"
             value={it.name ?? ""}
-            placeholder={getShape(it.shape).names.en}
+            placeholder={shapeOf(it.shape).names.en}
             oninput={(e) => studio.setName(it.id, e.currentTarget.value, t("studio.act.rename"))}
           />
         </label>

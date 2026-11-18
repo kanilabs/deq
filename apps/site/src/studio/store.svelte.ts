@@ -2,7 +2,7 @@
  * Studio state: the document with undo/redo, the selection, the view and the overlays.
  * Every document change goes through {@link Studio.commit}, which records history.
  */
-import { DEFAULT_OPTIONS, getShape, prepare } from "@0xdolan/deq-core";
+import { DEFAULT_OPTIONS, prepare } from "@0xdolan/deq-core";
 
 import {
   align,
@@ -17,6 +17,15 @@ import {
   type Axis,
   type Order,
 } from "./arrange.ts";
+import {
+  CUSTOM_LIMITS,
+  CustomShapeError,
+  fromSpecJson,
+  isCustomId,
+  parseCustomDef,
+  type CustomDef,
+} from "./custom.ts";
+import type { ShapeStore } from "./db.ts";
 import { History } from "./history.ts";
 import {
   EMPTY_DOC,
@@ -29,8 +38,10 @@ import {
   type ItemOptions,
   type OptionKey,
   type StudioDoc,
+  embedShapes,
   omit,
 } from "./model.ts";
+import { knownShape, setCustomShapes, shapeOf } from "./shapes.ts";
 import { GRID, ZOOM, clampZoom, fitView, unionBox, zoomAt, type View } from "./snap.ts";
 
 const DOC_KEY = "deq-studio-doc";
@@ -55,7 +66,12 @@ function safeStorage(): Storage_ | undefined {
 }
 
 export class Studio {
-  doc = $state<StudioDoc>(EMPTY_DOC);
+  #doc = $state<StudioDoc>(EMPTY_DOC);
+  /** "My shapes": custom shapes saved in this browser. */
+  library = $state<readonly CustomDef[]>([]);
+  /** Whether the library survives a reload (IndexedDB is available). */
+  persistent = $state(false);
+  #shapeStore: ShapeStore | undefined;
   selection = $state<string[]>([]);
   view = $state<View>({ x: -40, y: -40, zoom: 4 });
   overlays = $state<Overlays>({
@@ -74,6 +90,20 @@ export class Studio {
 
   constructor(storage: Storage_ | undefined = safeStorage()) {
     this.#storage = storage;
+  }
+
+  get doc(): StudioDoc {
+    return this.#doc;
+  }
+  set doc(next: StudioDoc) {
+    const changed = next.shapes !== this.#doc.shapes;
+    this.#doc = next;
+    if (changed) this.#syncShapes();
+  }
+
+  /** Tell the renderers about the custom shapes in play (the design's copies win). */
+  #syncShapes(): void {
+    setCustomShapes(this.library, this.#doc.shapes ?? []);
   }
 
   get selected(): Item[] {
@@ -100,6 +130,7 @@ export class Studio {
 
   /** Replace the document, recording the previous one for undo. */
   commit(next: StudioDoc, label: string, coalesce?: string): void {
+    next = embedShapes(next, (id) => this.customDef(id));
     if (next === this.doc) return;
     this.history.record(this.doc, label, coalesce);
     this.doc = next;
@@ -153,7 +184,7 @@ export class Studio {
 
   // Items ------------------------------------------------------------------------------
 
-  /** Add a catalog shape centred on (cx, cy) in canvas px, or the viewport centre. */
+  /** Add a catalog or custom shape centred on (cx, cy) in canvas px, or the viewport centre. */
   add(
     shape: string,
     label: string,
@@ -161,7 +192,7 @@ export class Studio {
     viewport?: { w: number; h: number },
   ): Item | undefined {
     if (this.doc.items.length >= LIMITS.items) return undefined;
-    getShape(shape);
+    if (isCustomId(shape) ? !this.customDef(shape) : !knownShape(shape)) return undefined;
     const size = DEFAULT_OPTIONS.size;
     const centre =
       at ??
@@ -256,7 +287,7 @@ export class Studio {
     for (const item of items) {
       const options = { ...item.options, ...patchOf(item) };
       try {
-        prepare(getShape(item.shape), options);
+        prepare(shapeOf(item.shape), options);
       } catch (error) {
         return (error as Error).message;
       }
@@ -455,6 +486,79 @@ export class Studio {
   toggle(key: keyof Overlays): void {
     this.overlays = { ...this.overlays, [key]: !this.overlays[key] };
     this.#savePrefs();
+  }
+
+  // Custom shapes (Phase 8c) ----------------------------------------------------------
+
+  /** The definition of custom shape `id`: the design's copy, else the library's. */
+  customDef(id: string): CustomDef | undefined {
+    return this.doc.shapes?.find((d) => d.id === id) ?? this.library.find((d) => d.id === id);
+  }
+
+  /** Load "My shapes" from `store`, or keep them in memory when it is missing or fails. */
+  async useShapeStore(store: ShapeStore | undefined): Promise<void> {
+    let rows: CustomDef[] = [];
+    try {
+      rows = store ? await store.all() : [];
+      this.#shapeStore = store;
+    } catch {
+      this.#shapeStore = undefined;
+    }
+    this.persistent = this.#shapeStore !== undefined;
+    const ids = new Set(this.library.map((d) => d.id));
+    this.library = [...this.library, ...rows.filter((d) => !ids.has(d.id))].slice(
+      0,
+      CUSTOM_LIMITS.shapes,
+    );
+    this.#syncShapes();
+  }
+
+  /**
+   * Save `def` to the library. When the design uses the shape, its embedded copy is
+   * updated too, as one undoable step. @throws CustomShapeError when the library is full.
+   */
+  async saveCustom(def: CustomDef, label: string): Promise<void> {
+    const valid = parseCustomDef(def);
+    const at = this.library.findIndex((d) => d.id === valid.id);
+    if (at < 0 && this.library.length >= CUSTOM_LIMITS.shapes) {
+      throw new CustomShapeError(`at most ${String(CUSTOM_LIMITS.shapes)} custom shapes`);
+    }
+    this.library =
+      at < 0 ? [...this.library, valid] : this.library.map((d, i) => (i === at ? valid : d));
+    this.#syncShapes();
+    const shapes = this.doc.shapes;
+    if (shapes?.some((d) => d.id === valid.id)) {
+      this.commit(
+        { ...this.doc, shapes: shapes.map((d) => (d.id === valid.id ? valid : d)) },
+        label,
+      );
+    }
+    await this.#persist((store) => store.put(valid));
+  }
+
+  /** Remove custom shape `id` from the library. Designs keep their embedded copy. */
+  async deleteCustom(id: string): Promise<void> {
+    this.library = this.library.filter((d) => d.id !== id);
+    this.#syncShapes();
+    await this.#persist((store) => store.delete(id));
+  }
+
+  /** Import a spec JSON file into the library. @throws CustomShapeError on bad input. */
+  async importCustom(text: string, label = "import"): Promise<CustomDef> {
+    const def = fromSpecJson(text, (id) => this.customDef(id) !== undefined);
+    await this.saveCustom(def, label);
+    return def;
+  }
+
+  async #persist(write: (store: ShapeStore) => Promise<void>): Promise<void> {
+    if (!this.#shapeStore) return;
+    try {
+      await write(this.#shapeStore);
+    } catch {
+      // Storage failed (quota, private mode): keep the library in memory for the session.
+      this.#shapeStore = undefined;
+      this.persistent = false;
+    }
   }
 
   // Persistence (a per-browser convenience; shared links come in Phase 8d) ------------

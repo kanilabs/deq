@@ -15,7 +15,7 @@ export default defineConfig({
       ...shared.test?.coverage,
       include: ["src/i18n/**/*.ts", "src/lib/**/*.ts", "src/studio/**/*.ts"],
       // DOM-only glue, exercised by the e2e suite.
-      exclude: ["src/studio/svg.ts"],
+      exclude: ["src/studio/svg.ts", "src/studio/db.ts"],
     },
   },
 });
