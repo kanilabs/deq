@@ -28,6 +28,7 @@ import {
 import type { ShapeStore } from "./db.ts";
 import { History } from "./history.ts";
 import {
+  DocError,
   EMPTY_DOC,
   LIMITS,
   compactOptions,
@@ -550,6 +551,35 @@ export class Studio {
     return def;
   }
 
+  /** Replace the design with `next` (an opened file or a share link), as one undoable step. */
+  openDoc(next: StudioDoc, label: string): void {
+    this.selection = [];
+    this.commit(next, label);
+  }
+
+  /**
+   * Open a JSON file: a design replaces the current one, a shape in the spec format joins
+   * "My shapes". @throws DocError or CustomShapeError on bad input.
+   */
+  async openJson(text: string, label: string): Promise<"design" | CustomDef> {
+    let value: unknown;
+    try {
+      value = JSON.parse(text);
+    } catch {
+      throw new DocError("invalid design: not JSON");
+    }
+    if (value !== null && typeof value === "object" && "items" in value) {
+      this.openDoc(parseDoc(value), label);
+      return "design";
+    }
+    return this.importCustom(text, label);
+  }
+
+  /** What an export covers: the selected items, else every visible one, in drawing order. */
+  get exportable(): Item[] {
+    return this.selection.length > 0 ? this.selected : this.doc.items.filter((i) => !i.hidden);
+  }
+
   async #persist(write: (store: ShapeStore) => Promise<void>): Promise<void> {
     if (!this.#shapeStore) return;
     try {
@@ -561,7 +591,7 @@ export class Studio {
     }
   }
 
-  // Persistence (a per-browser convenience; shared links come in Phase 8d) ------------
+  // Persistence (a per-browser convenience; share links are in share.ts) ----------------
 
   /** Restore the autosaved document and preferences. Bad data is ignored. */
   load(): void {

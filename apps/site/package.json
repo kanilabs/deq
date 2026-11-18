@@ -17,10 +17,12 @@
   },
   "dependencies": {
     "@0xdolan/deq-core": "workspace:*",
+    "@0xdolan/deq-exporters": "workspace:*",
     "@astrojs/starlight": "0.42.10",
     "@astrojs/svelte": "9.1.2",
     "@fontsource-variable/noto-sans": "5.3.0",
     "@fontsource-variable/vazirmatn": "5.3.0",
+    "@resvg/resvg-wasm": "2.6.2",
     "astro": "7.4.10",
     "paper": "0.12.18",
     "svelte": "5.57.3",
@@ -28,7 +30,6 @@
     "workbox-window": "7.4.1"
   },
   "devDependencies": {
-    "@0xdolan/deq-exporters": "workspace:*",
     "@0xdolan/deq-icons": "workspace:*",
     "@astrojs/check": "0.9.12",
     "@axe-core/playwright": "4.14.0",
@@ -36,6 +37,7 @@
     "@sveltejs/vite-plugin-svelte": "7.3.1",
     "@types/node": "24.19.2",
     "chrome-launcher": "1.2.3",
+    "happy-dom": "21.0.4",
     "lighthouse": "13.6.0",
     "svelte-check": "4.7.8",
     "typescript": "6.0.3",

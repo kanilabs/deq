@@ -1,4 +1,7 @@
-/** Export inputs: catalog shapes or compositions, plus the files exporters produce. */
+/**
+ * Export inputs: catalog shapes, compositions or shape data (for example custom shapes from
+ * Studio), plus the files exporters produce.
+ */
 import { DeqError, composeShape, getShape, prepare } from "@0xdolan/deq-core";
 import type {
   CompositionPart,
@@ -7,6 +10,8 @@ import type {
   RenderOptions,
   ShapeData,
 } from "@0xdolan/deq-core";
+
+import { KEBAB, checkShapeData } from "./shape-data.js";
 
 /** One catalog shape, with optional parameters and render options. */
 export interface ShapeItem {
@@ -28,8 +33,23 @@ export interface CompositionItem {
   readonly name?: string;
 }
 
-/** What every exporter accepts: a shape id, a {@link ShapeItem} or a {@link CompositionItem}. */
-export type ExportItem = string | ShapeItem | CompositionItem;
+/**
+ * A shape given as data instead of a catalog id: a custom shape in the spec format, as
+ * core's `renderShapeData` reads it. Its primitives may `use` catalog shapes. The top level
+ * is checked against the full primitive schema first (see `checkShapeData`), and core
+ * enforces its expansion limits while rendering.
+ */
+export interface DataItem {
+  readonly data: ShapeData;
+  /** Shape parameter values; merged over `options.params`. */
+  readonly params?: Readonly<Record<string, ParamValue>>;
+  readonly options?: RenderOptions;
+  /** Base file name (kebab case). Default: the shape's id. */
+  readonly name?: string;
+}
+
+/** What every exporter accepts: a shape id, a {@link ShapeItem}, a {@link CompositionItem} or a {@link DataItem}. */
+export type ExportItem = string | ShapeItem | CompositionItem | DataItem;
 
 /** One output file. Text formats return a string, binary formats a `Uint8Array`. */
 export interface ExportFile {
@@ -50,7 +70,7 @@ export interface Resolved {
   readonly prepared: Prepared;
 }
 
-const NAME = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const NAME = KEBAB;
 /** Most items one export call accepts. */
 export const MAX_ITEMS = 512;
 
@@ -76,7 +96,7 @@ export function resolveItem(item: ExportItem, defaults: RenderOptions = {}): Res
     const name = checkName(item.name ?? "composition");
     return { name, shape, options, prepared: prepare(shape, options) };
   }
-  const shape = getShape(item.shape);
+  const shape = "data" in item ? checkShapeData(item.data) : getShape(item.shape);
   const params = { ...defaults.params, ...item.options?.params, ...item.params };
   const options: RenderOptions = { ...defaults, ...item.options, params };
   const name = checkName(item.name ?? shape.id);

@@ -28,6 +28,11 @@
 </script>
 
 <div class="toolbar" role="toolbar" aria-label={t("studio.toolbar")}>
+  <div class="group" role="group" aria-label={t("studio.file")}>
+    {#each [["open", "studio.open"], ["save", "studio.save"], ["share", "studio.share"], ["export", "studio.export"]] as const as [action, label] (action)}
+      <button type="button" data-action={action} title={tip(t(`studio.action.${action}`), action)} onclick={() => run(action)}>{t(label)}</button>
+    {/each}
+  </div>
   <div class="group">
     <button type="button" data-action="undo" disabled={!studio.canUndo} title={tip(t("studio.undo"), "undo")} onclick={() => run("undo")}>{t("studio.undo")}</button>
     <button type="button" data-action="redo" disabled={!studio.canRedo} title={tip(t("studio.redo"), "redo")} onclick={() => run("redo")}>{t("studio.redo")}</button>

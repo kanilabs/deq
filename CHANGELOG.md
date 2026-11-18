@@ -87,6 +87,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   - unite, subtract, intersect and exclude on closed parts with paper.js 0.12.18, loaded on first use;
   - radial and repeat arrays that can be unwrapped into parts;
   - a "My shapes" library section saved in IndexedDB, with spec JSON export and import, edit and delete; designs embed the custom shapes they use.
+- Phase 8d Studio import, share links and export (ADR 0014):
+  - export of the selection or all visible shapes in all 23 formats, one file per shape, with several files packed into a ZIP; raster formats run resvg and jSquash as WebAssembly, allowed by `'wasm-unsafe-eval'` on the Studio pages only;
+  - `DataItem` in `@0xdolan/deq-exporters`: shapes given as validated spec data, so custom shapes export in every format;
+  - share links that hold the compressed design in the URL fragment (capped at 16,000 characters), with a copyable field when the clipboard is refused;
+  - Save and Open for design files, plus custom shape specs and SVG files, with Open, Save, Share and Export in the toolbar and on shortcuts;
+  - SVG import that rebuilds the file from an allowlist of geometry, fits it into the keylines and adds it to My shapes, leaving out gradients, text, images and effects with a notice;
+  - end-to-end tests for every export format, files, SVG import and share links on desktop and mobile.
 
 ### Changed
 

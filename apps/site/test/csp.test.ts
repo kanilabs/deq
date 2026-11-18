@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 
 import { describe, expect, it } from "vitest";
 
-import { hashInlineScripts } from "../integrations/csp.ts";
+import { WASM_PAGES, addScriptSource, hashInlineScripts } from "../integrations/csp.ts";
 
 const hash = (s: string) => `'sha256-${createHash("sha256").update(s).digest("base64")}'`;
 const page = (policy: string, body: string) =>
@@ -32,5 +32,40 @@ describe("hashInlineScripts", () => {
 
   it("fails on a page without the CSP meta tag", () => {
     expect(() => hashInlineScripts("<script>x()</script>")).toThrow(/no CSP/u);
+  });
+});
+
+describe("addScriptSource", () => {
+  const page = (policy: string) =>
+    `<head><meta http-equiv="content-security-policy" content="${policy}"></head>`;
+
+  it("adds a source to script-src once, or creates script-src", () => {
+    const once = addScriptSource(
+      page("default-src 'self';script-src 'self' 'sha256-x'"),
+      "'wasm-unsafe-eval'",
+    );
+    expect(once).toContain("script-src 'wasm-unsafe-eval' 'self' 'sha256-x'");
+    expect(addScriptSource(once, "'wasm-unsafe-eval'")).toBe(once);
+    expect(addScriptSource(page("default-src 'self'"), "'wasm-unsafe-eval'")).toContain(
+      "default-src 'self';script-src 'self' 'wasm-unsafe-eval'",
+    );
+    expect(() => addScriptSource("<head></head>", "'x'")).toThrow(/CSP/);
+  });
+
+  it("matches only the Studio pages", () => {
+    for (const file of [
+      "dist/studio/index.html",
+      "dist/ckb/studio/index.html",
+      "C:\\d\\kmr\\studio\\index.html",
+    ]) {
+      expect(WASM_PAGES.test(file)).toBe(true);
+    }
+    for (const file of [
+      "dist/index.html",
+      "dist/icons/studio-x/index.html",
+      "dist/studio/x/index.html",
+    ]) {
+      expect(WASM_PAGES.test(file)).toBe(false);
+    }
   });
 });

@@ -28,7 +28,7 @@ await exportShapes("favicon", ["kurdish-sun"], {
 
 ## Items
 
-An item is a catalog id, `{ shape, name?, params?, options? }`, or a composition `{ parts, name? }` (parts as in core's `compose`). `name` (kebab case) sets the file name and defaults to the shape id. Up to 512 items per call. Item options win over `options.render`.
+An item is a catalog id, `{ shape, name?, params?, options? }`, a composition `{ parts, name? }` (parts as in core's `compose`), or a shape given as data `{ data, name?, params?, options? }` (a shape spec that is not in the catalog, validated against the shape schema first; `use` may only point at catalog shapes). `name` (kebab case) sets the file name and defaults to the shape id. Up to 512 items per call. Item options win over `options.render`.
 
 ## Formats
 

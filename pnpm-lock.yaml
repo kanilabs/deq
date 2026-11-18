@@ -63,6 +63,9 @@ importers:
       '@0xdolan/deq-core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@0xdolan/deq-exporters':
+        specifier: workspace:*
+        version: link:../../packages/exporters
       '@astrojs/starlight':
         specifier: 0.42.10
         version: 0.42.10(astro@7.4.10(@types/node@24.19.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))(typescript@6.0.3)
@@ -75,6 +78,9 @@ importers:
       '@fontsource-variable/vazirmatn':
         specifier: 5.3.0
         version: 5.3.0
+      '@resvg/resvg-wasm':
+        specifier: 2.6.2
+        version: 2.6.2
       astro:
         specifier: 7.4.10
         version: 7.4.10(@types/node@24.19.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1)
@@ -91,9 +97,6 @@ importers:
         specifier: 7.4.1
         version: 7.4.1
     devDependencies:
-      '@0xdolan/deq-exporters':
-        specifier: workspace:*
-        version: link:../../packages/exporters
       '@0xdolan/deq-icons':
         specifier: workspace:*
         version: link:../../packages/icons
@@ -115,6 +118,9 @@ importers:
       chrome-launcher:
         specifier: 1.2.3
         version: 1.2.3
+      happy-dom:
+        specifier: 21.0.4
+        version: 21.0.4
       lighthouse:
         specifier: 13.6.0
         version: 13.6.0(ajv@8.20.0)(rollup@4.68.2)
