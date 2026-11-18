@@ -49,8 +49,8 @@ export default defineConfig({
       title: "Deq",
       description: CATALOGS.en["site.description"],
       logo: {
-        light: "./src/assets/mark-light.svg",
-        dark: "./src/assets/mark-dark.svg",
+        light: "../../assets/brand/mark-small.svg",
+        dark: "../../assets/brand/mark-small-dark.svg",
         alt: "Deq",
       },
       favicon: "/favicon.svg",

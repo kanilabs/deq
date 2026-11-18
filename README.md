@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="assets/brand/logo.svg" width="128" height="128" alt="Deq logo: the Dot rosette, a yellow ring with eight green dots, in a light disc">
+
 # Deq · دەق
 
 **Traditional Kurdish tattoo shapes as an open, parametric design system.**

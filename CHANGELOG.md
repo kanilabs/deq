@@ -68,9 +68,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   - an installable PWA: manifest with app icons from the chin mark, a Workbox service worker that precaches every page for offline use, and an update prompt;
   - Vitest unit tests, a Playwright suite (axe, CSP, RTL, JavaScript budget, theme, search, offline) and a Lighthouse gate (every category ≥ 95), run by the new `site` CI job and `just site`;
   - the `Pages` workflow: `develop` deploys a preview until `PAGES_PRODUCTION` is set, releases deploy production.
+- The Deq logo: the Dot rosette in the Kanî Labs badge, with mark, dark, mono, small-size and favicon SVGs and a social preview card, all generated from `spec/shapes/dot-rosette.json` by `uv run deq-spec brand` and checked fresh by `deq-spec lint`; `just brand` renders PNGs for GitHub and social media (ADR 0013).
 
 ### Changed
 
+- The site's header logo, favicon, app icons, share-card mark and Brand page use the Dot rosette instead of the chin mark (concept A).
 - cargo-deny allows the IJG licence for the `jpeg-encoder` crate only (permissive and GPL-compatible).
 - The repository moved to the `kanilabs` organisation: repository, issue, badge and security links now point to `github.com/kanilabs/deq`, and the site, schema `$id`s and CSP allowlist to `kanilabs.github.io`. The npm scope stays `@0xdolan`.
 - CI scans for secrets with the pinned, checksum-verified gitleaks CLI instead of `gitleaks-action`, which needs a paid licence for organisation repositories.
