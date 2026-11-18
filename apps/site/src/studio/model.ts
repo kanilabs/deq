@@ -4,14 +4,11 @@
  * share-URL and export code. Every document that enters the Studio (local autosave,
  * shared links, imports) goes through {@link parseDoc}.
  */
-import {
-  DEFAULT_OPTIONS,
-  getShape,
-  hasShape,
-  prepare,
-  type RenderOptions,
-} from "@0xdolan/deq-core";
+import { DEFAULT_OPTIONS, hasShape, prepare, type RenderOptions } from "@0xdolan/deq-core";
 import * as v from "valibot";
+
+import { isCustomId, parseCustomDefs, toShapeData, type CustomDef } from "./custom.ts";
+import { shapeOf } from "./shapes.ts";
 
 /** Render options a Studio item can carry. `title`/`ariaLabel` come from the item name. */
 export type ItemOptions = Omit<RenderOptions, "title" | "ariaLabel">;
@@ -34,6 +31,8 @@ export interface Item {
 export interface StudioDoc {
   readonly v: 1;
   readonly items: readonly Item[];
+  /** The custom shapes the items use (Phase 8c), so a design renders anywhere. */
+  readonly shapes?: readonly CustomDef[];
 }
 
 /** Hard caps for untrusted documents (shared links, local storage). */
@@ -72,7 +71,11 @@ const coord = v.pipe(
 );
 const ItemSchema = v.strictObject({
   id: v.pipe(v.string(), v.regex(/^[a-z0-9]{1,16}$/u)),
-  shape: v.pipe(v.string(), v.maxLength(64), v.check(hasShape, "unknown shape")),
+  shape: v.pipe(
+    v.string(),
+    v.maxLength(64),
+    v.check((id) => hasShape(id) || isCustomId(id), "unknown shape"),
+  ),
   x: coord,
   y: coord,
   // Shape-specific checks (layers, parameters) run in parseDoc through core's prepare().
@@ -85,6 +88,8 @@ const ItemSchema = v.strictObject({
 const DocSchema = v.strictObject({
   v: v.literal(1),
   items: v.pipe(v.array(ItemSchema), v.maxLength(LIMITS.items)),
+  // Checked by parseCustomDefs (schema plus core's expansion limits).
+  shapes: v.optional(v.unknown()),
 });
 
 /** Why a document was rejected. */
@@ -106,6 +111,13 @@ export function parseDoc(value: unknown): StudioDoc {
     const path = issue.path?.map((p) => String(p.key)).join(".") ?? "";
     throw new DocError(`invalid design: ${path ? `${path}: ` : ""}${issue.message}`);
   }
+  let shapes: CustomDef[];
+  try {
+    shapes = result.output.shapes === undefined ? [] : parseCustomDefs(result.output.shapes);
+  } catch (error) {
+    throw new DocError(`invalid design: ${(error as Error).message}`);
+  }
+  const defs = new Map(shapes.map((d) => [d.id, d]));
   const ids = new Set<string>();
   const items = result.output.items.map((raw, i): Item => {
     if (ids.has(raw.id)) throw new DocError(`invalid design: items.${String(i)}.id: duplicate id`);
@@ -115,8 +127,11 @@ export function parseDoc(value: unknown): StudioDoc {
       throw new DocError(
         `invalid design: items.${String(i)}.options: title and ariaLabel are not allowed`,
       );
+    const def = defs.get(raw.shape);
+    if (isCustomId(raw.shape) && !def)
+      throw new DocError(`invalid design: items.${String(i)}.shape: missing custom shape`);
     try {
-      prepare(getShape(raw.shape), options);
+      prepare(def ? toShapeData(def) : shapeOf(raw.shape), options);
     } catch (error) {
       throw new DocError(`invalid design: items.${String(i)}.options: ${(error as Error).message}`);
     }
@@ -132,7 +147,29 @@ export function parseDoc(value: unknown): StudioDoc {
       ...(raw.group ? { group: raw.group } : {}),
     };
   });
-  return { v: 1, items };
+  const used = new Set(items.map((i) => i.shape));
+  const kept = shapes.filter((d) => used.has(d.id));
+  return kept.length > 0 ? { v: 1, items, shapes: kept } : { v: 1, items };
+}
+
+/**
+ * Embed exactly the custom shapes the items use: keep the design's own copies, take
+ * missing ones from `lookup` (the library) and drop unused ones. Returns `doc` itself
+ * when nothing changes.
+ */
+export function embedShapes(
+  doc: StudioDoc,
+  lookup: (id: string) => CustomDef | undefined,
+): StudioDoc {
+  const have = new Map((doc.shapes ?? []).map((d) => [d.id, d]));
+  const used = [...new Set(doc.items.map((i) => i.shape).filter(isCustomId))];
+  const shapes = used.flatMap((id) => {
+    const def = have.get(id) ?? lookup(id);
+    return def ? [def] : [];
+  });
+  const old = doc.shapes ?? [];
+  if (shapes.length === old.length && shapes.every((d, i) => d === old[i])) return doc;
+  return shapes.length > 0 ? { ...doc, shapes } : omit(doc, "shapes");
 }
 
 /** Drop options equal to their defaults (and empty maps) so documents stay small. */
@@ -157,7 +194,7 @@ export function optionValue<K extends OptionKey>(item: Item, key: K): NonNullabl
 
 /** Render options for an item; the name becomes the accessible title. */
 export function renderOptions(item: Item, extra: RenderOptions = {}): RenderOptions {
-  return { ...item.options, title: item.name ?? getShape(item.shape).names.en, ...extra };
+  return { ...item.options, title: item.name ?? shapeOf(item.shape).names.en, ...extra };
 }
 
 /** The smallest id not used in `doc`: `i1`, `i2`, ... */

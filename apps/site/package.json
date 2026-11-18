@@ -22,6 +22,7 @@
     "@fontsource-variable/noto-sans": "5.3.0",
     "@fontsource-variable/vazirmatn": "5.3.0",
     "astro": "7.4.10",
+    "paper": "0.12.18",
     "svelte": "5.57.3",
     "valibot": "1.5.0",
     "workbox-window": "7.4.1"
