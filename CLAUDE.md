@@ -1,6 +1,6 @@
 # Deq: project rules for AI agents
 
-Deq turns traditional Kurdish tattoo (deq) motifs into an open, parametric design system: shape spec, renderers in TS/Python/Rust, exporters, icon packages, fonts, a website with Studio, and a cited cultural story. The full plan is in `PRD-detailed.md` (local only, never committed). Current phase: **6 done** (Phase 2: shape spec, flag, logo concept A, 93 shapes approved with all variations, small fixes may follow. Phase 3: `@0xdolan/deq-core` reference renderer with all render options, golden fixtures in `spec/fixtures/` and the generated API reference. Phase 4: `@0xdolan/deq-exporters` with 23 formats, layered PDF/AI/PSD/SVG verified in Inkscape and Ghostscript (ADR 0009). Phase 5: icon packages (icons, react, vue, svelte, elements with a CDN build and SRI), example apps, and the static, variable and COLRv1 icon fonts passing fontbakery (ADR 0010); Phase 6: Python and Rust `deq-shapes` ports matching all golden fixtures, and the `deq` CLI in Node, Python and Rust from the shared `spec/cli.json`, replaying 84 shared CLI cases on three OSes (ADR 0011); next is Phase 7, the website foundation).
+Deq turns traditional Kurdish tattoo (deq) motifs into an open, parametric design system: shape spec, renderers in TS/Python/Rust, exporters, icon packages, fonts, a website with Studio, and a cited cultural story. The full plan is in `PRD-detailed.md` (local only, never committed). Current phase: **7 done** (Phase 2: shape spec, flag, logo concept A, 93 shapes approved with all variations, small fixes may follow. Phase 3: `@0xdolan/deq-core` reference renderer with all render options, golden fixtures in `spec/fixtures/` and the generated API reference. Phase 4: `@0xdolan/deq-exporters` with 23 formats, layered PDF/AI/PSD/SVG verified in Inkscape and Ghostscript (ADR 0009). Phase 5: icon packages (icons, react, vue, svelte, elements with a CDN build and SRI), example apps, and the static, variable and COLRv1 icon fonts passing fontbakery (ADR 0010); Phase 6: Python and Rust `deq-shapes` ports matching all golden fixtures, and the `deq` CLI in Node, Python and Rust from the shared `spec/cli.json`, replaying 84 shared CLI cases on three OSes (ADR 0011); Phase 7: the website in `apps/site` (Astro + Starlight, en/ckb/kmr with RTL, themes, icon pages, SEO, hashed `<meta>` CSP, Workbox PWA, Playwright/axe/Lighthouse checks, Pages workflow; ADR 0012); next is Phase 8, Studio).
 
 ## Hard rules
 
@@ -27,6 +27,7 @@ Deq turns traditional Kurdish tattoo (deq) motifs into an open, parametric desig
 | Fonts                            | `just fonts`; `just fonts-check` adds fontbakery, ots and a fontconfig install check   |
 | New shape code points            | `uv run deq-fonts codepoints` (never change or reuse one)                              |
 | CLI help/completions, CLI cases  | `pnpm --filter @0xdolan/deq-cli {generate,fixtures}` (ADR 0011)                        |
+| Website checks (e2e, Lighthouse) | `just site` (fonts, build, Playwright + axe + offline, Lighthouse ≥ 95)                |
 | CI in Docker                     | `just docker-ci`                                                                       |
 
 ## Layout
@@ -46,7 +47,8 @@ Deq turns traditional Kurdish tattoo (deq) motifs into an open, parametric desig
 - `packages/icons` (data, SVG strings, sprite), `react`, `vue`, `svelte` (generated per-icon components), `elements` (`<deq-icon>`, CDN bundle and `integrity.json`). Default output equals core's `render` byte for byte (ADR 0010).
 - `examples/<fw>`: private Vite apps that build and test against the packages' `dist`.
 - `scripts/deq-fonts`: the private font builder (fontTools). `fonts/codepoints.json` (committed, PUA from U+E000), `fonts/LICENSE.md` (GPL + Font Exception); built fonts go to the gitignored `fonts/dist/`. Guide: `docs/fonts/README.md`.
-- `apps/site` (Astro site, Phase 7+), `docs/` (guides, `api/` generated reference, ADRs in `docs/decisions/`).
+- `apps/site` → private `@0xdolan/deq-site` (ADR 0012): Astro 7 + Starlight. Own pages in `src/pages/[...locale]/` via `StarlightPage`; typed catalogs in `src/i18n/messages/` (`en.ts` defines the keys); build integrations `fonts` → `csp` (inline-script hashes) → `pwa` (Workbox), in that order. `DEQ_REQUIRE_FONTS=1` fails the build without `fonts/dist`. Pages deploys `develop` while repo variable `PAGES_PRODUCTION` ≠ `true`, releases always.
+- `docs/` (guides, `api/` generated reference, ADRs in `docs/decisions/`).
 - `.github/actions/setup` is the shared toolchain setup for workflows.
 
 ## Conventions

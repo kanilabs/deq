@@ -1,0 +1,27 @@
+---
+import type { ShapeData } from "@0xdolan/deq-core";
+
+import type { Locale } from "../i18n/index.ts";
+import IconTile from "./IconTile.astro";
+
+interface Props {
+  readonly shapes: readonly ShapeData[];
+  readonly locale: Locale;
+}
+const { shapes, locale } = Astro.props;
+---
+
+<ul class="icon-grid not-content" role="list">
+  {shapes.map((shape) => <IconTile shape={shape} locale={locale} />)}
+</ul>
+
+<style>
+  .icon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(var(--deq-tile), 1fr));
+    gap: var(--deq-space-3);
+    margin: var(--deq-space-4) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>

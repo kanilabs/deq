@@ -49,6 +49,22 @@ test:
 test-tools:
     DEQ_REQUIRE_TOOLS=1 pnpm exec turbo run test --filter=@0xdolan/deq-exporters
 
+# Website end-to-end checks: build with the fonts, then Playwright + axe + offline, then Lighthouse
+site: fonts
+    DEQ_REQUIRE_FONTS=1 pnpm exec turbo run build --filter=@0xdolan/deq-site
+    pnpm --filter @0xdolan/deq-site e2e
+    just site-lighthouse
+
+# Lighthouse (every category at least 95) against a background preview of the built site
+site-lighthouse:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd apps/site
+    pnpm exec astro preview --background --port 4321
+    trap 'pnpm exec astro preview stop' EXIT
+    for _ in $(seq 30); do curl -sf -o /dev/null http://localhost:4321/deq/ && break; sleep 1; done
+    pnpm lighthouse
+
 # Build the icon fonts into fonts/dist (checks that the code point table is fresh)
 fonts:
     pnpm exec turbo run build --filter=@0xdolan/deq-core
@@ -76,7 +92,7 @@ audit:
 # Scan git history and the working tree for secrets
 secrets:
     gitleaks git --redact --no-banner .
-    gitleaks dir --redact --no-banner packages python rust scripts docs .github spec content assets examples fonts
+    gitleaks dir --redact --no-banner apps packages python rust scripts docs .github spec content assets examples fonts
 
 # Fail if files that must never be committed are tracked or staged
 forbidden:

@@ -1,0 +1,56 @@
+---
+/** One shape as a link tile: the icon drawn by core, and its localised name. */
+import { render, type ShapeData } from "@0xdolan/deq-core";
+
+import { LOCALE_INFO, localizedPath, type Locale } from "../i18n/index.ts";
+import { searchText, shapeName } from "../lib/data.ts";
+
+interface Props {
+  readonly shape: ShapeData;
+  readonly locale: Locale;
+}
+
+const { shape, locale } = Astro.props;
+const name = shapeName(shape, locale);
+// Decorative: the visible name labels the link. The SVG comes from our own spec data.
+const svg = render(shape.id, { size: 40, title: "" });
+---
+
+<li class="icon-tile" data-search={searchText(shape)} data-category={shape.category}>
+  <a href={localizedPath(locale, `icons/${shape.id}/`)}>
+    <span class="glyph" set:html={svg} />
+    <span class="name" lang={name.lang === locale ? undefined : LOCALE_INFO[name.lang].lang}>{name.text}</span>
+  </a>
+</li>
+
+<style>
+  .icon-tile a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--deq-space-2);
+    min-height: var(--deq-tile);
+    padding: var(--deq-space-3) var(--deq-space-2);
+    border: 1px solid var(--sl-color-hairline);
+    border-radius: var(--deq-radius);
+    background: var(--deq-surface);
+    color: var(--sl-color-text);
+    text-align: center;
+    text-decoration: none;
+  }
+  .icon-tile a:hover,
+  .icon-tile a:focus-visible {
+    border-color: var(--sl-color-accent);
+    color: var(--sl-color-white);
+  }
+  .glyph {
+    display: inline-flex;
+    color: var(--deq-icon);
+  }
+  .name {
+    font-size: var(--sl-text-sm);
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+  }
+</style>

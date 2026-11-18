@@ -1,0 +1,29 @@
+---
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+
+import { localePaths } from "../../i18n/index.ts";
+import { pageContext } from "../../lib/page.ts";
+
+export const getStaticPaths = localePaths;
+
+const { t } = pageContext(Astro.params.locale);
+const repo = "https://github.com/kanilabs/deq";
+---
+
+<StarlightPage frontmatter={{ title: t("about.title"), description: t("about.description") }}>
+  <h2>{t("about.project")}</h2>
+  <p>{t("about.project.body")}</p>
+
+  <h2>{t("about.author")}</h2>
+  <p><a href="https://github.com/0xdolan" lang="en">0xdolan</a></p>
+
+  <h2>{t("about.license")}</h2>
+  <p>{t("about.license.body")}</p>
+
+  <h2>{t("about.contribute")}</h2>
+  <p>{t("about.contribute.body")}</p>
+  <p><a href={repo}>{t("about.source")}</a></p>
+
+  <h2>{t("about.translations")}</h2>
+  <p>{t("about.translations.body")}</p>
+</StarlightPage>

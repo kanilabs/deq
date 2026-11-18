@@ -1,0 +1,59 @@
+---
+/**
+ * Starlight's head plus the share image, web app manifest, theme colour, JSON-LD and
+ * the service worker update prompt. Starlight already writes the title, description,
+ * canonical URL, Open Graph text and the hreflang alternates.
+ */
+import Default from "@astrojs/starlight/components/Head.astro";
+// The same file Fontsource's CSS uses, so Vite emits it once.
+import vazirmatnArabic from "@fontsource-variable/vazirmatn/files/vazirmatn-arabic-wght-normal.woff2?url";
+
+import { CATALOGS, isLocale, LOCALE_INFO } from "../i18n/index.ts";
+import { BASE } from "../lib/base.ts";
+import { ogSlug } from "../lib/og.ts";
+
+const route = Astro.locals.starlightRoute;
+const site = Astro.site ?? new URL("https://kanilabs.github.io");
+const locale = isLocale(route.locale) ? route.locale : "en";
+const hasImage = route.head.some((h) => h.attrs?.["property"] === "og:image");
+const image = new URL(`${BASE}og/${ogSlug(Astro.url.pathname, BASE)}.png`, site).href;
+const url = new URL(Astro.url.pathname, site).href;
+const home = new URL(BASE, site).href;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": url === home ? "WebSite" : "WebPage",
+  name: route.entry.data.title,
+  description: route.entry.data.description ?? CATALOGS[locale]["site.description"],
+  url,
+  inLanguage: LOCALE_INFO[locale].lang,
+  ...(url === home ? {} : { isPartOf: { "@type": "WebSite", name: "Deq", url: home } }),
+  license: "https://www.gnu.org/licenses/gpl-3.0.html",
+};
+// A data block, never executed; escape "<" so content cannot close the tag.
+const ld = JSON.stringify(jsonLd).replace(/</gu, "\\u003c");
+---
+
+<Default />
+{
+  !hasImage && (
+    <>
+      <meta property="og:image" content={image} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:image:alt" content={route.entry.data.title} />
+      <meta name="twitter:image" content={image} />
+    </>
+  )
+}
+{
+  // Sorani text is set in Vazirmatn: load it early so the swap does not move the layout.
+  LOCALE_INFO[locale].dir === "rtl" && (
+    <link rel="preload" href={vazirmatnArabic} as="font" type="font/woff2" crossorigin />
+  )
+}
+<link rel="manifest" href={`${BASE}manifest.webmanifest`} />
+<link rel="apple-touch-icon" href={`${BASE}app/apple-touch-icon.png`} />
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#17181c" media="(prefers-color-scheme: dark)" />
+<script type="application/ld+json" is:inline set:html={ld} />

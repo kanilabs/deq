@@ -1,0 +1,28 @@
+---
+/** Starlight's footer plus the site footer: licence, source and the update prompt. */
+import Default from "@astrojs/starlight/components/Footer.astro";
+
+import { CATALOGS, isLocale } from "../i18n/index.ts";
+import PwaUpdate from "./PwaUpdate.astro";
+
+const locale = isLocale(Astro.locals.starlightRoute.locale) ? Astro.locals.starlightRoute.locale : "en";
+const t = CATALOGS[locale];
+---
+
+<Default />
+<div class="site-footer">
+  <p>
+    GPL-3.0-or-later · <a href="https://github.com/kanilabs/deq">{t["about.source"]}</a>
+  </p>
+</div>
+<PwaUpdate />
+
+<style>
+  .site-footer {
+    margin-top: var(--deq-space-8);
+    padding-top: var(--deq-space-4);
+    border-top: 1px solid var(--sl-color-hairline);
+    font-size: var(--sl-text-sm);
+    color: var(--sl-color-gray-3);
+  }
+</style>

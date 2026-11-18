@@ -1,0 +1,4 @@
+/* Self-hosted UI fonts (no third-party requests). Fontsource splits each font by
+   unicode-range, so a browser downloads only the scripts a page uses. */
+@import "@fontsource-variable/noto-sans/wght.css";
+@import "@fontsource-variable/vazirmatn/wght.css";

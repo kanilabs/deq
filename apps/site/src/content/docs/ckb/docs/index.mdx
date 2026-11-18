@@ -1,0 +1,26 @@
+---
+title: دەستپێکردن
+description: پاکێجێکی دەق دابمەزرێنە، شێوەیەک بکێشە، و ڕێنماییەکانی هەموو بەشەکانی پرۆژەکە بدۆزەرەوە.
+sidebar:
+  order: 0
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+دەق نەخشەکانی دەقی کوردیی کۆن لەسەر یەک تۆڕی ٢٤ یەکەیی دەکێشێت. هەموو کێشەرێک (TypeScript، Python، Rust) هەمان SVG بەرهەم دەهێنێت، بایت بە بایت.
+
+## دامەزراندن
+
+<Tabs>
+  <TabItem label="npm">```sh npm install @0xdolan/deq-core ```</TabItem>
+  <TabItem label="Python">```sh pip install deq-shapes ```</TabItem>
+  <TabItem label="Rust">```sh cargo add deq-shapes ```</TabItem>
+</Tabs>
+
+## کێشانی شێوەیەک
+
+```ts
+import { render } from "@0xdolan/deq-core";
+
+const svg = render("roj-half-sun", { size: 48, strokeWidth: 1.5 });
+```

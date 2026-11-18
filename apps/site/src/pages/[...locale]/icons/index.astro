@@ -1,0 +1,120 @@
+---
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+
+import IconGrid from "../../../components/IconGrid.astro";
+import { formatNumber, localePaths } from "../../../i18n/index.ts";
+import { CATEGORIES, categoryKey, SHAPES } from "../../../lib/data.ts";
+import { pageContext } from "../../../lib/page.ts";
+
+export const getStaticPaths = localePaths;
+
+const { locale, t } = pageContext(Astro.params.locale);
+const total = formatNumber(locale, SHAPES.length);
+const groups = CATEGORIES.map((id) => ({ id, label: t(categoryKey(id)), shapes: SHAPES.filter((s) => s.category === id) }));
+// The live count text, with placeholders kept for the filter script.
+const resultsTemplate = t("icons.results", { total });
+---
+
+<StarlightPage
+  frontmatter={{ title: t("icons.title"), description: t("icons.description", { count: total }) }}
+  headings={groups.map((g) => ({ depth: 2, slug: g.id, text: g.label }))}
+>
+  <p>{t("icons.description", { count: total })}</p>
+
+  <form class="icon-filter not-content" role="search" data-icon-filter hidden>
+    <label>
+      <span>{t("icons.search.label")}</span>
+      <input type="search" name="q" placeholder={t("icons.search.placeholder")} autocomplete="off" spellcheck="false" />
+    </label>
+    <label>
+      <span>{t("icons.category.label")}</span>
+      <select name="category">
+        <option value="">{t("icons.category.all")}</option>
+        {groups.map((g) => <option value={g.id}>{g.label}</option>)}
+      </select>
+    </label>
+    <p class="count" aria-live="polite" data-template={resultsTemplate} data-locale={locale}>
+      {t("icons.results", { count: total, total })}
+    </p>
+  </form>
+  <noscript><p>{t("icons.noscript")}</p></noscript>
+  <p class="empty" data-icon-empty hidden>{t("icons.empty")}</p>
+
+  {
+    groups.map((g) => (
+      <section data-group={g.id}>
+        <h2 id={g.id}>{g.label}</h2>
+        <IconGrid shapes={g.shapes} locale={locale} />
+      </section>
+    ))
+  }
+</StarlightPage>
+
+<script>
+  // Progressive enhancement: the full list is in the HTML; this only hides tiles.
+  const form = document.querySelector<HTMLFormElement>("[data-icon-filter]");
+  const count = form?.querySelector<HTMLElement>(".count");
+  const empty = document.querySelector<HTMLElement>("[data-icon-empty]");
+  if (form && count && empty) {
+    const tiles = [...document.querySelectorAll<HTMLElement>("[data-search]")];
+    const groups = [...document.querySelectorAll<HTMLElement>("[data-group]")];
+    const numbers = new Intl.NumberFormat(count.dataset["locale"] === "ckb" ? "ckb-IQ" : count.dataset["locale"]);
+    const template = count.dataset["template"] ?? "{count}";
+    const apply = (): void => {
+      const data = new FormData(form);
+      const query = String(data.get("q") ?? "").trim().toLowerCase();
+      const category = String(data.get("category") ?? "");
+      let shown = 0;
+      for (const tile of tiles) {
+        const match =
+          (category === "" || tile.dataset["category"] === category) && (query === "" || (tile.dataset["search"] ?? "").includes(query));
+        tile.hidden = !match;
+        if (match) shown += 1;
+      }
+      for (const group of groups) group.hidden = !group.querySelector("[data-search]:not([hidden])");
+      count.textContent = template.replace("{count}", numbers.format(shown));
+      empty.hidden = shown !== 0;
+    };
+    form.addEventListener("input", apply);
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+    });
+    form.hidden = false;
+  }
+</script>
+
+<style>
+  .icon-filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: var(--deq-space-4);
+    margin-block: var(--deq-space-4);
+  }
+  .icon-filter[hidden] {
+    display: none;
+  }
+  .icon-filter label {
+    display: flex;
+    flex-direction: column;
+    gap: var(--deq-space-1);
+    font-size: var(--sl-text-sm);
+  }
+  .icon-filter input,
+  .icon-filter select {
+    min-width: 14rem;
+    padding: var(--deq-space-2) var(--deq-space-3);
+    border: 1px solid var(--sl-color-gray-4);
+    border-radius: var(--deq-radius);
+    background: var(--sl-color-bg);
+    color: var(--sl-color-white);
+    font: inherit;
+  }
+  .count {
+    margin: 0;
+    color: var(--sl-color-gray-2);
+  }
+  [hidden] {
+    display: none !important;
+  }
+</style>

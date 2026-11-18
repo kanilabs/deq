@@ -1,0 +1,71 @@
+/*
+ * Deq design tokens. Every colour is a CSS variable; Starlight's own variables are
+ * mapped onto them so the docs and our pages share one theme. Both themes meet WCAG AA
+ * (pairs measured in docs/decisions/0012-website.md). Flag colours are used for graphics
+ * and large accents only, never as text colours on white (see the deq-brand skill).
+ */
+:root {
+  /* Brand constants (spec/flag.json). */
+  --deq-flag-red: #ed2024;
+  --deq-flag-white: #ffffff;
+  --deq-flag-green: #278e43;
+  --deq-flag-yellow: #febd11;
+
+  /* Spacing and shape. */
+  --deq-space-1: 0.25rem;
+  --deq-space-2: 0.5rem;
+  --deq-space-3: 0.75rem;
+  --deq-space-4: 1rem;
+  --deq-space-6: 1.5rem;
+  --deq-space-8: 2rem;
+  --deq-radius: 0.5rem;
+  --deq-tile: 7.5rem;
+
+  /* Typography: Noto Sans for Latin, Vazirmatn for Arabic script. */
+  --sl-font: "Noto Sans Variable", "Vazirmatn Variable";
+
+  /* Dark theme (Starlight's default block). */
+  --sl-color-accent-low: #0b2614;
+  --sl-color-accent: #278e43;
+  --sl-color-accent-high: #8fdba5;
+  --deq-surface: var(--sl-color-gray-6);
+  --deq-surface-raised: var(--sl-color-gray-5);
+  --deq-icon: var(--sl-color-white);
+}
+
+:root[data-theme="light"] {
+  --sl-color-accent-low: #d6f0dd;
+  --sl-color-accent: #1d6b33;
+  --sl-color-accent-high: #0b2614;
+  /* Starlight puts black text on the accent; white has 6.56:1 on #1d6b33. */
+  --sl-color-text-invert: #ffffff;
+  --deq-surface: var(--sl-color-gray-7);
+  --deq-surface-raised: var(--sl-color-white);
+  --deq-icon: var(--sl-color-black);
+}
+
+/* Arabic script reads better a little larger and with Vazirmatn first. */
+:root[lang="ckb"] {
+  --sl-font: "Vazirmatn Variable", "Noto Sans Variable";
+  --sl-text-base: 1.0625rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* The home page hero drawing follows the theme's icon colour. */
+.deq-hero-mark {
+  display: inline-flex;
+  color: var(--deq-icon);
+}
+.deq-hero-mark svg {
+  max-width: 100%;
+  height: auto;
+}

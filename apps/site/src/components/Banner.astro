@@ -1,0 +1,23 @@
+---
+/** Starlight's banner plus the "needs native review" notice on Sorani and Kurmanji pages (ADR 0012, Q10). */
+import Default from "@astrojs/starlight/components/Banner.astro";
+
+import { CATALOGS, isLocale, LOCALE_INFO } from "../i18n/index.ts";
+
+const { locale } = Astro.locals.starlightRoute;
+const review = isLocale(locale) && LOCALE_INFO[locale].needsReview ? CATALOGS[locale]["review.notice"] : undefined;
+---
+
+<Default />
+{review !== undefined && <p class="review" role="note">{review}</p>}
+
+<style>
+  .review {
+    margin: 0;
+    padding: var(--deq-space-2) var(--sl-nav-pad-x);
+    background: var(--sl-color-accent-low);
+    color: var(--sl-color-white);
+    font-size: var(--sl-text-sm);
+    text-align: center;
+  }
+</style>

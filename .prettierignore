@@ -8,6 +8,9 @@ Cargo.lock
 **/dist/
 **/coverage/
 **/target/
+**/.astro/
+**/test-results/
+**/playwright-report/
 **/.venv/
 CHANGELOG.md
 # Written by scripts/deq-assets

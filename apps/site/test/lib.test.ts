@@ -1,0 +1,135 @@
+import { readFile } from "node:fs/promises";
+
+import { describe, expect, it } from "vitest";
+
+import { BASE } from "../src/lib/base.ts";
+import {
+  CATEGORIES,
+  categoryKey,
+  codepoint,
+  searchText,
+  shapeName,
+  SHAPES,
+} from "../src/lib/data.ts";
+import { appIcon, ogImage } from "../src/lib/images.ts";
+import { llmsTxt } from "../src/lib/llms.ts";
+import { ogSlug } from "../src/lib/og.ts";
+import { pageContext } from "../src/lib/page.ts";
+import { CATALOGS } from "../src/i18n/index.ts";
+
+const PNG = [0x89, 0x50, 0x4e, 0x47];
+
+describe("data", () => {
+  it("lists every shape once, with a translated category", () => {
+    expect(SHAPES.length).toBeGreaterThanOrEqual(93);
+    expect(new Set(SHAPES.map((s) => s.id)).size).toBe(SHAPES.length);
+    for (const c of CATEGORIES) expect(CATALOGS.en[categoryKey(c)]).toBeTruthy();
+  });
+
+  it("gives every shape a font code point", () => {
+    for (const s of SHAPES) expect(codepoint(s.id)).toMatch(/^U\+[0-9A-F]{4,5}$/u);
+    expect(codepoint("no-such-shape")).toBeUndefined();
+  });
+
+  it("falls back to English names and flags unreviewed Kurdish ones", () => {
+    const base = SHAPES[0];
+    if (base === undefined) throw new Error("no shapes");
+    const unnamed = {
+      ...base,
+      names: {
+        ...base.names,
+        ckb: { ...base.names.ckb, text: null },
+        kmr: { ...base.names.kmr, text: null },
+      },
+    };
+    expect(shapeName(unnamed, "en")).toEqual({
+      text: base.names.en,
+      lang: "en",
+      needsReview: false,
+    });
+    expect(shapeName(unnamed, "ckb")).toEqual({
+      text: base.names.en,
+      lang: "en",
+      needsReview: false,
+    });
+    const named = {
+      ...base,
+      names: {
+        ...base.names,
+        ckb: { ...base.names.ckb, text: "خاڵ", status: "needs-native-review" as const },
+        kmr: { ...base.names.kmr, text: "Xal", status: "verified" as const },
+      },
+    };
+    expect(shapeName(named, "ckb")).toEqual({ text: "خاڵ", lang: "ckb", needsReview: true });
+    expect(shapeName(named, "kmr")).toEqual({ text: "Xal", lang: "kmr", needsReview: false });
+    expect(searchText(named)).toContain("xal");
+    expect(searchText(named)).toContain(base.id);
+  });
+});
+
+describe("share images and paths", () => {
+  it("maps paths to share image slugs", () => {
+    expect(ogSlug("/deq/", "/deq/")).toBe("home");
+    expect(ogSlug("/deq/ckb/", "/deq")).toBe("home");
+    expect(ogSlug("/deq/kmr/icons/", "/deq/")).toBe("icons");
+    expect(ogSlug("/deq/icons/sun-rays/", "/deq/")).toBe("icons/sun-rays");
+    expect(ogSlug("/deq/icons/Bad_Id/", "/deq/")).toBe("icons");
+    expect(ogSlug("/deq/docs/cli/", "/deq/")).toBe("docs");
+    expect(ogSlug("/elsewhere/page/", "/deq/")).toBe("home");
+  });
+
+  it("renders PNG share cards and app icons", async () => {
+    const [shape, flag, icon] = await Promise.all([
+      ogImage(SHAPES[0]?.id),
+      ogImage("flag"),
+      appIcon(48, true),
+    ]);
+    for (const png of [shape, flag, icon]) expect([...png.subarray(0, 4)]).toEqual(PNG);
+    expect([...(await ogImage(undefined)).subarray(0, 4)]).toEqual(PNG);
+    expect([...(await appIcon(48, false)).subarray(0, 4)]).toEqual(PNG);
+  });
+});
+
+describe("pages", () => {
+  it("has a base path with a trailing slash", () => {
+    expect(BASE.endsWith("/")).toBe(true);
+  });
+
+  it("builds a page context from the locale parameter", () => {
+    const { locale, t } = pageContext("ckb");
+    expect(locale).toBe("ckb");
+    expect(t("nav.icons")).toBe(CATALOGS.ckb["nav.icons"]);
+  });
+
+  it("writes llms.txt and the full shape list", () => {
+    const short = llmsTxt("https://example.test/deq/", false);
+    const full = llmsTxt("https://example.test/deq/", true);
+    expect(short.startsWith("# Deq\n")).toBe(true);
+    expect(short).not.toContain("## Shapes");
+    for (const s of SHAPES) expect(full).toContain(`https://example.test/deq/icons/${s.id}/`);
+    expect(full.endsWith("\n")).toBe(true);
+  });
+});
+
+describe("brand mark", () => {
+  it("matches logo concept A from the shape spec", async () => {
+    const spec = JSON.parse(
+      await readFile(
+        new URL("../../../assets/brand/concepts/logo-concept-a.json", import.meta.url),
+        "utf8",
+      ),
+    ) as {
+      primitives: (
+        | { type: "polyline"; points: number[][] }
+        | { type: "dot"; cx: number; cy: number; r: number }
+      )[];
+    };
+    for (const file of ["mark-light.svg", "mark-dark.svg"]) {
+      const svg = await readFile(new URL(`../src/assets/${file}`, import.meta.url), "utf8");
+      for (const p of spec.primitives) {
+        if (p.type === "polyline") expect(svg).toContain(`points="${p.points.flat().join(" ")}"`);
+        else expect(svg).toContain(`cx="${String(p.cx)}" cy="${String(p.cy)}" r="${String(p.r)}"`);
+      }
+    }
+  });
+});

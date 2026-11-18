@@ -11,6 +11,8 @@ dist/
 coverage/
 .eslintcache
 .astro/
+test-results/
+playwright-report/
 
 # --- Python ---
 __pycache__/

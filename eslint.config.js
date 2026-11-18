@@ -15,6 +15,7 @@ export default defineConfig(
       "**/target/**",
       "**/.venv/**",
       "**/.svelte-kit/**",
+      "**/.astro/**",
       "temp/**",
       // Recorded CLI output (generated), compared byte for byte, not source code.
       "spec/fixtures/**",
