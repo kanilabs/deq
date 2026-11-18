@@ -81,5 +81,5 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Removed `hand-composition`, `foot-composition` and `vertical-stack`: each mixed several designs, which are now separate shapes.
 - uv now refuses releases younger than 7 days (`exclude-newer`). The relock moved pip, platformdirs, py-serializable, Ruff and zizmor back to their previous releases.
 - The repository ESLint run gets a 6 GB heap, and `.svelte-kit/` is ignored, for the extra TypeScript projects.
-- ESLint and Prettier ignore Astro's generated `.astro/` folder and Playwright output.
+- ESLint and Prettier ignore Astro's generated `.astro/` folder and Playwright output; `pnpm lint` runs `astro sync` first so the site's types exist on a clean checkout.
 - pnpm override `workbox-build>glob` to 14.0.4: glob 11 finds no files with the `minimatch` 11.0.3 override. Remove it when `workbox-build` depends on glob 14+.
