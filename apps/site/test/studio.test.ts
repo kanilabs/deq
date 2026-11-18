@@ -2,6 +2,16 @@ import { getShape, listShapes } from "@0xdolan/deq-core";
 import { describe, expect, it } from "vitest";
 
 import { CATALOGS } from "../src/i18n/index.ts";
+import {
+  align,
+  distribute,
+  expandGroups,
+  group,
+  nextGroupId,
+  reorder,
+  ungroup,
+  unitsOf,
+} from "../src/studio/arrange.ts";
 import { History } from "../src/studio/history.ts";
 import { studioMessages, translator } from "../src/studio/i18n.ts";
 import {
@@ -339,6 +349,79 @@ describe("i18n and render", () => {
   });
 });
 
+describe("arrange", () => {
+  // Default size is 24, so each box is 24 px square.
+  const a = item({ id: "a", x: 0, y: 0 });
+  const b = item({ id: "b", x: 50, y: 10 });
+  const c = item({ id: "c", x: 200, y: 100 });
+  const ids = (list: readonly Item[]) => list.map((i) => i.id).join("");
+
+  it("expands groups and builds units", () => {
+    const list = [a, { ...b, group: "g1" }, { ...c, group: "g1" }];
+    expect(expandGroups(list, ["b"])).toEqual(["b", "c"]);
+    expect(expandGroups(list, ["a"])).toEqual(["a"]);
+    const units = unitsOf([...list, { ...a, id: "d", locked: true }]);
+    expect(units.map((u) => u.ids)).toEqual([["a"], ["b", "c"], ["d"]]);
+    expect(units[1]?.box).toEqual({ x: 50, y: 10, w: 174, h: 114 });
+    expect(units[2]?.locked).toBe(true);
+    expect(nextGroupId(list)).toBe("g2");
+    expect(nextGroupId([a])).toBe("g1");
+  });
+
+  it("aligns units to every edge and skips locked ones", () => {
+    const list = [a, b, c];
+    expect(align([a], "left").size).toBe(0);
+    expect(align(list, "left").get("b")).toEqual({ dx: -50, dy: 0 });
+    expect(align(list, "left").has("a")).toBe(false);
+    expect(align(list, "right").get("a")).toEqual({ dx: 200, dy: 0 });
+    expect(align(list, "hcenter").get("a")).toEqual({ dx: 100, dy: 0 });
+    expect(align(list, "top").get("c")).toEqual({ dx: 0, dy: -100 });
+    expect(align(list, "bottom").get("a")).toEqual({ dx: 0, dy: 100 });
+    expect(align(list, "vcenter").get("a")).toEqual({ dx: 0, dy: 50 });
+    expect(align([{ ...a, locked: true }, b], "left").size).toBe(1);
+    // A group moves as one.
+    const grouped = align([a, { ...b, group: "g1" }, { ...c, group: "g1" }], "left");
+    expect(grouped.get("b")).toEqual({ dx: -50, dy: 0 });
+    expect(grouped.get("c")).toEqual({ dx: -50, dy: 0 });
+  });
+
+  it("distributes three units or more", () => {
+    expect(distribute([a, b], "x").size).toBe(0);
+    // Span 0..224, boxes 72, gap (224-72)/2 = 76: b moves to x=100.
+    expect(distribute([c, b, a], "x").get("b")).toEqual({ dx: 50, dy: 0 });
+    expect(distribute([a, b, c], "y").get("b")).toEqual({ dx: 0, dy: 40 });
+    expect(distribute([a, { ...b, locked: true }, c], "x").size).toBe(0);
+    expect(distribute([a, { ...b, x: 100 }, c], "x").size).toBe(0);
+  });
+
+  it("reorders blocks and keeps groups together", () => {
+    const d = item({ id: "d" });
+    const list = [a, b, c, d];
+    expect(ids(reorder(list, new Set(["a"]), "front"))).toBe("bcda");
+    expect(ids(reorder(list, new Set(["d"]), "back"))).toBe("dabc");
+    expect(ids(reorder(list, new Set(["a", "c"]), "forward"))).toBe("badc");
+    expect(ids(reorder(list, new Set(["b", "d"]), "backward"))).toBe("badc");
+    expect(reorder(list, new Set(["d"]), "forward")).toBe(list);
+    expect(reorder(list, new Set(["a"]), "back")).toBe(list);
+    const g = [a, { ...b, group: "g1" }, { ...c, group: "g1" }, d];
+    expect(ids(reorder(g, new Set(["a"]), "forward"))).toBe("bcad");
+    expect(ids(reorder(g, new Set(["b", "c"]), "front"))).toBe("adbc");
+  });
+
+  it("groups and ungroups", () => {
+    const d = item({ id: "d" });
+    const doc = { v: 1 as const, items: [a, b, c, d] };
+    expect(group(doc, new Set(["a"]))).toBe(doc);
+    const grouped = group(doc, new Set(["a", "c"]));
+    expect(ids(grouped.items)).toBe("bacd");
+    expect(grouped.items.filter((i) => i.group === "g1")).toHaveLength(2);
+    expect(ungroup(doc, new Set(["a"]))).toBe(doc);
+    const back = ungroup(grouped, new Set(["a"]));
+    expect(back.items.find((i) => i.id === "a")?.group).toBeUndefined();
+    expect(back.items.find((i) => i.id === "c")?.group).toBe("g1");
+  });
+});
+
 describe("store", () => {
   const studio = (storage = new MemoryStorage()) => ({ s: new Studio(storage), storage });
 
@@ -390,22 +473,22 @@ describe("store", () => {
       Object.entries(shape.parameters).find(([, p]) => p.type === "integer") ?? [];
     const it1 = s.add(shape.id, "Add");
     if (!it1 || !name || decl?.type !== "integer") throw new Error("setup");
-    expect(s.setParam(it1.id, name, decl.max + 100, "Edit")).toBeTypeOf("string");
-    expect(s.setParam(it1.id, name, decl.min, "Edit")).toBeUndefined();
+    expect(s.setParam([it1.id], name, decl.max + 100, "Edit")).toBeTypeOf("string");
+    expect(s.setParam([it1.id], name, decl.min, "Edit")).toBeUndefined();
     expect(s.doc.items[0]?.options.params).toEqual({ [name]: decl.min });
-    s.resetParam(it1.id, name, "Reset");
+    s.resetParam([it1.id], name, "Reset");
     expect(s.doc.items[0]?.options.params).toBeUndefined();
-    s.resetParam(it1.id, name, "Reset");
-    expect(s.setParam("missing", name, 1, "Edit")).toBeUndefined();
+    s.resetParam([it1.id], name, "Reset");
+    expect(s.setParam(["missing"], name, 1, "Edit")).toBeUndefined();
 
     const it2 = s.add(layered.id, "Add");
     const layer = layered.layers[0] ?? "";
     if (!it2) throw new Error("setup");
-    expect(s.setLayerColor(it2.id, layer, "#123456", "Edit")).toBeUndefined();
+    expect(s.setLayerColor([it2.id], layer, "#123456", "Edit")).toBeUndefined();
     expect(s.doc.items[1]?.options.layerColors).toEqual({ [layer]: "#123456" });
-    expect(s.setLayerColor(it2.id, layer, undefined, "Edit")).toBeUndefined();
+    expect(s.setLayerColor([it2.id], layer, undefined, "Edit")).toBeUndefined();
     expect(s.doc.items[1]?.options.layerColors).toBeUndefined();
-    expect(s.setLayerColor("missing", layer, "red", "Edit")).toBeUndefined();
+    expect(s.setLayerColor(["missing"], layer, "red", "Edit")).toBeUndefined();
 
     s.setName(it2.id, "Mine", "Rename");
     expect(s.doc.items[1]?.name).toBe("Mine");
@@ -531,5 +614,62 @@ describe("store", () => {
     expect(s.add("kurdish-sun", "Add")).toBeUndefined();
     s.duplicate(["i1"], "Dup");
     expect(s.doc.items).toHaveLength(500);
+  });
+
+  it("batch edits, arranges, groups, locks and hides a selection", () => {
+    const { s } = studio();
+    s.doc = parseDoc({
+      v: 1,
+      items: [
+        item({ id: "a" }),
+        item({ id: "b", x: 50, y: 10 }),
+        item({ id: "c", x: 200, y: 100 }),
+      ],
+    });
+    s.selectAll();
+    expect(s.units).toBe(3);
+    expect(s.setOptions(s.selection, { color: "#c00" }, "Edit")).toBeUndefined();
+    expect(s.doc.items.every((i) => i.options.color === "#c00")).toBe(true);
+    s.align("left", "Align");
+    expect(s.doc.items.map((i) => i.x)).toEqual([0, 0, 0]);
+    s.align("left", "Align");
+    expect(s.undo()).toBe("Align");
+    s.distribute("y", "Distribute");
+    expect(s.doc.items[1]?.y).toBe(50);
+    s.arrange("back", "Order");
+    s.select("c");
+    s.arrange("back", "Order");
+    expect(s.doc.items[0]?.id).toBe("c");
+    s.arrange("back", "Order", ["c"]);
+    expect(s.undo()).toBe("Order");
+
+    s.selectIds(["a", "b"]);
+    s.group("Group");
+    expect(s.doc.items.filter((i) => i.group)).toHaveLength(2);
+    s.select("a");
+    expect(s.selection.toSorted()).toEqual(["a", "b"]);
+    expect(s.units).toBe(1);
+    s.select("c", true);
+    expect(s.selection).toHaveLength(3);
+    s.select("b", true);
+    expect(s.selection).toEqual(["c"]);
+    s.selectIds(["a"], true);
+    expect(s.selection.toSorted()).toEqual(["a", "b", "c"]);
+    s.duplicate(["a", "b"], "Dup");
+    const copies = s.doc.items.slice(-2);
+    expect(copies[0]?.group).toBe("g2");
+    expect(copies[1]?.group).toBe("g2");
+    s.select("a");
+    s.ungroup("Ungroup");
+    expect(s.doc.items.find((i) => i.id === "a")?.group).toBeUndefined();
+
+    s.setFlag(["a", "b"], "locked", "Lock");
+    expect(s.doc.items.filter((i) => i.locked)).toHaveLength(2);
+    s.setFlag(["a", "b"], "locked", "Lock");
+    expect(s.doc.items.filter((i) => i.locked)).toHaveLength(0);
+    s.setFlag(["a"], "hidden", "Hide", true);
+    expect(s.doc.items.find((i) => i.id === "a")?.hidden).toBe(true);
+    s.setFlag(["missing"], "hidden", "Hide");
+    expect(s.undo()).toBe("Hide");
   });
 });

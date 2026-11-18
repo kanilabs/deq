@@ -1,7 +1,11 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 
-/** Studio (Phase 8a): canvas, library, inspector, history, view, overlays and shortcuts. */
+/**
+ * Studio. Phase 8a: canvas, library, inspector, history, view, overlays and shortcuts.
+ * Phase 8b: multi-select, batch editing, align and distribute, groups, layer order, lock
+ * and hide, and the layers panel.
+ */
 const LOCALES = [
   { prefix: "", lang: "en", dir: "ltr" },
   { prefix: "ckb/", lang: "ckb", dir: "rtl" },
@@ -41,6 +45,41 @@ async function addSun(page: Page): Promise<void> {
 }
 
 const items = (page: Page) => page.locator("[data-item]");
+const pressed = (page: Page) => page.locator('[data-item][aria-pressed="true"]');
+const tool = (page: Page, action: string) => page.locator(`.inspector [data-action="${action}"]`);
+
+/** Add the Kurdish Sun `n` times; new shapes are placed side by side. */
+async function addSuns(page: Page, n: number): Promise<void> {
+  for (let k = 1; k <= n; k++) {
+    await show(page, "library");
+    await page.locator('.tile[data-shape="kurdish-sun"]').click();
+    await expect(items(page)).toHaveCount(k);
+  }
+}
+
+/** Select every shape from the keyboard. */
+async function selectAll(page: Page): Promise<void> {
+  await show(page, "canvas");
+  await items(page).first().focus();
+  await page.keyboard.press("ControlOrMeta+a");
+}
+
+/** Canvas positions of the shapes, read from their transforms (works while the pane is hidden). */
+async function boxes(page: Page): Promise<{ x: number; y: number }[]> {
+  const transforms = await items(page).evaluateAll((els) =>
+    els.map((el) => el.getAttribute("transform") ?? ""),
+  );
+  return transforms.map((t) => {
+    const [x = NaN, y = NaN] = (/translate\(([^ ]+) ([^)]+)\)/u.exec(t) ?? []).slice(1).map(Number);
+    return { x, y };
+  });
+}
+
+async function showLayers(page: Page): Promise<void> {
+  await show(page, "library");
+  await page.locator('[data-side="layers"]').click();
+  await expect(page.locator(".layers")).toBeVisible();
+}
 const option = (page: Page, key: string) => page.locator(`[data-option="${key}"]`);
 
 test.beforeEach(async ({ context }) => {
@@ -224,7 +263,7 @@ test("shortcuts are listed, remappable and persist", async ({ page }) => {
   await page.locator('.toolbar [data-action="help"]').click();
   const dialog = page.locator("dialog.shortcuts");
   await expect(dialog).toBeVisible();
-  await expect(dialog.locator("tbody tr")).toHaveCount(25);
+  await expect(dialog.locator("tbody tr")).toHaveCount(41);
 
   await dialog.locator('tr[data-action="toggleGrid"] button').click();
   await expect(dialog.locator(".status")).not.toBeEmpty();
@@ -280,4 +319,184 @@ test("studio works offline once cached", async ({ page, context }) => {
   await open(page);
   await addSun(page);
   await context.setOffline(false);
+});
+
+test("shift-click and select all pick several shapes for batch editing", async ({ page }) => {
+  await open(page);
+  await addSuns(page, 2);
+  await show(page, "canvas");
+  await items(page).first().focus();
+  await show(page, "inspector");
+  await option(page, "size").locator("input.num").fill("48");
+
+  await selectAll(page);
+  await expect(pressed(page)).toHaveCount(2);
+  await show(page, "inspector");
+  await expect(page.locator(".inspector .count")).toContainText("2");
+  const size = option(page, "size").locator("input.num");
+  await expect(size).toHaveValue("");
+  await expect(size).toHaveAttribute("placeholder", "Mixed");
+  await expect(option(page, "size")).toHaveClass(/mixed/u);
+
+  // One edit changes every selected shape and is one undo step.
+  const color = option(page, "color").locator("input.text");
+  await color.fill("#cc0000");
+  await color.press("Enter");
+  await expect(option(page, "color")).not.toHaveClass(/mixed/u);
+  await expect(color).toHaveValue("#cc0000");
+  await size.fill("32");
+  await expect(option(page, "size")).not.toHaveClass(/mixed/u);
+  await expect(items(page).locator("svg[width='32']")).toHaveCount(2);
+  await page.locator('.toolbar [data-action="undo"]').click();
+  await expect(option(page, "size")).toHaveClass(/mixed/u);
+
+  // Shift-click needs a pointer and a keyboard.
+  if (mobile(page)) return;
+  await page.locator(".surface").click({ position: { x: 5, y: 5 } });
+  await expect(pressed(page)).toHaveCount(0);
+  await items(page).nth(0).click();
+  await items(page)
+    .nth(1)
+    .click({ modifiers: ["Shift"] });
+  await expect(pressed(page)).toHaveCount(2);
+  await items(page)
+    .nth(0)
+    .click({ modifiers: ["Shift"] });
+  await expect(pressed(page)).toHaveCount(1);
+});
+
+test("a marquee drag selects shapes and Space-drag pans", async ({ page }) => {
+  test.skip(mobile(page), "touch drags pan; the marquee needs a mouse or pen");
+  await open(page);
+  await addSuns(page, 3);
+  await page.locator(".surface").click({ position: { x: 5, y: 5 } });
+  const first = await items(page).nth(0).boundingBox();
+  const second = await items(page).nth(1).boundingBox();
+  if (!first || !second) throw new Error("no item box");
+  await page.mouse.move(first.x - 20, first.y - 20);
+  await page.mouse.down();
+  await page.mouse.move(second.x + second.width / 2, second.y + second.height + 20, { steps: 6 });
+  await expect(page.locator(".marquee")).toHaveCount(1);
+  await page.mouse.up();
+  await expect(page.locator(".marquee")).toHaveCount(0);
+  await expect(pressed(page)).toHaveCount(2);
+  await expect(page.locator(".bounds")).toHaveCount(1);
+
+  // Holding Space turns the same drag into a pan: the shapes move on screen, not in the design.
+  const before = await items(page).first().boundingBox();
+  const label = await items(page).first().getAttribute("aria-label");
+  await page.mouse.move(first.x - 20, first.y + 60);
+  await page.keyboard.down(" ");
+  await page.mouse.down();
+  await page.mouse.move(first.x + 80, first.y + 60, { steps: 4 });
+  await page.mouse.up();
+  await page.keyboard.up(" ");
+  expect((await items(page).first().boundingBox())?.x).toBeGreaterThan((before?.x ?? 0) + 50);
+  await expect(items(page).first()).toHaveAttribute("aria-label", label ?? "");
+  await expect(pressed(page)).toHaveCount(2);
+});
+
+test("align, distribute, group, lock and hide from the inspector", async ({ page }) => {
+  await open(page);
+  await addSuns(page, 3);
+  // Move the first shape down so the shapes are not lined up.
+  await show(page, "canvas");
+  await items(page).first().focus();
+  for (let k = 0; k < 3; k++) await page.keyboard.press("Shift+ArrowDown");
+
+  await show(page, "inspector");
+  await expect(tool(page, "alignTop")).toBeDisabled();
+  await selectAll(page);
+  await show(page, "inspector");
+  await expect(tool(page, "distributeH")).toBeEnabled();
+  await tool(page, "alignTop").click();
+  await expect.poll(async () => new Set((await boxes(page)).map((b) => b.y)).size).toBe(1);
+  await tool(page, "alignLeft").click();
+  await expect.poll(async () => new Set((await boxes(page)).map((b) => b.x)).size).toBe(1);
+  await page.locator('.toolbar [data-action="undo"]').click();
+  await expect.poll(async () => new Set((await boxes(page)).map((b) => b.x)).size).toBe(3);
+  await tool(page, "distributeH").click();
+
+  await tool(page, "group").click();
+  await expect(tool(page, "ungroup")).toBeEnabled();
+  await expect(tool(page, "group")).toBeDisabled();
+  // Focusing one member selects the whole group.
+  await show(page, "canvas");
+  await page.keyboard.press("Escape");
+  await expect(pressed(page)).toHaveCount(0);
+  await items(page).nth(1).focus();
+  await expect(pressed(page)).toHaveCount(3);
+  await expect(page.locator(".group-box")).toHaveCount(1);
+
+  await show(page, "inspector");
+  await tool(page, "toggleLock").click();
+  await expect(tool(page, "toggleLock")).toHaveAttribute("aria-pressed", "true");
+  await show(page, "canvas");
+  await items(page).first().focus();
+  await page.keyboard.press("Delete");
+  await expect(items(page)).toHaveCount(3);
+  await page.keyboard.press("ControlOrMeta+Shift+l");
+  await show(page, "inspector");
+  await expect(tool(page, "toggleLock")).toHaveAttribute("aria-pressed", "false");
+
+  await tool(page, "ungroup").click();
+  await expect(tool(page, "ungroup")).toBeDisabled();
+  await tool(page, "toggleHide").click();
+  await expect(items(page)).toHaveCount(0);
+  await page.locator('.toolbar [data-action="undo"]').click();
+  await expect(items(page)).toHaveCount(3);
+});
+
+test("the layers panel selects, reorders, locks and hides shapes", async ({ page }) => {
+  await open(page);
+  await addSuns(page, 2);
+  await showLayers(page);
+  const rows = page.locator(".layer-row");
+  await expect(rows).toHaveCount(2);
+  // Top of the stack first.
+  await expect(rows.nth(0)).toHaveAttribute("data-id", "i2");
+  await expect(rows.nth(0).locator('[data-move="up"]')).toBeDisabled();
+
+  await rows.nth(0).locator('[data-move="down"]').click();
+  await expect(rows.nth(0)).toHaveAttribute("data-id", "i1");
+  await page.keyboard.press("ControlOrMeta+z");
+  await expect(rows.nth(0)).toHaveAttribute("data-id", "i2");
+
+  await rows.nth(0).locator(".pick").click();
+  await rows
+    .nth(1)
+    .locator(".pick")
+    .click({ modifiers: ["Shift"] });
+  await expect(rows.locator('.pick[aria-pressed="true"]')).toHaveCount(2);
+  await expect(pressed(page)).toHaveCount(2);
+
+  // Keyboard layer order: send the selection's top shape to the back.
+  await rows.nth(0).locator(".pick").click();
+  await page.keyboard.press("ControlOrMeta+Shift+ArrowDown");
+  await expect(rows.nth(1)).toHaveAttribute("data-id", "i2");
+
+  await page.keyboard.press("ControlOrMeta+g");
+  await expect(rows.locator(".tag")).toHaveCount(0);
+  await rows
+    .nth(0)
+    .locator(".pick")
+    .click({ modifiers: ["Shift"] });
+  await page.keyboard.press("ControlOrMeta+g");
+  await expect(rows.locator(".tag")).toHaveCount(2);
+
+  const lock = rows.nth(0).locator('[data-flag="locked"]');
+  await lock.click();
+  await expect(lock).toHaveAttribute("aria-pressed", "true");
+  const hide = rows.nth(0).locator('[data-flag="hidden"]');
+  await hide.click();
+  await expect(hide).toHaveAttribute("aria-pressed", "true");
+  await expect(items(page)).toHaveCount(1);
+
+  const axe = await new AxeBuilder({ page })
+    .include(".layers")
+    .withTags(["wcag2a", "wcag2aa"])
+    .analyze();
+  expect(axe.violations.filter((v) => v.impact === "serious" || v.impact === "critical")).toEqual(
+    [],
+  );
 });

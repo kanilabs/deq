@@ -27,6 +27,8 @@ export interface Item {
   readonly name?: string;
   readonly locked?: boolean;
   readonly hidden?: boolean;
+  /** Items with the same group id select and move together (Phase 8b). */
+  readonly group?: string;
 }
 
 export interface StudioDoc {
@@ -78,6 +80,7 @@ const ItemSchema = v.strictObject({
   name: v.optional(v.pipe(v.string(), v.maxLength(LIMITS.name))),
   locked: v.optional(v.boolean()),
   hidden: v.optional(v.boolean()),
+  group: v.optional(v.pipe(v.string(), v.regex(/^g[0-9]{1,6}$/u))),
 });
 const DocSchema = v.strictObject({
   v: v.literal(1),
@@ -126,6 +129,7 @@ export function parseDoc(value: unknown): StudioDoc {
       ...(raw.name ? { name: raw.name } : {}),
       ...(raw.locked ? { locked: true } : {}),
       ...(raw.hidden ? { hidden: true } : {}),
+      ...(raw.group ? { group: raw.group } : {}),
     };
   });
   return { v: 1, items };

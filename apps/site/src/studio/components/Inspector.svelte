@@ -2,16 +2,20 @@
   import { DEFAULT_OPTIONS, getShape, type ParameterDecl } from "@0xdolan/deq-core";
 
   import type { StudioKey, Translate } from "../i18n.ts";
-  import { OPTION_KEYS, optionValue, renderOptions, type Item, type OptionKey } from "../model.ts";
+  import { ALIGN_EDGES } from "../arrange.ts";
+  import { itemBox, OPTION_KEYS, optionValue, renderOptions, type Item, type OptionKey } from "../model.ts";
   import { renderCached } from "../render.ts";
+  import type { Action } from "../shortcuts.ts";
+  import { unionBox } from "../snap.ts";
   import type { Studio } from "../store.svelte.ts";
   import { svgMarkup } from "../svg.ts";
 
   interface Props {
     studio: Studio;
     t: Translate;
+    run: (action: Action) => void;
   }
-  let { studio, t }: Props = $props();
+  let { studio, t, run }: Props = $props();
 
   const PREVIEW_SIZES = [16, 24, 32, 48, 96] as const;
 
@@ -39,49 +43,94 @@
     background: { type: "color", none: true },
   };
 
-  const item = $derived(studio.current);
-  const shape = $derived(item ? getShape(item.shape) : undefined);
+  const ALIGN_ACTIONS = {
+    left: "alignLeft", hcenter: "alignHCenter", right: "alignRight",
+    top: "alignTop", vcenter: "alignVCenter", bottom: "alignBottom",
+  } as const;
+  const ORDER_ACTIONS = ["bringToFront", "bringForward", "sendBackward", "sendToBack"] as const;
+
+  /** The selected items; batch edits apply to all of them. */
+  const sel = $derived(studio.selected);
+  const ids = $derived(sel.map((i) => i.id));
+  const item = $derived(sel[0]);
+  const single = $derived(sel.length === 1);
+  /** Parameters and layer colours only show when every selected item is the same shape. */
+  const shape = $derived(item && sel.every((i) => i.shape === item.shape) ? getShape(item.shape) : undefined);
+  const box = $derived(unionBox(sel.map(itemBox)));
+  const units = $derived(studio.units);
   let errors = $state<Record<string, string>>({});
+  const key = $derived(ids.join(","));
+
+  // Clear stale errors when the selection changes.
+  $effect(() => {
+    void key;
+    errors = {};
+  });
+
+  /** The shared value of `get` over the selection, or `mixed`. */
+  function common<T>(get: (it: Item) => T): { value: T; mixed: boolean } {
+    const values = sel.map(get);
+    const [first] = values;
+    return { value: first as T, mixed: values.some((v) => v !== first) };
+  }
+
+  /** Show a checkbox as neither on nor off when the selection disagrees. */
+  function indeterminate(node: HTMLInputElement, on: boolean): { update: (on: boolean) => void } {
+    node.indeterminate = on;
+    return {
+      update(next: boolean) {
+        node.indeterminate = next;
+      },
+    };
+  }
 
   const optLabel = (key: OptionKey) => t(`studio.opt.${key}` as StudioKey);
   const valLabel = (v: string) => t(`studio.val.${v}` as StudioKey);
   const HEX6 = /^#[0-9a-f]{6}$/iu;
 
   function setError(key: string, message: string | undefined): void {
-    const { [key]: _drop, ...rest } = errors;
+    const rest = Object.fromEntries(Object.entries(errors).filter(([k]) => k !== key));
     errors = message ? { ...rest, [key]: message } : rest;
   }
 
-  function setOption(it: Item, key: OptionKey, value: unknown): void {
+  function setOption(key: OptionKey, value: unknown): void {
     const message = studio.setOptions(
-      [it.id],
+      ids,
       { [key]: value },
       t("studio.act.edit", { option: optLabel(key) }),
-      `opt:${it.id}:${key}`,
+      `opt:${ids.join(",")}:${key}`,
     );
     setError(key, message);
   }
 
-  function numberInput(it: Item, key: OptionKey, raw: string): void {
+  function numberInput(key: OptionKey, raw: string): void {
     if (raw.trim() === "") return;
     const n = Number(raw);
     if (!Number.isFinite(n)) return;
-    setOption(it, key, n);
+    setOption(key, n);
   }
 
-  function colorText(it: Item, key: OptionKey, raw: string): void {
+  function colorText(key: OptionKey, raw: string, mixed: boolean): void {
     const value = raw.trim();
     if (value === "") {
-      studio.resetOption([it.id], key, t("studio.act.reset"));
+      // An empty field over mixed values leaves them alone.
+      if (!mixed) studio.resetOption(ids, key, t("studio.act.reset"));
       setError(key, undefined);
       return;
     }
-    setOption(it, key, value);
+    setOption(key, value);
   }
 
-  function reset(it: Item, key: OptionKey): void {
-    studio.resetOption([it.id], key, t("studio.act.reset"));
+  function reset(key: OptionKey): void {
+    studio.resetOption(ids, key, t("studio.act.reset"));
     setError(key, undefined);
+  }
+
+  function moveTo(axis: "x" | "y", raw: string): void {
+    const n = Number(raw);
+    if (raw.trim() === "" || !Number.isFinite(n) || !box) return;
+    const d = n - (axis === "x" ? box.x : box.y);
+    studio.moveBy(ids, axis === "x" ? d : 0, axis === "y" ? d : 0, t("studio.act.move"));
   }
 
   function display(value: unknown): string {
@@ -96,15 +145,15 @@
     return v === undefined ? decl.default : v;
   }
 
-  function setParam(it: Item, name: string, value: number | boolean | string): void {
-    setError(`param:${name}`, studio.setParam(it.id, name, value, t("studio.act.edit", { option: name })));
+  function setParam(name: string, value: number | boolean | string): void {
+    setError(`param:${name}`, studio.setParam(ids, name, value, t("studio.act.edit", { option: name })));
   }
 
-  function setLayer(it: Item, layer: string, raw: string): void {
+  function setLayer(layer: string, raw: string): void {
     const value = raw.trim();
     setError(
       `layer:${layer}`,
-      studio.setLayerColor(it.id, layer, value === "" ? undefined : value, t("studio.act.edit", { option: layer })),
+      studio.setLayerColor(ids, layer, value === "" ? undefined : value, t("studio.act.edit", { option: layer })),
     );
   }
 
@@ -119,68 +168,97 @@
 
 <section class="inspector" aria-labelledby="studio-inspector-h">
   <h2 id="studio-inspector-h" class="panel-title">{t("studio.inspector")}</h2>
-  {#if !item || !shape}
-    <p class="hint">
-      {studio.selection.length > 1
-        ? t("studio.multiSelected", { count: studio.selection.length })
-        : t("studio.nothingSelected")}
-    </p>
+  {#if !item}
+    <p class="hint">{t("studio.nothingSelected")}</p>
   {:else}
     {@const it = item}
     <div class="body">
+      {#if !single}
+        <p class="hint count" role="status">{t("studio.multiSelected", { count: sel.length })}</p>
+      {/if}
       <div class="actions">
-        <button type="button" onclick={() => studio.duplicate([it.id], t("studio.act.duplicate"))}>{t("studio.duplicate")}</button>
-        <button type="button" onclick={() => studio.remove([it.id], t("studio.act.delete"))} disabled={it.locked}>{t("studio.delete")}</button>
-        <button type="button" data-action="reset-shape" onclick={() => { studio.resetItems([it.id], t("studio.act.reset")); errors = {}; }}>{t("studio.resetShape")}</button>
+        <button type="button" onclick={() => run("duplicate")}>{t("studio.duplicate")}</button>
+        <button type="button" onclick={() => run("delete")} disabled={sel.every((i) => i.locked)}>{t("studio.delete")}</button>
+        <button type="button" data-action="reset-shape" onclick={() => { studio.resetItems(ids, t("studio.act.reset")); errors = {}; }}>{t("studio.resetShape")}</button>
         <button type="button" data-action="reset-all" onclick={() => { studio.resetItems(studio.doc.items.map((i) => i.id), t("studio.act.reset")); errors = {}; }}>{t("studio.resetAll")}</button>
       </div>
 
-      <fieldset>
-        <legend>{t("studio.preview")}</legend>
-        <ul class="previews" role="list">
-          {#each PREVIEW_SIZES as size (size)}
-            <li>
-              <span class="preview" style:width={`${size}px`} style:height={`${size}px`} aria-hidden="true" use:svgMarkup={previewMarkup(it, size)}></span>
-              <span class="size">{t("studio.previewSize", { size })}</span>
-            </li>
+      {#if single}
+        <fieldset>
+          <legend>{t("studio.preview")}</legend>
+          <ul class="previews" role="list">
+            {#each PREVIEW_SIZES as size (size)}
+              <li>
+                <span class="preview" style:width={`${String(size)}px`} style:height={`${String(size)}px`} aria-hidden="true" use:svgMarkup={previewMarkup(it, size)}></span>
+                <span class="size">{t("studio.previewSize", { size })}</span>
+              </li>
+            {/each}
+          </ul>
+        </fieldset>
+
+        <label class="field">
+          <span>{t("studio.name")}</span>
+          <input
+            type="text"
+            maxlength="80"
+            value={it.name ?? ""}
+            placeholder={getShape(it.shape).names.en}
+            oninput={(e) => studio.setName(it.id, e.currentTarget.value, t("studio.act.rename"))}
+          />
+        </label>
+      {/if}
+
+      {#if box}
+        <fieldset class="pair">
+          <legend>{t("studio.position")}</legend>
+          <label class="field">
+            <span>{t("studio.x")}</span>
+            <input type="number" step="1" value={box.x} onchange={(e) => moveTo("x", e.currentTarget.value)} />
+          </label>
+          <label class="field">
+            <span>{t("studio.y")}</span>
+            <input type="number" step="1" value={box.y} onchange={(e) => moveTo("y", e.currentTarget.value)} />
+          </label>
+        </fieldset>
+      {/if}
+
+      <fieldset class="arrange" data-section="arrange">
+        <legend>{t("studio.arrange")}</legend>
+        <div class="tools" role="group" aria-label={t("studio.align")}>
+          {#each ALIGN_EDGES as edge (edge)}
+            {@const action = ALIGN_ACTIONS[edge]}
+            <button type="button" data-action={action} disabled={units < 2} onclick={() => run(action)}>{t(`studio.action.${action}`)}</button>
           {/each}
-        </ul>
-      </fieldset>
-
-      <label class="field">
-        <span>{t("studio.name")}</span>
-        <input
-          type="text"
-          maxlength="80"
-          value={it.name ?? ""}
-          placeholder={shape.names.en}
-          oninput={(e) => studio.setName(it.id, e.currentTarget.value, t("studio.act.rename"))}
-        />
-      </label>
-
-      <fieldset class="pair">
-        <legend>{t("studio.position")}</legend>
-        <label class="field">
-          <span>{t("studio.x")}</span>
-          <input type="number" step="1" value={it.x} onchange={(e) => { const n = Number(e.currentTarget.value); if (Number.isFinite(n)) studio.moveBy([it.id], n - it.x, 0, t("studio.act.move")); }} />
-        </label>
-        <label class="field">
-          <span>{t("studio.y")}</span>
-          <input type="number" step="1" value={it.y} onchange={(e) => { const n = Number(e.currentTarget.value); if (Number.isFinite(n)) studio.moveBy([it.id], 0, n - it.y, t("studio.act.move")); }} />
-        </label>
+        </div>
+        <div class="tools" role="group" aria-label={t("studio.distribute")}>
+          {#each ["distributeH", "distributeV"] as const as action (action)}
+            <button type="button" data-action={action} disabled={units < 3} onclick={() => run(action)}>{t(`studio.action.${action}`)}</button>
+          {/each}
+        </div>
+        <div class="tools" role="group" aria-label={t("studio.order")}>
+          {#each ORDER_ACTIONS as action (action)}
+            <button type="button" data-action={action} onclick={() => run(action)}>{t(`studio.action.${action}`)}</button>
+          {/each}
+        </div>
+        <div class="tools">
+          <button type="button" data-action="group" disabled={units < 2} onclick={() => run("group")}>{t("studio.action.group")}</button>
+          <button type="button" data-action="ungroup" disabled={!sel.some((i) => i.group)} onclick={() => run("ungroup")}>{t("studio.action.ungroup")}</button>
+          <button type="button" data-action="toggleLock" aria-pressed={sel.every((i) => i.locked)} onclick={() => run("toggleLock")}>{t("studio.action.toggleLock")}</button>
+          <button type="button" data-action="toggleHide" aria-pressed={sel.every((i) => i.hidden)} onclick={() => run("toggleHide")}>{t("studio.action.toggleHide")}</button>
+        </div>
       </fieldset>
 
       <fieldset>
         <legend>{t("studio.options")}</legend>
         {#each OPTION_KEYS as key (key)}
           {@const c = CONTROLS[key]}
-          {@const value = optionValue(it, key)}
-          {@const changed = key in it.options}
+          {@const { value, mixed } = common((i) => optionValue(i, key))}
+          {@const changed = sel.some((i) => key in i.options)}
           {@const id = `studio-opt-${key}`}
-          <div class="row" class:changed data-option={key}>
+          <div class="row" class:changed class:mixed data-option={key}>
             {#if c.type === "boolean"}
               <label class="check" for={id}>
-                <input {id} type="checkbox" checked={Boolean(value)} onchange={(e) => setOption(it, key, e.currentTarget.checked)} />
+                <input {id} type="checkbox" checked={!mixed && Boolean(value)} use:indeterminate={mixed} onchange={(e) => setOption(key, e.currentTarget.checked)} />
                 <span>{optLabel(key)}</span>
               </label>
             {:else}
@@ -188,11 +266,14 @@
               <div class="control">
                 {#if c.type === "number"}
                   {#if c.slider}
-                    <input type="range" aria-label={optLabel(key)} min={c.slider.min} max={c.slider.max} step={c.step} value={Number(value)} oninput={(e) => numberInput(it, key, e.currentTarget.value)} />
+                    <input type="range" aria-label={optLabel(key)} min={c.slider.min} max={c.slider.max} step={c.step} value={Number(value)} oninput={(e) => numberInput(key, e.currentTarget.value)} />
                   {/if}
-                  <input {id} class="num" type="number" min={c.min} max={c.max} step={c.step} value={Number(value)} oninput={(e) => numberInput(it, key, e.currentTarget.value)} aria-describedby={errors[key] ? `${id}-err` : undefined} />
+                  <input {id} class="num" type="number" min={c.min} max={c.max} step={c.step} value={mixed ? "" : Number(value)} placeholder={mixed ? t("studio.mixed") : undefined} oninput={(e) => numberInput(key, e.currentTarget.value)} aria-describedby={errors[key] ? `${id}-err` : undefined} />
                 {:else if c.type === "enum"}
-                  <select {id} value={String(value)} onchange={(e) => setOption(it, key, e.currentTarget.value)}>
+                  <select {id} value={mixed ? "" : String(value)} onchange={(e) => setOption(key, e.currentTarget.value)}>
+                    {#if mixed}
+                      <option value="" disabled>{t("studio.mixed")}</option>
+                    {/if}
                     {#each c.values as v (v)}
                       <option value={v}>{valLabel(v)}</option>
                     {/each}
@@ -201,8 +282,8 @@
                   <input
                     type="color"
                     aria-label={`${optLabel(key)}: ${t("studio.useColor")}`}
-                    value={HEX6.test(String(value)) ? String(value) : "#000000"}
-                    oninput={(e) => setOption(it, key, e.currentTarget.value)}
+                    value={!mixed && HEX6.test(String(value)) ? String(value) : "#000000"}
+                    oninput={(e) => setOption(key, e.currentTarget.value)}
                   />
                   <input
                     {id}
@@ -211,9 +292,9 @@
                     dir="ltr"
                     spellcheck="false"
                     autocomplete="off"
-                    value={changed ? String(value) : ""}
-                    placeholder={String(DEFAULT_OPTIONS[key])}
-                    onchange={(e) => colorText(it, key, e.currentTarget.value)}
+                    value={changed && !mixed ? String(value) : ""}
+                    placeholder={mixed ? t("studio.mixed") : String(DEFAULT_OPTIONS[key])}
+                    onchange={(e) => colorText(key, e.currentTarget.value, mixed)}
                     aria-describedby={errors[key] ? `${id}-err` : undefined}
                     aria-invalid={errors[key] ? "true" : undefined}
                   />
@@ -226,7 +307,7 @@
               disabled={!changed}
               aria-label={t("studio.resetOption", { option: optLabel(key) })}
               title={t("studio.default", { value: display(DEFAULT_OPTIONS[key]) })}
-              onclick={() => reset(it, key)}>↺</button>
+              onclick={() => reset(key)}>↺</button>
             {#if errors[key]}
               <p class="error" id={`${id}-err`} role="alert">{errors[key]}</p>
             {/if}
@@ -234,27 +315,30 @@
         {/each}
       </fieldset>
 
-      {#if Object.keys(shape.parameters).length > 0}
+      {#if shape && Object.keys(shape.parameters).length > 0}
         <fieldset>
           <legend>{t("studio.params")}</legend>
           {#each Object.entries(shape.parameters) as [name, decl] (name)}
-            {@const value = paramValue(it, name, decl)}
-            {@const changed = it.options.params !== undefined && name in it.options.params}
+            {@const { value, mixed } = common((i) => paramValue(i, name, decl))}
+            {@const changed = sel.some((i) => i.options.params !== undefined && name in i.options.params)}
             {@const id = `studio-param-${name}`}
-            <div class="row" class:changed data-param={name}>
+            <div class="row" class:changed class:mixed data-param={name}>
               {#if decl.type === "boolean"}
                 <label class="check" for={id}>
-                  <input {id} type="checkbox" checked={Boolean(value)} onchange={(e) => setParam(it, name, e.currentTarget.checked)} />
+                  <input {id} type="checkbox" checked={!mixed && Boolean(value)} use:indeterminate={mixed} onchange={(e) => setParam(name, e.currentTarget.checked)} />
                   <span>{name}</span>
                 </label>
               {:else}
                 <label for={id}>{name}</label>
                 <div class="control">
                   {#if decl.type === "integer"}
-                    <input type="range" aria-label={name} min={decl.min} max={decl.max} step="1" value={Number(value)} oninput={(e) => setParam(it, name, Number(e.currentTarget.value))} />
-                    <input {id} class="num" type="number" min={decl.min} max={decl.max} step="1" value={Number(value)} oninput={(e) => { const n = Number(e.currentTarget.value); if (Number.isInteger(n)) setParam(it, name, n); }} />
+                    <input type="range" aria-label={name} min={decl.min} max={decl.max} step="1" value={Number(value)} oninput={(e) => setParam(name, Number(e.currentTarget.value))} />
+                    <input {id} class="num" type="number" min={decl.min} max={decl.max} step="1" value={mixed ? "" : Number(value)} placeholder={mixed ? t("studio.mixed") : undefined} oninput={(e) => { const raw = e.currentTarget.value; const n = Number(raw); if (raw.trim() !== "" && Number.isInteger(n)) setParam(name, n); }} />
                   {:else}
-                    <select {id} value={String(value)} onchange={(e) => setParam(it, name, e.currentTarget.value)}>
+                    <select {id} value={mixed ? "" : String(value)} onchange={(e) => setParam(name, e.currentTarget.value)}>
+                      {#if mixed}
+                        <option value="" disabled>{t("studio.mixed")}</option>
+                      {/if}
                       {#each decl.values as v (v)}
                         <option value={v}>{v}</option>
                       {/each}
@@ -262,7 +346,7 @@
                   {/if}
                 </div>
               {/if}
-              <button type="button" class="reset" disabled={!changed} aria-label={t("studio.resetOption", { option: name })} title={t("studio.default", { value: String(decl.default) })} onclick={() => studio.resetParam(it.id, name, t("studio.act.reset"))}>↺</button>
+              <button type="button" class="reset" disabled={!changed} aria-label={t("studio.resetOption", { option: name })} title={t("studio.default", { value: String(decl.default) })} onclick={() => studio.resetParam(ids, name, t("studio.act.reset"))}>↺</button>
               <p class="desc">{decl.description}</p>
               {#if errors[`param:${name}`]}
                 <p class="error" role="alert">{errors[`param:${name}`]}</p>
@@ -272,19 +356,20 @@
         </fieldset>
       {/if}
 
-      {#if shape.layers.length > 1}
+      {#if shape && shape.layers.length > 1}
         <fieldset>
           <legend>{t("studio.layers")}</legend>
           {#each shape.layers as layer (layer)}
-            {@const value = it.options.layerColors?.[layer]}
+            {@const { value, mixed } = common((i) => i.options.layerColors?.[layer])}
+            {@const changed = sel.some((i) => i.options.layerColors?.[layer] !== undefined)}
             {@const id = `studio-layer-${layer}`}
-            <div class="row" class:changed={value !== undefined} data-layer={layer}>
+            <div class="row" class:changed class:mixed data-layer={layer}>
               <label for={id}>{layer}</label>
               <div class="control">
-                <input type="color" aria-label={`${layer}: ${t("studio.useColor")}`} value={value && HEX6.test(value) ? value : "#000000"} oninput={(e) => setLayer(it, layer, e.currentTarget.value)} />
-                <input {id} class="text" type="text" dir="ltr" spellcheck="false" autocomplete="off" value={value ?? ""} placeholder={t("studio.layerDefault")} onchange={(e) => setLayer(it, layer, e.currentTarget.value)} />
+                <input type="color" aria-label={`${layer}: ${t("studio.useColor")}`} value={!mixed && value && HEX6.test(value) ? value : "#000000"} oninput={(e) => setLayer(layer, e.currentTarget.value)} />
+                <input {id} class="text" type="text" dir="ltr" spellcheck="false" autocomplete="off" value={mixed ? "" : (value ?? "")} placeholder={mixed ? t("studio.mixed") : t("studio.layerDefault")} onchange={(e) => { if (!(mixed && e.currentTarget.value.trim() === "")) setLayer(layer, e.currentTarget.value); }} />
               </div>
-              <button type="button" class="reset" disabled={value === undefined} aria-label={t("studio.resetOption", { option: layer })} onclick={() => setLayer(it, layer, "")}>↺</button>
+              <button type="button" class="reset" disabled={!changed} aria-label={t("studio.resetOption", { option: layer })} onclick={() => setLayer(layer, "")}>↺</button>
               {#if errors[`layer:${layer}`]}
                 <p class="error" role="alert">{errors[`layer:${layer}`]}</p>
               {/if}
@@ -313,6 +398,17 @@
     display: grid;
     gap: 0.75rem;
     align-content: start;
+  }
+  .count {
+    margin: 0;
+  }
+  .tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+  .tools + .tools {
+    margin-block-start: 0.375rem;
   }
   .actions {
     display: flex;
