@@ -10,7 +10,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "typecheck": "astro check --minimumSeverity warning",
+    "typecheck": "astro check --minimumSeverity warning && svelte-check --threshold warning",
     "test": "vitest run --coverage",
     "e2e": "playwright test",
     "lighthouse": "node e2e/lighthouse.ts"
@@ -18,9 +18,12 @@
   "dependencies": {
     "@0xdolan/deq-core": "workspace:*",
     "@astrojs/starlight": "0.42.10",
+    "@astrojs/svelte": "9.1.2",
     "@fontsource-variable/noto-sans": "5.3.0",
     "@fontsource-variable/vazirmatn": "5.3.0",
     "astro": "7.4.10",
+    "svelte": "5.57.3",
+    "valibot": "1.5.0",
     "workbox-window": "7.4.1"
   },
   "devDependencies": {
@@ -29,9 +32,11 @@
     "@astrojs/check": "0.9.12",
     "@axe-core/playwright": "4.14.0",
     "@playwright/test": "1.65.0",
+    "@sveltejs/vite-plugin-svelte": "7.3.1",
     "@types/node": "24.19.2",
     "chrome-launcher": "1.2.3",
     "lighthouse": "13.6.0",
+    "svelte-check": "4.7.8",
     "typescript": "6.0.3",
     "vitest": "5.0.5",
     "workbox-build": "7.4.1"

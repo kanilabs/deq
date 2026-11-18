@@ -7,7 +7,11 @@ export default defineConfig({
   retries: process.env["CI"] ? 1 : 0,
   reporter: process.env["CI"] ? [["list"], ["html", { open: "never" }]] : "list",
   use: { baseURL: "http://localhost:4321/deq/", trace: "retain-on-failure" },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  projects: [
+    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
+    // Studio is also checked on a phone (PRD §8.5 definition of done).
+    { name: "mobile", use: { ...devices["Pixel 7"] }, testMatch: /studio\.spec\.ts$/u },
+  ],
   webServer: {
     command: "pnpm exec astro preview --port 4321 --ignore-lock",
     url: "http://localhost:4321/deq/",

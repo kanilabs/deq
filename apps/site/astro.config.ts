@@ -1,4 +1,5 @@
 import starlight from "@astrojs/starlight";
+import svelte from "@astrojs/svelte";
 import { defineConfig } from "astro/config";
 
 import { csp } from "./integrations/csp.ts";
@@ -70,6 +71,7 @@ export default defineConfig({
       sidebar: [
         { ...label("nav.home"), link: "/" },
         { ...label("nav.icons"), link: "/icons/" },
+        { ...label("nav.studio"), link: "/studio/" },
         { ...label("nav.flag"), link: "/flag/" },
         { ...label("nav.fonts"), link: "/fonts/" },
         { ...label("nav.brand"), link: "/brand/" },
@@ -81,6 +83,7 @@ export default defineConfig({
       lastUpdated: false,
       pagination: false,
     }),
+    svelte(),
     fonts(),
     // After every page is written, before the service worker precaches them.
     csp(),

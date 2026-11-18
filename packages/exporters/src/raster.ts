@@ -80,7 +80,7 @@ async function codecOptions(file: string): Promise<{ wasmBinary?: Uint8Array }> 
 interface Pixels {
   readonly width: number;
   readonly height: number;
-  readonly data: Uint8ClampedArray;
+  readonly data: Uint8ClampedArray<ArrayBuffer>;
   readonly colorSpace: "srgb";
 }
 type Encoder = (data: Pixels, options?: Record<string, unknown>) => Promise<ArrayBuffer>;
@@ -126,7 +126,7 @@ function encoder(format: "jpg" | "webp" | "avif"): Promise<Encoder> {
 export interface Bitmap {
   readonly width: number;
   readonly height: number;
-  readonly data: Uint8ClampedArray;
+  readonly data: Uint8ClampedArray<ArrayBuffer>;
 }
 
 function checkWidth(width: number): void {
