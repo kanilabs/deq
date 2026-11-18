@@ -1,0 +1,55 @@
+---
+import { render } from "@0xdolan/deq-core";
+import { CardGrid, Code, LinkCard } from "@astrojs/starlight/components";
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+
+import IconGrid from "../../components/IconGrid.astro";
+import { formatNumber, localePaths, localizedPath } from "../../i18n/index.ts";
+import { SHAPES } from "../../lib/data.ts";
+import { pageContext } from "../../lib/page.ts";
+
+export const getStaticPaths = localePaths;
+
+const { locale, t } = pageContext(Astro.params.locale);
+const FEATURED = ["kurdish-sun", "roj-half-sun", "sterk-star", "tree-branch", "gazelle", "fish", "bird", "lozenge-nested", "dot-rosette", "chin-composition", "dancer", "wheat-arrow"];
+const featured = FEATURED.flatMap((id) => SHAPES.filter((s) => s.id === id));
+const hero = `<span class="deq-hero-mark">${render("kurdish-sun", { size: 256, title: "" })}</span>`;
+const quickstart = `npm install @0xdolan/deq-core
+
+import { render } from "@0xdolan/deq-core";
+const svg = render("roj-half-sun", { size: 48 });`;
+---
+
+<StarlightPage
+  frontmatter={{
+    title: t("home.title"),
+    description: t("site.description"),
+    template: "splash",
+    hero: {
+      title: t("home.hero.title"),
+      tagline: t("home.hero.tagline", { count: formatNumber(locale, SHAPES.length) }),
+      image: { html: hero },
+      actions: [
+        { text: t("home.cta.icons"), link: localizedPath(locale, "icons/"), icon: "right-arrow", variant: "primary" },
+        { text: t("home.cta.docs"), link: localizedPath(locale, "docs/"), variant: "minimal" },
+      ],
+    },
+  }}
+>
+  <h2>{t("home.quickstart.title")}</h2>
+  <p>{t("home.quickstart.body")}</p>
+  <Code code={quickstart} lang="ts" />
+
+  <h2>{t("home.featured.title")}</h2>
+  <IconGrid shapes={featured} locale={locale} />
+
+  <h2>{t("home.explore.title")}</h2>
+  <CardGrid>
+    <LinkCard title={t("nav.icons")} description={t("home.card.icons")} href={localizedPath(locale, "icons/")} />
+    <LinkCard title={t("nav.flag")} description={t("home.card.flag")} href={localizedPath(locale, "flag/")} />
+    <LinkCard title={t("nav.fonts")} description={t("home.card.fonts")} href={localizedPath(locale, "fonts/")} />
+    <LinkCard title={t("nav.brand")} description={t("home.card.brand")} href={localizedPath(locale, "brand/")} />
+    <LinkCard title={t("nav.docs")} description={t("home.card.docs")} href={localizedPath(locale, "docs/")} />
+    <LinkCard title={t("nav.about")} description={t("home.card.about")} href={localizedPath(locale, "about/")} />
+  </CardGrid>
+</StarlightPage>

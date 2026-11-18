@@ -13,6 +13,7 @@
   - **cargo-deny** covers RustSec advisories, so a separate cargo-audit run is not needed.
   - **Trivy** image scanning is deferred until the project publishes a Docker image; the `ci` image is local-only.
   - **minimatch override**: ESLint 10.14 depends on `minimatch@^10`, which is affected by GHSA-g3hv-75wg-m249 and only fixed in 11.x. `pnpm-workspace.yaml` overrides it to 11.0.3 (lint verified). Remove the override once ESLint depends on a patched release.
+  - **picomatch exception** (2026-11-17): GHSA-fc5q-39xc-vjpf (ReDoS) has no patched picomatch release. It is reached only through build tools (typescript-eslint; astro → unstorage → anymatch) and never shipped to the website, so `pnpm audit` ignores it (`auditConfig.ignoreGhsas` in `pnpm-workspace.yaml`) and dependency review allows it (`allow-ghsas` in `ci.yml`). Remove both once a fixed release exists.
 - **Docker**: base images pinned by digest, tool downloads verified by SHA-256, non-root user, all capabilities dropped, `no-new-privileges`.
 - **Commits**: commitlint rejects AI attribution trailers.
 

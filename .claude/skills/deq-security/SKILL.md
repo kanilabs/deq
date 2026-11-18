@@ -17,7 +17,8 @@ Apply to every change. Security is a requirement, not a phase.
 
 ## Web
 
-- Strict CSP via `<meta>` (GitHub Pages cannot set headers). `frame-src` only for `youtube-nocookie.com` and `kanilabs.github.io`.
+- Strict CSP via `<meta>` (GitHub Pages cannot set headers), configured in `apps/site/astro.config.ts` (ADR 0012). `frame-src` only for `youtube-nocookie.com` and `kanilabs.github.io`. Scripts are allowed by hash only: Astro hashes bundled scripts and `integrations/csp.ts` hashes inline ones; never add `'unsafe-inline'` or `'unsafe-eval'` for scripts. `'unsafe-inline'` is allowed in `style-src-attr` only (Starlight's CSS variables). Never put visitor input into inline scripts or markup. The e2e suite fails on any CSP violation.
+- No analytics or third-party requests on the site.
 - SRI for any CDN asset; self-host fonts. Iframes are `sandbox`ed with minimum permissions.
 
 ## Supply chain

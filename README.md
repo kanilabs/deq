@@ -11,7 +11,7 @@
 
 </div>
 
-> **Status: pre-alpha (Phase 0 of 14).** The repository foundation is in place; shapes, packages and the website arrive in later phases. See the [roadmap](#roadmap).
+> **Status: pre-alpha (Phase 7 of 14).** The shape spec, the renderer in TypeScript, Python and Rust, the exporters, icon packages, fonts, the CLIs and the website foundation are in place; Studio, the story and v1.0.0 come in later phases. See the [roadmap](#roadmap).
 
 ## Table of contents
 
@@ -79,13 +79,13 @@ Full guide: [docs/dev/setup.md](docs/dev/setup.md).
 | Phase | Scope                                  | Status |
 | ----- | -------------------------------------- | ------ |
 | 0     | Foundation and security baseline       | ✅     |
-| 1     | Research and image curation            | ⏳     |
-| 2     | Shape specification and geometry       | ⏳     |
-| 3     | Core library                           | ⏳     |
-| 4     | Exporters                              | ⏳     |
-| 5     | Icon packages and fonts                | ⏳     |
-| 6     | Python and Rust ports, CLIs            | ⏳     |
-| 7     | Website foundation (themes, i18n, PWA) | ⏳     |
+| 1     | Research and image curation            | ✅     |
+| 2     | Shape specification and geometry       | ✅     |
+| 3     | Core library                           | ✅     |
+| 4     | Exporters                              | ✅     |
+| 5     | Icon packages and fonts                | ✅     |
+| 6     | Python and Rust ports, CLIs            | ✅     |
+| 7     | Website foundation (themes, i18n, PWA) | ✅     |
 | 8     | Studio                                 | ⏳     |
 | 9     | Deq Leet and pattern generator         | ⏳     |
 | 10    | Story, sources and showcase            | ⏳     |

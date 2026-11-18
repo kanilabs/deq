@@ -19,3 +19,13 @@ overrides:
   # GHSA-g3hv-75wg-m249 (ReDoS-style DoS): ESLint 10.14 pins minimatch ^10, fix is only in 11.x.
   # Remove when ESLint depends on a patched minimatch.
   "minimatch@>=7.0.0 <11.0.1": "11.0.3"
+  # glob 11 (from workbox-build) finds no files with minimatch 11 (above); glob 14 is built for it.
+  # Remove when workbox-build depends on glob 14+.
+  "workbox-build>glob": "14.0.4"
+
+auditConfig:
+  ignoreGhsas:
+    # GHSA-fc5q-39xc-vjpf (picomatch ReDoS): no patched release. Reached only by build tools
+    # (typescript-eslint, astro > unstorage > anymatch), never shipped to the site (ADR 0004).
+    # Remove when a fixed picomatch is released; mirrored in ci.yml dependency review.
+    - GHSA-fc5q-39xc-vjpf

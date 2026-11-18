@@ -1,0 +1,104 @@
+---
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+
+import markDark from "../../assets/mark-dark.svg?raw";
+import markLight from "../../assets/mark-light.svg?raw";
+import { localePaths, localizedPath } from "../../i18n/index.ts";
+import { pageContext } from "../../lib/page.ts";
+
+export const getStaticPaths = localePaths;
+
+const { locale, t } = pageContext(Astro.params.locale);
+const big = (svg: string) => svg.replace('width="24" height="24"', 'width="160" height="160"');
+const tokens = [
+  { name: "--deq-flag-red", value: "#ED2024", cls: "red" },
+  { name: "--deq-flag-white", value: "#FFFFFF", cls: "white" },
+  { name: "--deq-flag-green", value: "#278E43", cls: "green" },
+  { name: "--deq-flag-yellow", value: "#FEBD11", cls: "yellow" },
+  { name: "--sl-color-accent (light)", value: "#1D6B33", cls: "accent-light" },
+  { name: "--sl-color-accent-high (dark)", value: "#8FDBA5", cls: "accent-dark" },
+];
+---
+
+<StarlightPage frontmatter={{ title: t("brand.title"), description: t("brand.description") }}>
+  <h2>{t("brand.logo")}</h2>
+  <div class="marks not-content">
+    <div class="mark on-light" set:html={big(markLight)} />
+    <div class="mark on-dark" set:html={big(markDark)} />
+  </div>
+  <p>{t("brand.logo.body")}</p>
+
+  <h2>{t("brand.colors")}</h2>
+  <ul class="tokens not-content" role="list">
+    {
+      tokens.map((c) => (
+        <li>
+          <span class={`chip chip-${c.cls}`} aria-hidden="true" />
+          <code dir="ltr">{c.name}</code>
+          <code dir="ltr">{c.value}</code>
+        </li>
+      ))
+    }
+  </ul>
+
+  <h2>{t("brand.rules")}</h2>
+  <ul>
+    <li>{t("brand.rule.contrast")}</li>
+    <li><a href={localizedPath(locale, "flag/")}>{t("brand.rule.flag")}</a></li>
+    <li>{t("brand.rule.yellow")}</li>
+  </ul>
+</StarlightPage>
+
+<style>
+  .marks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--deq-space-4);
+  }
+  .mark {
+    display: flex;
+    padding: var(--deq-space-6);
+    border: 1px solid var(--sl-color-hairline-light);
+    border-radius: var(--deq-radius);
+  }
+  .on-light {
+    background: #ffffff;
+  }
+  .on-dark {
+    background: #17181c;
+  }
+  .tokens {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+    gap: var(--deq-space-3);
+    padding: 0;
+    list-style: none;
+  }
+  .tokens li {
+    display: grid;
+    gap: var(--deq-space-1);
+  }
+  .chip {
+    height: 2.5rem;
+    border: 1px solid var(--sl-color-gray-4);
+    border-radius: calc(var(--deq-radius) / 2);
+  }
+  .chip-red {
+    background: #ed2024;
+  }
+  .chip-white {
+    background: #ffffff;
+  }
+  .chip-green {
+    background: #278e43;
+  }
+  .chip-yellow {
+    background: #febd11;
+  }
+  .chip-accent-light {
+    background: #1d6b33;
+  }
+  .chip-accent-dark {
+    background: #8fdba5;
+  }
+</style>

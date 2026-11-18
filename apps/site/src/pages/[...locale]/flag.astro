@@ -1,0 +1,135 @@
+---
+import { listFlagVariants, renderFlag } from "@0xdolan/deq-core";
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+
+import flag from "../../../../../spec/flag.json";
+import { formatNumber, localePaths, type MessageKey } from "../../i18n/index.ts";
+import { pageContext } from "../../lib/page.ts";
+
+export const getStaticPaths = localePaths;
+
+const { locale, t } = pageContext(Astro.params.locale);
+const title = t("flag.title");
+const main = renderFlag({ width: 900, title });
+const variants = listFlagVariants().map((id) => ({
+  id,
+  label: t(`flag.variant.${id}` as MessageKey),
+  svg: renderFlag({ variant: id, width: 360, title: "" }),
+}));
+const colorName = (id: string) => t(`flag.color.${id}` as MessageKey);
+---
+
+<StarlightPage frontmatter={{ title, description: t("flag.description") }}>
+  <div class="flag-main not-content" set:html={main} />
+  <p>{t("flag.intro")}</p>
+
+  <h2>{t("flag.colors")}</h2>
+  <ul class="swatches not-content" role="list">
+    {
+      flag.colors.map((c) => (
+        <li>
+          <span class={`chip chip-${c.id}`} aria-hidden="true" />
+          <span class="label">{colorName(c.id)}</span>
+          <code dir="ltr">{c.hex}</code>
+          <code dir="ltr">rgb({c.rgb.join(", ")})</code>
+          <code dir="ltr">cmyk({c.cmyk.join(", ")})</code>
+        </li>
+      ))
+    }
+  </ul>
+  <p>{t("flag.contrast")}</p>
+  <table>
+    <tbody>
+      {
+        flag.contrast.map((p) => (
+          <tr>
+            <th scope="row">
+              {colorName(p.pair[0] ?? "")} / {colorName(p.pair[1] ?? "")}
+            </th>
+            <td dir="ltr">{formatNumber(locale, p.ratio)}:1</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+
+  <h2>{t("flag.variants")}</h2>
+  <ul class="variants not-content" role="list">
+    {
+      variants.map((v) => (
+        <li>
+          <figure>
+            <div class={`variant variant-${v.id}`} set:html={v.svg} />
+            <figcaption>{v.label}</figcaption>
+          </figure>
+        </li>
+      ))
+    }
+  </ul>
+  <p><strong>{t("flag.rules")}</strong></p>
+</StarlightPage>
+
+<style>
+  .flag-main :global(svg),
+  .variant :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--sl-color-hairline-light);
+  }
+  .flag-main {
+    max-width: 36rem;
+  }
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+    gap: var(--deq-space-3);
+    padding: 0;
+    list-style: none;
+  }
+  .swatches li {
+    display: grid;
+    gap: var(--deq-space-1);
+    padding: var(--deq-space-3);
+    border: 1px solid var(--sl-color-hairline);
+    border-radius: var(--deq-radius);
+    background: var(--deq-surface);
+  }
+  .chip {
+    height: 3rem;
+    border: 1px solid var(--sl-color-gray-4);
+    border-radius: calc(var(--deq-radius) / 2);
+  }
+  .chip-red {
+    background: var(--deq-flag-red);
+  }
+  .chip-white {
+    background: var(--deq-flag-white);
+  }
+  .chip-green {
+    background: var(--deq-flag-green);
+  }
+  .chip-yellow {
+    background: var(--deq-flag-yellow);
+  }
+  .label {
+    font-weight: 600;
+  }
+  .variants {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+    gap: var(--deq-space-4);
+    padding: 0;
+    list-style: none;
+  }
+  .variants figure {
+    margin: 0;
+  }
+  .variant-mono-white {
+    background: #000;
+  }
+  figcaption {
+    margin-top: var(--deq-space-2);
+    font-size: var(--sl-text-sm);
+  }
+</style>

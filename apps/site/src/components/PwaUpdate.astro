@@ -1,0 +1,79 @@
+---
+/**
+ * Registers the service worker (production builds only) and asks before a new version
+ * takes over. The text is rendered here so the script holds no strings.
+ */
+import { CATALOGS, isLocale } from "../i18n/index.ts";
+
+const locale = isLocale(Astro.locals.starlightRoute.locale) ? Astro.locals.starlightRoute.locale : "en";
+const t = CATALOGS[locale];
+---
+
+<div class="pwa-update" role="status" data-pwa-update hidden>
+  <p>{t["pwa.update"]}</p>
+  <button type="button" data-pwa-reload>{t["pwa.reload"]}</button>
+  <button type="button" data-pwa-dismiss>{t["pwa.dismiss"]}</button>
+</div>
+
+<script>
+  import { Workbox } from "workbox-window";
+
+  import { BASE as base } from "../lib/base.ts";
+  const box = document.querySelector<HTMLElement>("[data-pwa-update]");
+  if (import.meta.env.PROD && "serviceWorker" in navigator && box) {
+    const wb = new Workbox(`${base}sw.js`, { scope: base });
+    wb.addEventListener("waiting", () => {
+      box.hidden = false;
+    });
+    box.querySelector("[data-pwa-reload]")?.addEventListener("click", () => {
+      wb.addEventListener("controlling", () => {
+        window.location.reload();
+      });
+      wb.messageSkipWaiting();
+    });
+    box.querySelector("[data-pwa-dismiss]")?.addEventListener("click", () => {
+      box.hidden = true;
+    });
+    void wb.register();
+  }
+</script>
+
+<style>
+  .pwa-update {
+    position: fixed;
+    inset-block-end: var(--deq-space-4);
+    inset-inline: var(--deq-space-4);
+    z-index: 100;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--deq-space-3);
+    max-width: 32rem;
+    margin-inline: auto;
+    padding: var(--deq-space-3) var(--deq-space-4);
+    border: 1px solid var(--sl-color-hairline-light);
+    border-radius: var(--deq-radius);
+    background: var(--sl-color-bg-nav);
+    box-shadow: var(--sl-shadow-lg);
+  }
+  .pwa-update[hidden] {
+    display: none;
+  }
+  .pwa-update p {
+    flex: 1 1 12rem;
+    margin: 0;
+  }
+  .pwa-update button {
+    padding: var(--deq-space-1) var(--deq-space-3);
+    border: 1px solid var(--sl-color-accent);
+    border-radius: var(--deq-radius);
+    background: transparent;
+    color: var(--sl-color-text-accent);
+    font: inherit;
+    cursor: pointer;
+  }
+  .pwa-update [data-pwa-reload] {
+    background: var(--sl-color-bg-accent);
+    color: var(--sl-color-text-invert);
+  }
+</style>

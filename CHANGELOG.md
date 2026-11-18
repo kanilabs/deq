@@ -59,6 +59,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   - the `deq` CLI in Node (`@0xdolan/deq-cli`, every format), Python (script `deq`) and Rust (crate `deq-cli`), with `list`, `info`, `render`, `export`, `flag`, `validate` and `completion`; formats outside the core subset exit with code 4 in Python and Rust and point to the Node CLI;
   - `spec/cli.json`, the shared CLI interface, generating help texts and bash, zsh, fish and PowerShell completions for all three CLIs;
   - 84 shared CLI cases (`spec/fixtures/cli-cases.json`) recorded from the Node CLI in `spec/fixtures/cli/` and run by the Python and Rust tests on Linux, macOS and Windows.
+- Phase 7 website foundation in `apps/site` (ADR 0012):
+  - Astro 7 + Starlight with light, dark and system themes, flag-green accents checked for contrast, and self-hosted Noto Sans and Vazirmatn;
+  - English, Sorani (`ckb`, right-to-left) and Kurmanji (`kmr`) with typed message catalogs that fail the type check on a missing key; the Kurdish text is AI-drafted and every ckb and kmr page says it needs native review;
+  - Home, Icons (filterable gallery) and a page per icon with preview, sizes, names, parameters, code point, usage and SVG download; Flag, Fonts (specimens and a weight slider), Brand, About, Docs (getting started, packages, CLI) and a 404 page;
+  - SEO: Open Graph and Twitter images per page and per icon rendered at build time, JSON-LD, sitemap with hreflang, `robots.txt`, `llms.txt` and `llms-full.txt`;
+  - a strict `<meta>` CSP with hashes for every script, including Starlight's inline ones;
+  - an installable PWA: manifest with app icons from the chin mark, a Workbox service worker that precaches every page for offline use, and an update prompt;
+  - Vitest unit tests, a Playwright suite (axe, CSP, RTL, JavaScript budget, theme, search, offline) and a Lighthouse gate (every category ≥ 95), run by the new `site` CI job and `just site`;
+  - the `Pages` workflow: `develop` deploys a preview until `PAGES_PRODUCTION` is set, releases deploy production.
 
 ### Changed
 
@@ -72,3 +81,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Removed `hand-composition`, `foot-composition` and `vertical-stack`: each mixed several designs, which are now separate shapes.
 - uv now refuses releases younger than 7 days (`exclude-newer`). The relock moved pip, platformdirs, py-serializable, Ruff and zizmor back to their previous releases.
 - The repository ESLint run gets a 6 GB heap, and `.svelte-kit/` is ignored, for the extra TypeScript projects.
+- ESLint and Prettier ignore Astro's generated `.astro/` folder and Playwright output; `pnpm lint` runs `astro sync` first so the site's types exist on a clean checkout.
+- pnpm override `workbox-build>glob` to 14.0.4: glob 11 finds no files with the `minimatch` 11.0.3 override. Remove it when `workbox-build` depends on glob 14+.
+- `pnpm audit` and dependency review allow GHSA-fc5q-39xc-vjpf (picomatch ReDoS, no patched release, build tools only); remove when a fix ships (ADR 0004).
