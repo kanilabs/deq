@@ -69,6 +69,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   - Vitest unit tests, a Playwright suite (axe, CSP, RTL, JavaScript budget, theme, search, offline) and a Lighthouse gate (every category ≥ 95), run by the new `site` CI job and `just site`;
   - the `Pages` workflow: `develop` deploys a preview until `PAGES_PRODUCTION` is set, releases deploy production.
 - The Deq logo: the Dot rosette in the Kanî Labs badge, with mark, dark, mono, small-size and favicon SVGs and a social preview card, all generated from `spec/shapes/dot-rosette.json` by `uv run deq-spec brand` and checked fresh by `deq-spec lint`; `just brand` renders PNGs for GitHub and social media (ADR 0013).
+- Phase 8a Studio at `/studio/` in every locale (ADR 0014), built with Svelte 5:
+  - an infinite canvas with pan, pinch and wheel zoom, fit, rulers, an 8 px snap grid with guides to other shapes, and overlays for the 24-unit design grid, keylines and a pixel preview;
+  - a library searchable by English, Sorani and Kurmanji names, aliases and tags, filtered by category, adding by click, Enter or drag;
+  - an inspector for every render option, shape parameter and layer colour, with previews at 16 to 96 px, per-option reset, reset shape and reset all;
+  - undo and redo with merged edits, autosave to local storage, and 25 documented, remappable keyboard shortcuts;
+  - a tab bar on narrow screens, unit tests and Playwright tests on desktop and a Pixel 7 viewport.
 
 ### Changed
 
