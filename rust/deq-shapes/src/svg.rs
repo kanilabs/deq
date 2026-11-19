@@ -255,14 +255,36 @@ pub struct Prepared {
 /// The SVG document for prepared geometry; with default hooks exactly what [`render`] gives.
 #[must_use]
 pub fn svg_document(p: &Prepared, hooks: &SvgHooks<'_>) -> String {
-    let o = &p.options;
+    let mut out = svg_root(
+        &p.options,
+        &p.default_title,
+        &hooks.root_attrs,
+        CANVAS,
+        CANVAS,
+    );
+    out.push_str(&body(&p.items, &p.options, hooks));
+    out.push_str("</svg>");
+    out
+}
+
+/// The root `<svg>` with title and background for a `width` x `height` canvas (grid units).
+#[must_use]
+pub fn svg_root(
+    o: &ResolvedOptions,
+    default_title: &str,
+    root_attrs: &str,
+    width: f64,
+    height: f64,
+) -> String {
     let bx = CANVAS + 2.0 * o.padding;
+    let w = width + 2.0 * o.padding;
+    let h = height + 2.0 * o.padding;
     let stroke = if o.absolute_stroke_width {
         (o.stroke_width * bx) / o.size
     } else {
         o.stroke_width
     };
-    let title = o.title.as_deref().unwrap_or(&p.default_title);
+    let title = o.title.as_deref().unwrap_or(default_title);
     let label = o.aria_label.as_deref().unwrap_or(title);
     let a11y = if title.is_empty() && label.is_empty() {
         " aria-hidden=\"true\"".to_owned()
@@ -280,12 +302,22 @@ pub fn svg_document(p: &Prepared, hooks: &SvgHooks<'_>) -> String {
         format!(" stroke-opacity=\"{}\"", num(o.stroke_opacity))
     };
     let pad = num(-o.padding);
-    let size = num(o.size);
-    let bs = num(bx);
+    let (ws, hs) = (num(w), num(h));
+    let pw = if width == CANVAS {
+        o.size
+    } else {
+        (o.size * w) / bx
+    };
+    let ph = if height == CANVAS {
+        o.size
+    } else {
+        (o.size * h) / bx
+    };
     let mut out = format!(
-        "<svg xmlns=\"http://www.w3.org/2000/svg\"{} width=\"{size}\" height=\"{size}\" viewBox=\"{pad} {pad} {bs} {bs}\" \
+        "<svg xmlns=\"http://www.w3.org/2000/svg\"{root_attrs} width=\"{}\" height=\"{}\" viewBox=\"{pad} {pad} {ws} {hs}\" \
          fill=\"none\" stroke=\"currentColor\" stroke-width=\"{}\" stroke-linecap=\"{}\" stroke-linejoin=\"{}\"{color}{opacity}{a11y}>",
-        hooks.root_attrs,
+        num(pw),
+        num(ph),
         num(stroke),
         o.linecap,
         o.linejoin,
@@ -295,12 +327,10 @@ pub fn svg_document(p: &Prepared, hooks: &SvgHooks<'_>) -> String {
     }
     if o.background != "none" {
         out.push_str(&format!(
-            "<rect x=\"{pad}\" y=\"{pad}\" width=\"{bs}\" height=\"{bs}\" fill=\"{}\" stroke=\"none\"/>",
+            "<rect x=\"{pad}\" y=\"{pad}\" width=\"{ws}\" height=\"{hs}\" fill=\"{}\" stroke=\"none\"/>",
             escape_xml(&o.background)
         ));
     }
-    out.push_str(&body(&p.items, o, hooks));
-    out.push_str("</svg>");
     out
 }
 

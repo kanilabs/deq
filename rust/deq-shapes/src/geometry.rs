@@ -81,7 +81,7 @@ pub fn cos_sin(deg: f64) -> Vec2 {
         (0.0, -1.0)
     } else {
         let t = (deg * std::f64::consts::PI) / 180.0;
-        (t.cos(), t.sin())
+        (crate::trig::cos(t), crate::trig::sin(t))
     }
 }
 
