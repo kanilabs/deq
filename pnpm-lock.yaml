@@ -300,7 +300,14 @@ importers:
         specifier: 5.57.3
         version: 5.57.3(@typescript-eslint/types@8.72.1)
 
-  packages/generator: {}
+  packages/generator:
+    dependencies:
+      '@0xdolan/deq-core':
+        specifier: workspace:*
+        version: link:../core
+      valibot:
+        specifier: 1.5.0
+        version: 1.5.0(typescript@6.0.3)
 
   packages/icons:
     dependencies:
