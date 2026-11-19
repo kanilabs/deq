@@ -15,6 +15,8 @@ description: Export formats and the exporter contract for Deq shapes (SVG, layer
 - Output is deterministic (no dates, random ids or environment data) and contains no scripts, `href`s or external references. Strings in code are escaped for their context (XML, JS, PDF UTF-16BE, ASCII-only EPS comments).
 - File names are unique without case; a format that writes one file for many items (sprite, CSS, favicon) handles that in `exportShapes`.
 - Limits: 512 items, raster width 8192 px, scales 1 to 8.
+- Items are a catalog id, a `ShapeItem`, a `CompositionItem` or a `DataItem` (shape spec as data, validated by `shape-data.ts` before core renders it; `use` only resolves catalog ids). The Studio exports custom shapes as `DataItem`s, one file per canvas item, ZIPped when there are several (ADR 0014, 8d).
+- In browsers, raster formats need `initRaster({ resvg })` first, and the page needs `'wasm-unsafe-eval'`.
 - Keep layers: layered SVG (Inkscape attributes), PDF/AI (one OCG per layer, `background` first), PSD (one pixel layer per used layer), Figma (named groups), spec JSON.
 
 ## Modules

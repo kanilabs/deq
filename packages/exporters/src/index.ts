@@ -337,7 +337,14 @@ export type { EpsOptions } from "./eps.js";
 export { ICO_SIZES, packIco, toFaviconPack, toIco } from "./favicon.js";
 export type { FaviconOptions } from "./favicon.js";
 export { MAX_ITEMS, resolveItem, resolveItems } from "./input.js";
-export type { CompositionItem, ExportFile, ExportItem, Resolved, ShapeItem } from "./input.js";
+export type {
+  CompositionItem,
+  DataItem,
+  ExportFile,
+  ExportItem,
+  Resolved,
+  ShapeItem,
+} from "./input.js";
 export { writePdf } from "./pdf.js";
 export type { ColorSpace, PdfOptions } from "./pdf.js";
 export { writePsd } from "./psd.js";

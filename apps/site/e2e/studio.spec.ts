@@ -6,6 +6,8 @@ import { expect, test, type Page } from "@playwright/test";
  * Phase 8b: multi-select, batch editing, align and distribute, groups, layer order, lock
  * and hide, and the layers panel. Phase 8c: the shape editor (parts, booleans, mirror,
  * arrays, the path editor) and "My shapes" (save, place, export, import, edit, delete).
+ * Phase 8d: export in every format (one file or a ZIP), saving and opening design files,
+ * SVG import, share links and their error notices.
  */
 const LOCALES = [
   { prefix: "", lang: "en", dir: "ltr" },
@@ -264,7 +266,7 @@ test("shortcuts are listed, remappable and persist", async ({ page }) => {
   await page.locator('.toolbar [data-action="help"]').click();
   const dialog = page.locator("dialog.shortcuts");
   await expect(dialog).toBeVisible();
-  await expect(dialog.locator("tbody tr")).toHaveCount(41);
+  await expect(dialog.locator("tbody tr")).toHaveCount(45);
 
   await dialog.locator('tr[data-action="toggleGrid"] button').click();
   await expect(dialog.locator(".status")).not.toBeEmpty();
@@ -701,4 +703,222 @@ test("the shape editor drags parts and points and edits properties", async ({ pa
   await editor(page).getByRole("button", { name: "Cancel" }).click();
   await expect(editor(page)).toBeHidden();
   await expect(mine(page)).toHaveCount(0);
+});
+
+// Phase 8d: files, share links and export.
+const exporter = (page: Page) => page.locator("dialog.export");
+const notice = (page: Page) => page.locator(".notices .notice");
+const fileInput = (page: Page) => page.locator(".file-input");
+const file = (page: Page, action: string) => page.locator(`.toolbar [data-action="${action}"]`);
+
+async function readDownload(page: Page, click: () => Promise<void>) {
+  const pending = page.waitForEvent("download");
+  await click();
+  const download = await pending;
+  const { readFile } = await import("node:fs/promises");
+  return { name: download.suggestedFilename(), data: await readFile(await download.path()) };
+}
+
+test("every export format downloads one file or a ZIP", async ({ page }) => {
+  test.setTimeout(240_000);
+  const problems = await watchCsp(page);
+  await open(page);
+  await addSun(page);
+  await file(page, "export").click();
+  await expect(exporter(page)).toBeVisible();
+  const axe = await new AxeBuilder({ page })
+    .include("dialog.export")
+    .withTags(["wcag2a", "wcag2aa"])
+    .analyze();
+  expect(axe.violations.filter((v) => v.impact === "serious" || v.impact === "critical")).toEqual(
+    [],
+  );
+
+  const formats = await exporter(page)
+    .locator("select option")
+    .evaluateAll((els) => els.map((el) => (el as HTMLOptionElement).value));
+  expect(formats).toHaveLength(23);
+  const download = exporter(page).locator('[data-action="download"]');
+  for (const [i, format] of formats.entries()) {
+    // Mobile Chromium stops after 20 downloads from one page; a reload resets that (the
+    // design persists).
+    if (i > 0 && i % 10 === 0) {
+      await page.reload();
+      await expect(page.locator(".studio.ready")).toBeVisible();
+      await file(page, "export").click();
+      await expect(exporter(page)).toBeVisible();
+    }
+    await exporter(page).locator("select").selectOption(format);
+    const { name, data } = await readDownload(page, () => download.click());
+    expect(name, format).toMatch(/^(?:kurdish-?sun|deq-)[\w.-]+$/iu);
+    expect(data.length, format).toBeGreaterThan(0);
+    if (name.endsWith(".zip")) expect(data.subarray(0, 2).toString(), format).toBe("PK");
+  }
+  const svg = await (async () => {
+    await exporter(page).locator("select").selectOption("svg");
+    return readDownload(page, () => download.click());
+  })();
+  expect(svg.name).toBe("kurdish-sun.svg");
+  expect(svg.data.toString()).toContain("<svg");
+
+  // Two scales of a PNG are two files, so one ZIP.
+  await exporter(page).locator("select").selectOption("png");
+  await exporter(page).locator('input[name="scale"][value="2"]').check();
+  const png = await readDownload(page, () => download.click());
+  expect(png.name).toBe("deq-export.zip");
+  await expect(exporter(page).getByRole("status")).toContainText("deq-export.zip");
+  await exporter(page).getByRole("button", { name: "Cancel" }).click();
+  await expect(exporter(page)).toBeHidden();
+  expect(problems).toEqual([]);
+});
+
+test("export picks the selection or all visible shapes", async ({ page }) => {
+  await open(page);
+  await addSuns(page, 2);
+  await show(page, "canvas");
+  await items(page).first().focus();
+  await page.keyboard.press("ControlOrMeta+e");
+  await expect(exporter(page)).toBeVisible();
+  const scope = exporter(page).locator('input[name="scope"]');
+  await expect(scope.first()).toBeChecked();
+  const download = exporter(page).locator('[data-action="download"]');
+  expect((await readDownload(page, () => download.click())).name).toBe("kurdish-sun.svg");
+  await scope.last().check();
+  const all = await readDownload(page, () => download.click());
+  expect(all.name).toBe("deq-export.zip");
+  expect(all.data.includes(Buffer.from("kurdish-sun-2.svg"))).toBe(true);
+  await page.keyboard.press("Escape");
+  await expect(exporter(page)).toBeHidden();
+});
+
+test("a design is saved to a file and opened again", async ({ page }) => {
+  await open(page);
+  await addSuns(page, 2);
+  const saved = await readDownload(page, () => file(page, "save").click());
+  expect(saved.name).toBe("deq-design.json");
+  const doc = JSON.parse(saved.data.toString()) as { items: unknown[] };
+  expect(doc.items).toHaveLength(2);
+
+  await selectAll(page);
+  await page.keyboard.press("Delete");
+  await expect(items(page)).toHaveCount(0);
+  await fileInput(page).setInputFiles({
+    name: "mine.json",
+    mimeType: "application/json",
+    buffer: saved.data,
+  });
+  await expect(items(page)).toHaveCount(2);
+  await expect(notice(page)).toContainText("Opened mine.json");
+
+  // Undo goes back to the design before the file was opened.
+  await file(page, "open").focus();
+  await page.keyboard.press("ControlOrMeta+z");
+  await expect(items(page)).toHaveCount(0);
+
+  await fileInput(page).setInputFiles({
+    name: "bad.json",
+    mimeType: "application/json",
+    buffer: Buffer.from("{"),
+  });
+  await expect(notice(page)).toHaveAttribute("role", "alert");
+  await expect(notice(page)).toContainText("cannot read this file");
+  await fileInput(page).setInputFiles({
+    name: "huge.json",
+    mimeType: "application/json",
+    buffer: Buffer.alloc(1_000_001, 32),
+  });
+  await expect(notice(page)).toContainText("too large");
+});
+
+const SVG = (body: string) =>
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">${body}</svg>`;
+
+test("an SVG file becomes a custom shape; unsafe and empty files are handled", async ({ page }) => {
+  const problems = await watchCsp(page);
+  await open(page);
+  await fileInput(page).setInputFiles({
+    name: "leaf-mark.svg",
+    mimeType: "image/svg+xml",
+    buffer: Buffer.from(
+      SVG(
+        '<script>window.pwned = 1</script><defs><linearGradient id="g"/></defs>' +
+          '<rect x="10" y="10" width="80" height="40" fill="url(#g)" onclick="window.pwned = 2"/>' +
+          '<circle cx="50" cy="70" r="20" fill="none" stroke="#000"/>',
+      ),
+    ),
+  });
+  await expect(notice(page)).toContainText("Added leaf mark to My shapes");
+  await expect(notice(page)).toContainText("left out");
+  await show(page, "library");
+  await expect(mine(page)).toHaveCount(1);
+  expect(await page.evaluate(() => (window as { pwned?: number }).pwned)).toBeUndefined();
+  await mine(page).first().locator(".tile").click();
+  await show(page, "canvas");
+  await expect(items(page)).toHaveCount(1);
+
+  await fileInput(page).setInputFiles({
+    name: "blank.svg",
+    mimeType: "image/svg+xml",
+    buffer: Buffer.from(SVG('<path d="M0 0 L9 9" fill="none"/>')),
+  });
+  await expect(notice(page)).toContainText("draws nothing");
+  await fileInput(page).setInputFiles({
+    name: "xxe.svg",
+    mimeType: "image/svg+xml",
+    buffer: Buffer.from(`<!DOCTYPE s [<!ENTITY x SYSTEM "file:///etc/passwd">]>${SVG("&x;")}`),
+  });
+  await expect(notice(page)).toContainText("cannot read this file");
+  // DOMParser documents inherit the page's CSP, so Chrome reports the file's inline handler
+  // while parsing; the parsed document is inert and the handler never runs (see `pwned`).
+  expect(problems.filter((p) => !/script-src-attr|inline event handler/u.test(p))).toEqual([]);
+  expect(await page.evaluate(() => (window as { pwned?: number }).pwned)).toBeUndefined();
+});
+
+test("share links copy the design and open it elsewhere", async ({ page, context }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "clipboard", {
+      value: {
+        writeText: (text: string) => (
+          ((window as { copied?: string }).copied = text),
+          Promise.resolve()
+        ),
+      },
+    });
+  });
+  await open(page);
+  await addSuns(page, 2);
+  await file(page, "share").click();
+  await expect(notice(page)).toContainText("Share link copied");
+  const link = await page.evaluate(() => (window as { copied?: string }).copied ?? "");
+  expect(link).toMatch(/\/studio\/#d=1\.[\w-]+$/u);
+
+  const other = await context.newPage();
+  await other.goto(link);
+  await expect(other.locator(".studio.ready")).toBeVisible();
+  await expect(other.locator("[data-item]")).toHaveCount(2);
+  await expect(other.locator(".notices .notice")).toContainText("Opened a shared design");
+  await expect.poll(() => new URL(other.url()).hash).toBe("");
+
+  await other.close();
+
+  const broken = await context.newPage();
+  await broken.goto(`${link.split("#")[0] ?? ""}#d=1.broken`);
+  await expect(broken.locator(".notices .notice")).toContainText("damaged");
+  await expect(broken.locator("[data-item]")).toHaveCount(0);
+  await broken.close();
+});
+
+test("a share link that cannot be copied is shown in a field", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: () => Promise.reject(new Error("denied")) },
+    });
+  });
+  await open(page);
+  await addSun(page);
+  await file(page, "share").click();
+  await expect(notice(page)).toContainText("could not be copied");
+  await expect(notice(page).locator("input")).toHaveValue(/#d=1\./u);
+  await notice(page).getByRole("button").click();
+  await expect(notice(page)).toHaveCount(0);
 });

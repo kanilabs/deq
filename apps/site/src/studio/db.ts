@@ -1,6 +1,6 @@
 /**
  * Browser glue for "My shapes" (Phase 8c), exercised by the e2e suite: IndexedDB storage
- * and file downloads. In storage,
+ * and file downloads (also used by save and export, Phase 8d). In storage,
  * every record read back goes through parseCustomDef, and every failure resolves to
  * `undefined` so the Studio keeps the library in memory for the session instead.
  */
@@ -61,7 +61,12 @@ export async function openShapeStore(): Promise<ShapeStore | undefined> {
 
 /** Offer `text` as a file download (a Blob URL, so nothing leaves the browser). */
 export function downloadText(name: string, text: string, type = "application/json"): void {
-  const url = URL.createObjectURL(new Blob([text], { type }));
+  downloadFile(name, text, type);
+}
+
+/** Offer text or bytes as a file download. */
+export function downloadFile(name: string, data: string | Uint8Array, type: string): void {
+  const url = URL.createObjectURL(new Blob([data as BlobPart], { type }));
   const a = document.createElement("a");
   a.href = url;
   a.download = name;
@@ -69,7 +74,9 @@ export function downloadText(name: string, text: string, type = "application/jso
   document.body.append(a);
   a.click();
   a.remove();
+  // Browsers start a blob download asynchronously; revoking at once can drop it on a slow
+  // device, so the URL lives for a minute.
   setTimeout(() => {
     URL.revokeObjectURL(url);
-  }, 0);
+  }, 60_000);
 }

@@ -2,12 +2,16 @@
   import { onMount } from "svelte";
 
   import type { CustomDef } from "../custom.ts";
-  import { openShapeStore } from "../db.ts";
+  import { downloadText, openShapeStore } from "../db.ts";
+  import { DESIGN_FILE, fileKind, ioErrorKey, openLimit } from "../files.ts";
+  import { decodeShare, encodeShare, shareToken, shareUrl } from "../share.ts";
+  import { dropsContent, importSvg } from "../svgimport.ts";
   import { shapeOf } from "../shapes.ts";
   import { translator, type StudioMessages } from "../i18n.ts";
   import { actionFor, loadBindings, saveBindings, type Action, type Bindings } from "../shortcuts.ts";
   import { Studio } from "../store.svelte.ts";
   import Canvas from "./Canvas.svelte";
+  import ExportDialog from "./ExportDialog.svelte";
   import Inspector from "./Inspector.svelte";
   import Layers from "./Layers.svelte";
   import Library from "./Library.svelte";
@@ -29,6 +33,10 @@
   let canvas: Canvas | undefined = $state();
   let library: Library | undefined = $state();
   let shortcuts: Shortcuts | undefined = $state();
+  let exporter: ExportDialog | undefined = $state();
+  let fileInput: HTMLInputElement | undefined = $state();
+  /** A visible message from open, save or share; `link` holds a share link to copy by hand. */
+  let notice = $state<{ text: string; error: boolean; link?: string } | undefined>();
   /** Which panel shows on narrow screens. */
   let panel = $state<"library" | "canvas" | "inspector">("canvas");
   /** Which list the left pane shows. */
@@ -53,8 +61,71 @@
   onMount(() => {
     studio.load();
     void openShapeStore().then((store) => studio.useShapeStore(store));
+    void openShared();
     ready = true;
   });
+
+  function tell(text: string, error = false, link?: string): void {
+    notice = link === undefined ? { text, error } : { text, error, link };
+    studio.announce(text);
+  }
+
+  /** Open the design in a share link (`#d=…`), then drop it from the address bar. */
+  async function openShared(): Promise<void> {
+    const token = shareToken(location.hash);
+    if (token === undefined) return;
+    history.replaceState(history.state, "", location.pathname + location.search);
+    try {
+      studio.openDoc(await decodeShare(token), t("studio.act.open"));
+      tell(t("studio.io.sharedOpened"));
+    } catch (error) {
+      tell(t(ioErrorKey(error)), true);
+    }
+  }
+
+  async function openFile(file: File): Promise<void> {
+    const kind = fileKind(file.name, file.type);
+    try {
+      if (file.size > openLimit(kind)) {
+        tell(t("studio.io.error.size"), true);
+        return;
+      }
+      const text = await file.text();
+      const label = t("studio.act.open");
+      if (kind === "svg") {
+        const def = await importSvg(text, file.name);
+        await studio.saveCustom(def, label);
+        const added = t("studio.io.imported", { name: def.name });
+        tell(dropsContent(text) ? `${added} ${t("studio.io.dropped")}` : added);
+        side = "library";
+        return;
+      }
+      const result = await studio.openJson(text, label);
+      if (result === "design") tell(t("studio.io.opened", { name: file.name }));
+      else {
+        tell(t("studio.io.imported", { name: result.name }));
+        side = "library";
+      }
+    } catch (error) {
+      tell(t(ioErrorKey(error)), true);
+    }
+  }
+
+  async function share(): Promise<void> {
+    let url: string;
+    try {
+      url = shareUrl(location.href.split("#")[0] ?? location.href, await encodeShare(studio.doc));
+    } catch (error) {
+      tell(t(ioErrorKey(error)), true);
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      tell(t("studio.io.shared"), false, url);
+    } catch {
+      tell(t("studio.io.error.clipboard"), true, url);
+    }
+  }
 
   const viewport = () => canvas?.size() ?? { w: 800, h: 600 };
 
@@ -184,6 +255,19 @@
       case "help":
         shortcuts?.open();
         break;
+      case "open":
+        fileInput?.click();
+        break;
+      case "save":
+        downloadText(DESIGN_FILE, `${JSON.stringify(studio.doc, null, 2)}\n`);
+        tell(t("studio.io.saved", { name: DESIGN_FILE }));
+        break;
+      case "share":
+        void share();
+        break;
+      case "export":
+        exporter?.open();
+        break;
     }
   }
 
@@ -212,7 +296,7 @@
   ]);
 
   function keydown(e: KeyboardEvent): void {
-    if (e.defaultPrevented || editing || shortcuts?.isOpen()) return;
+    if (e.defaultPrevented || editing || shortcuts?.isOpen() || exporter?.isOpen()) return;
     const target = e.target as HTMLElement | null;
     const inField = !!target?.closest("input, textarea, select, [contenteditable]");
     const action = actionFor(bindings, e, apple, inField);
@@ -234,6 +318,30 @@
 
 <div class="studio" class:ready data-panel={panel}>
   <Toolbar {studio} {t} {apple} {bindings} {run} />
+  <input
+    bind:this={fileInput}
+    class="file-input"
+    type="file"
+    accept=".json,.svg,application/json,image/svg+xml"
+    tabindex="-1"
+    aria-hidden="true"
+    onchange={(e) => {
+      const file = e.currentTarget.files?.[0];
+      e.currentTarget.value = "";
+      if (file) void openFile(file);
+    }}
+  />
+  <div class="notices">
+  {#if notice}
+    <div class="notice" class:error={notice.error} role={notice.error ? "alert" : "status"}>
+      <span>{notice.text}</span>
+      {#if notice.link}
+        <input type="text" readonly value={notice.link} aria-label={t("studio.io.copyLink")} onfocus={(e) => e.currentTarget.select()} />
+      {/if}
+      <button type="button" aria-label={t("studio.export.cancel")} onclick={() => (notice = undefined)}>×</button>
+    </div>
+  {/if}
+  </div>
   <div class="panes">
     <div class="pane pane-library" id="studio-pane-library">
       <div class="side-tabs" role="group" aria-label={t("studio.panels")}>
@@ -269,6 +377,7 @@
     {/key}
   {/if}
   <Shortcuts bind:this={shortcuts} {t} {bindings} {apple} onchange={changeBindings} />
+  <ExportDialog bind:this={exporter} {studio} {t} />
 </div>
 
 <style>
@@ -276,13 +385,35 @@
     position: relative;
     --studio-h: calc(100dvh - var(--sl-nav-height, 3.5rem) - 2rem);
     display: grid;
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: auto auto 1fr auto;
     height: var(--studio-h);
     min-height: 26rem;
     border: 1px solid var(--sl-color-gray-5);
     border-radius: 0.75rem;
     overflow: hidden;
     background: var(--sl-color-bg);
+  }
+  .file-input {
+    display: none;
+  }
+  .notice {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 0.375rem 0.75rem;
+    font-size: var(--sl-text-sm);
+    border-block-end: 1px solid var(--sl-color-gray-5);
+    background: var(--sl-color-accent-low);
+  }
+  .notice.error {
+    background: var(--sl-color-red-low, #3f1d1d);
+  }
+  .notice span {
+    flex: 1;
+  }
+  .notice input {
+    flex: 2;
+    min-width: 0;
   }
   .panes {
     display: grid;
