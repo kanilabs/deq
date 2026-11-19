@@ -152,13 +152,20 @@ class Prepared:
     default_title: str
 
 
-def svg_document(p: Prepared, hooks: SvgHooks | None = None) -> str:
-    """The SVG document for prepared geometry; with no hooks exactly what :func:`render` gives."""
+def svg_root(
+    o: ResolvedOptions,
+    default_title: str,
+    hooks: SvgHooks | None = None,
+    width: float = CANVAS,
+    height: float = CANVAS,
+) -> str:
+    """The root ``<svg>`` with title and background for a ``width`` x ``height`` canvas."""
     hooks = hooks or SvgHooks()
-    o = p.options
     box = CANVAS + 2 * o.padding
+    w = width + 2 * o.padding
+    h = height + 2 * o.padding
     stroke = (o.stroke_width * box) / o.size if o.absolute_stroke_width else o.stroke_width
-    title = o.title if o.title is not None else p.default_title
+    title = o.title if o.title is not None else default_title
     label = o.aria_label if o.aria_label is not None else title
     a11y = (
         ' aria-hidden="true"'
@@ -168,10 +175,12 @@ def svg_document(p: Prepared, hooks: SvgHooks | None = None) -> str:
     color = "" if o.color == "currentColor" else f' color="{escape_xml(o.color)}"'
     opacity = "" if o.stroke_opacity == 1 else f' stroke-opacity="{num(o.stroke_opacity)}"'
     pad = num(-o.padding)
-    vb = f"{pad} {pad} {num(box)} {num(box)}"
+    vb = f"{pad} {pad} {num(w)} {num(h)}"
+    pw = o.size if width == CANVAS else (o.size * w) / box
+    ph = o.size if height == CANVAS else (o.size * h) / box
     out = (
-        f'<svg xmlns="http://www.w3.org/2000/svg"{hooks.root_attrs} width="{num(o.size)}"'
-        f' height="{num(o.size)}" viewBox="{vb}" fill="none" stroke="currentColor"'
+        f'<svg xmlns="http://www.w3.org/2000/svg"{hooks.root_attrs} width="{num(pw)}"'
+        f' height="{num(ph)}" viewBox="{vb}" fill="none" stroke="currentColor"'
         f' stroke-width="{num(stroke)}" stroke-linecap="{o.linecap}"'
         f' stroke-linejoin="{o.linejoin}"{color}{opacity}{a11y}>'
     )
@@ -179,11 +188,16 @@ def svg_document(p: Prepared, hooks: SvgHooks | None = None) -> str:
         out += f"<title>{escape_xml(title)}</title>"
     if o.background != "none":
         out += (
-            f'<rect x="{pad}" y="{pad}" width="{num(box)}" height="{num(box)}"'
+            f'<rect x="{pad}" y="{pad}" width="{num(w)}" height="{num(h)}"'
             f' fill="{escape_xml(o.background)}" stroke="none"/>'
         )
-    out += _body(p.items, o, hooks)
-    return f"{out}</svg>"
+    return out
+
+
+def svg_document(p: Prepared, hooks: SvgHooks | None = None) -> str:
+    """The SVG document for prepared geometry; with no hooks exactly what :func:`render` gives."""
+    hooks = hooks or SvgHooks()
+    return f"{svg_root(p.options, p.default_title, hooks)}{_body(p.items, p.options, hooks)}</svg>"
 
 
 def _check_layers(shape: Shape, o: ResolvedOptions) -> None:

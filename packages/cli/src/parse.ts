@@ -31,7 +31,8 @@ export class UsageError extends Error {
 }
 
 const NUMBER = /^-?(?:\d+(?:\.\d+)?|\.\d+)$/;
-const INT = /^-?\d{1,9}$/;
+/** Up to 10 digits, so seeds up to 4294967295 fit. */
+const INT = /^-?\d{1,10}$/;
 const UINT = /^\d{1,9}$/;
 const PAIR = /^([^=]+)=(.*)$/s;
 
@@ -50,6 +51,8 @@ function convert(flag: Flag, raw: string, command: string): FlagValue {
     case "list":
     case "intlist": {
       const items = raw.split(",");
+      // A list without choices (colours, shape ids) is free text and may repeat items.
+      if (flag.type === "list" && flag.choices === undefined) return items;
       const seen = new Set<string>();
       for (const item of items) {
         if (flag.type === "list" && !choices.includes(item)) {

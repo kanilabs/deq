@@ -29,6 +29,16 @@ Register-ArgumentCompleter -Native -CommandName deq -ScriptBlock {
             Values = @{ '--variant' = @('full-color', 'mono-black', 'mono-white', 'outline', 'high-contrast', 'square'); '--width' = @(); '--format' = @('svg', 'png', 'jpg', 'webp'); '--title' = @(); '--current-color' = @(); '--matte' = @(); '--quality' = @(); '--out' = @() }
             Args = @()
         }
+        'leet' = @{
+            Flags = @('--decode', '--level', '--script', '--seed', '--letter-spacing', '--line-spacing', '--align', '--format', '--size', '--colors', '--title', '--out', '--color', '--stroke-width', '--absolute-stroke-width', '--fill', '--fill-opacity', '--stroke-opacity', '--linecap', '--linejoin', '--dot-scale', '--padding', '--background', '--current-color', '--matte', '--quality', '--force', '--help')
+            Values = @{ '--decode' = @(); '--level' = @('basic', 'advanced', 'full'); '--script' = @('latin', 'sorani'); '--seed' = @(); '--letter-spacing' = @(); '--line-spacing' = @(); '--align' = @('start', 'center', 'end'); '--format' = @('svg', 'png', 'jpg', 'webp'); '--size' = @(); '--colors' = @(); '--title' = @(); '--out' = @(); '--color' = @(); '--stroke-width' = @(); '--fill' = @(); '--fill-opacity' = @(); '--stroke-opacity' = @(); '--linecap' = @('round', 'butt', 'square'); '--linejoin' = @('round', 'miter', 'bevel'); '--dot-scale' = @(); '--padding' = @(); '--background' = @(); '--current-color' = @(); '--matte' = @(); '--quality' = @() }
+            Args = @()
+        }
+        'generate' = @{
+            Flags = @('--kind', '--seed', '--motifs', '--count', '--cols', '--rows', '--petals', '--spacing', '--format', '--size', '--colors', '--title', '--out', '--color', '--stroke-width', '--absolute-stroke-width', '--fill', '--fill-opacity', '--stroke-opacity', '--linecap', '--linejoin', '--dot-scale', '--padding', '--background', '--current-color', '--matte', '--quality', '--force', '--help')
+            Values = @{ '--kind' = @('band', 'grid', 'rosette', 'border'); '--seed' = @(); '--motifs' = $shapes; '--count' = @(); '--cols' = @(); '--rows' = @(); '--petals' = @(); '--spacing' = @(); '--format' = @('svg', 'png', 'jpg', 'webp'); '--size' = @(); '--colors' = @(); '--title' = @(); '--out' = @(); '--color' = @(); '--stroke-width' = @(); '--fill' = @(); '--fill-opacity' = @(); '--stroke-opacity' = @(); '--linecap' = @('round', 'butt', 'square'); '--linejoin' = @('round', 'miter', 'bevel'); '--dot-scale' = @(); '--padding' = @(); '--background' = @(); '--current-color' = @(); '--matte' = @(); '--quality' = @() }
+            Args = @()
+        }
         'validate' = @{
             Flags = @('--help')
             Values = @{  }

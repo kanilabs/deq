@@ -1,0 +1,2 @@
+deq: error: option --kind: "spiral" is not one of band, grid, rosette, border
+Run "deq generate --help" for usage.

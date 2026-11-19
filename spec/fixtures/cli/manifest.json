@@ -1562,6 +1562,848 @@
           "fixture": "validate-params/files/s.json"
         }
       ]
+    },
+    {
+      "name": "help-leet",
+      "args": [
+        "leet",
+        "--help"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 0,
+      "stdout": "help-leet/stdout",
+      "stderr": null,
+      "files": []
+    },
+    {
+      "name": "help-generate",
+      "args": [
+        "generate",
+        "--help"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 0,
+      "stdout": "help-generate/stdout",
+      "stderr": null,
+      "files": []
+    },
+    {
+      "name": "leet-basic",
+      "args": [
+        "leet",
+        "Hello Kurdistan"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 0,
+      "stdout": null,
+      "stderr": null,
+      "files": [
+        {
+          "path": "leet.svg",
+          "check": "bytes",
+          "fixture": "leet-basic/files/leet.svg"
+        }
+      ]
+    },
+    {
+      "name": "leet-sorani",
+      "args": [
+        "leet",
+        "سڵاو کوردستان",
+        "--align",
+        "center"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 0,
+      "stdout": null,
+      "stderr": null,
+      "files": [
+        {
+          "path": "leet.svg",
+          "check": "bytes",
+          "fixture": "leet-sorani/files/leet.svg"
+        }
+      ]
+    },
+    {
+      "name": "leet-advanced-stdout",
+      "args": [
+        "leet",
+        "Deq\nLeet",
+        "--level",
+        "advanced",
+        "--seed",
+        "7",
+        "--out",
+        "-"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 0,
+      "stdout": "leet-advanced-stdout/stdout",
+      "stderr": null,
+      "files": []
+    },
+    {
+      "name": "leet-full-script",
+      "args": [
+        "leet",
+        "roj",
+        "--level",
+        "full",
+        "--script",
+        "latin",
+        "--letter-spacing",
+        "0",
+        "--line-spacing",
+        "0"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 0,
+      "stdout": null,
+      "stderr": null,
+      "files": [
+        {
+          "path": "leet.svg",
+          "check": "bytes",
+          "fixture": "leet-full-script/files/leet.svg"
+        }
+      ]
+    },
+    {
+      "name": "leet-unknown",
+      "args": [
+        "leet",
+        "a☃b☂"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 0,
+      "stdout": null,
+      "stderr": "leet-unknown/stderr",
+      "files": [
+        {
+          "path": "leet.svg",
+          "check": "bytes",
+          "fixture": "leet-unknown/files/leet.svg"
+        }
+      ]
+    },
+    {
+      "name": "leet-colors",
+      "args": [
+        "leet",
+        "ABBA",
+        "--colors",
+        "red,#1b7f3b,red",
+        "--background",
+        "#fff",
+        "--out",
+        "out/"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 0,
+      "stdout": null,
+      "stderr": null,
+      "files": [
+        {
+          "path": "out/leet.svg",
+          "check": "bytes",
+          "fixture": "leet-colors/files/out/leet.svg"
+        }
+      ]
+    },
+    {
+      "name": "leet-render-flags",
+      "args": [
+        "leet",
+        "Roj",
+        "--stroke-width",
+        "1.5",
+        "--dot-scale",
+        "1.5",
+        "--padding",
+        "2",
+        "--title",
+        "",
+        "--out",
+        "roj.svg"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 0,
+      "stdout": null,
+      "stderr": null,
+      "files": [
+        {
+          "path": "roj.svg",
+          "check": "bytes",
+          "fixture": "leet-render-flags/files/roj.svg"
+        }
+      ]
+    },
+    {
+      "name": "leet-png",
+      "args": [
+        "leet",
+        "Deq",
+        "--format",
+        "png",
+        "--size",
+        "48"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 0,
+      "stdout": null,
+      "stderr": null,
+      "files": [
+        {
+          "path": "leet.png",
+          "check": "png",
+          "width": 152,
+          "height": 48
+        }
+      ]
+    },
+    {
+      "name": "leet-jpg",
+      "args": [
+        "leet",
+        "Deq",
+        "--format",
+        "jpg",
+        "--current-color",
+        "#123456",
+        "--quality",
+        "80"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 0,
+      "stdout": null,
+      "stderr": null,
+      "files": [
+        {
+          "path": "leet.jpg",
+          "check": "jpg"
+        }
+      ]
+    },
+    {
+      "name": "leet-too-large",
+      "args": [
+        "leet",
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "--format",
+        "png",
+        "--size",
+        "8192"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 1,
+      "stdout": null,
+      "stderr": "leet-too-large/stderr",
+      "files": []
+    },
+    {
+      "name": "leet-bad-quality",
+      "args": [
+        "leet",
+        "Deq",
+        "--format",
+        "webp",
+        "--quality",
+        "101"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 1,
+      "stdout": null,
+      "stderr": "leet-bad-quality/stderr",
+      "files": []
+    },
+    {
+      "name": "leet-decode",
+      "args": [
+        "leet",
+        "--decode",
+        "latin-basic.svg"
+      ],
+      "setup": [
+        {
+          "path": "latin-basic.svg",
+          "copy": "spec/fixtures/leet/latin-basic.svg"
+        }
+      ],
+      "nodeOnly": false,
+      "exit": 0,
+      "stdout": "leet-decode/stdout",
+      "stderr": null,
+      "files": [
+        {
+          "path": "latin-basic.svg",
+          "check": "bytes",
+          "fixture": "leet-decode/files/latin-basic.svg"
+        }
+      ]
+    },
+    {
+      "name": "leet-decode-sorani",
+      "args": [
+        "leet",
+        "--decode",
+        "s.svg"
+      ],
+      "setup": [
+        {
+          "path": "s.svg",
+          "copy": "spec/fixtures/leet/sorani-sentence.svg"
+        }
+      ],
+      "nodeOnly": false,
+      "exit": 0,
+      "stdout": "leet-decode-sorani/stdout",
+      "stderr": null,
+      "files": [
+        {
+          "path": "s.svg",
+          "check": "bytes",
+          "fixture": "leet-decode-sorani/files/s.svg"
+        }
+      ]
+    },
+    {
+      "name": "leet-decode-render-flags",
+      "args": [
+        "leet",
+        "--decode",
+        "r.svg",
+        "--stroke-width",
+        "1.5",
+        "--dot-scale",
+        "1.5",
+        "--padding",
+        "2"
+      ],
+      "setup": [
+        {
+          "path": "r.svg",
+          "copy": "spec/fixtures/leet/render-options.svg"
+        }
+      ],
+      "nodeOnly": false,
+      "exit": 0,
+      "stdout": "leet-decode-render-flags/stdout",
+      "stderr": "leet-decode-render-flags/stderr",
+      "files": [
+        {
+          "path": "r.svg",
+          "check": "bytes",
+          "fixture": "leet-decode-render-flags/files/r.svg"
+        }
+      ]
+    },
+    {
+      "name": "leet-decode-unmatched",
+      "args": [
+        "leet",
+        "--decode",
+        "latin-basic.svg",
+        "--dot-scale",
+        "2"
+      ],
+      "setup": [
+        {
+          "path": "latin-basic.svg",
+          "copy": "spec/fixtures/leet/latin-basic.svg"
+        }
+      ],
+      "nodeOnly": false,
+      "exit": 0,
+      "stdout": "leet-decode-unmatched/stdout",
+      "stderr": "leet-decode-unmatched/stderr",
+      "files": [
+        {
+          "path": "latin-basic.svg",
+          "check": "bytes",
+          "fixture": "leet-decode-unmatched/files/latin-basic.svg"
+        }
+      ]
+    },
+    {
+      "name": "leet-decode-not-leet",
+      "args": [
+        "leet",
+        "--decode",
+        "x.svg"
+      ],
+      "setup": [
+        {
+          "path": "x.svg",
+          "text": "<svg xmlns=\"http://www.w3.org/2000/svg\"/>"
+        }
+      ],
+      "nodeOnly": false,
+      "exit": 1,
+      "stdout": null,
+      "stderr": "leet-decode-not-leet/stderr",
+      "files": [
+        {
+          "path": "x.svg",
+          "check": "bytes",
+          "fixture": "leet-decode-not-leet/files/x.svg"
+        }
+      ]
+    },
+    {
+      "name": "leet-decode-missing",
+      "args": [
+        "leet",
+        "--decode",
+        "nope.svg"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 3,
+      "stdout": null,
+      "stderr": "leet-decode-missing/stderr",
+      "files": []
+    },
+    {
+      "name": "leet-decode-and-text",
+      "args": [
+        "leet",
+        "Deq",
+        "--decode",
+        "x.svg"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 2,
+      "stdout": null,
+      "stderr": "leet-decode-and-text/stderr",
+      "files": []
+    },
+    {
+      "name": "leet-decode-with-format",
+      "args": [
+        "leet",
+        "--decode",
+        "x.svg",
+        "--format",
+        "png"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 2,
+      "stdout": null,
+      "stderr": "leet-decode-with-format/stderr",
+      "files": []
+    },
+    {
+      "name": "leet-decode-with-seed",
+      "args": [
+        "leet",
+        "--decode",
+        "x.svg",
+        "--seed",
+        "3"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 2,
+      "stdout": null,
+      "stderr": "leet-decode-with-seed/stderr",
+      "files": []
+    },
+    {
+      "name": "leet-nothing",
+      "args": [
+        "leet"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 2,
+      "stdout": null,
+      "stderr": "leet-nothing/stderr",
+      "files": []
+    },
+    {
+      "name": "leet-no-glyphs",
+      "args": [
+        "leet",
+        "☃"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 1,
+      "stdout": null,
+      "stderr": "leet-no-glyphs/stderr",
+      "files": []
+    },
+    {
+      "name": "leet-too-long",
+      "args": [
+        "leet",
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 1,
+      "stdout": null,
+      "stderr": "leet-too-long/stderr",
+      "files": []
+    },
+    {
+      "name": "leet-bad-seed",
+      "args": [
+        "leet",
+        "A",
+        "--seed",
+        "4294967296"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 1,
+      "stdout": null,
+      "stderr": null,
+      "files": []
+    },
+    {
+      "name": "leet-bad-spacing",
+      "args": [
+        "leet",
+        "A",
+        "--letter-spacing",
+        "25"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 1,
+      "stdout": null,
+      "stderr": null,
+      "files": []
+    },
+    {
+      "name": "leet-bad-color",
+      "args": [
+        "leet",
+        "A",
+        "--colors",
+        "#zz"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 1,
+      "stdout": null,
+      "stderr": "leet-bad-color/stderr",
+      "files": []
+    },
+    {
+      "name": "leet-bad-level",
+      "args": [
+        "leet",
+        "A",
+        "--level",
+        "loud"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 2,
+      "stdout": null,
+      "stderr": "leet-bad-level/stderr",
+      "files": []
+    },
+    {
+      "name": "leet-no-rotation",
+      "args": [
+        "leet",
+        "A",
+        "--rotation",
+        "90"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 2,
+      "stdout": null,
+      "stderr": "leet-no-rotation/stderr",
+      "files": []
+    },
+    {
+      "name": "leet-exists",
+      "args": [
+        "leet",
+        "A"
+      ],
+      "setup": [
+        {
+          "path": "leet.svg",
+          "text": "old"
+        }
+      ],
+      "nodeOnly": false,
+      "exit": 3,
+      "stdout": null,
+      "stderr": "leet-exists/stderr",
+      "files": [
+        {
+          "path": "leet.svg",
+          "check": "bytes",
+          "fixture": "leet-exists/files/leet.svg"
+        }
+      ]
+    },
+    {
+      "name": "generate-default",
+      "args": [
+        "generate"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 0,
+      "stdout": null,
+      "stderr": null,
+      "files": [
+        {
+          "path": "pattern-band-1.svg",
+          "check": "bytes",
+          "fixture": "generate-default/files/pattern-band-1.svg"
+        }
+      ]
+    },
+    {
+      "name": "generate-band-mirror",
+      "args": [
+        "generate",
+        "--seed",
+        "2",
+        "--count",
+        "7"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 0,
+      "stdout": null,
+      "stderr": null,
+      "files": [
+        {
+          "path": "pattern-band-2.svg",
+          "check": "bytes",
+          "fixture": "generate-band-mirror/files/pattern-band-2.svg"
+        }
+      ]
+    },
+    {
+      "name": "generate-rosette",
+      "args": [
+        "generate",
+        "--kind",
+        "rosette",
+        "--seed",
+        "3",
+        "--petals",
+        "12",
+        "--colors",
+        "#c0392b,#1b7f3b"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 0,
+      "stdout": null,
+      "stderr": null,
+      "files": [
+        {
+          "path": "pattern-rosette-3.svg",
+          "check": "bytes",
+          "fixture": "generate-rosette/files/pattern-rosette-3.svg"
+        }
+      ]
+    },
+    {
+      "name": "generate-grid-motifs",
+      "args": [
+        "generate",
+        "--kind",
+        "grid",
+        "--motifs",
+        "dot,roj-sun-circle,dot",
+        "--cols",
+        "3",
+        "--rows",
+        "2",
+        "--spacing",
+        "0"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 0,
+      "stdout": null,
+      "stderr": null,
+      "files": [
+        {
+          "path": "pattern-grid-1.svg",
+          "check": "bytes",
+          "fixture": "generate-grid-motifs/files/pattern-grid-1.svg"
+        }
+      ]
+    },
+    {
+      "name": "generate-border-webp",
+      "args": [
+        "generate",
+        "--kind",
+        "border",
+        "--seed",
+        "9",
+        "--format",
+        "webp"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 0,
+      "stdout": null,
+      "stderr": null,
+      "files": [
+        {
+          "path": "pattern-border-9.webp",
+          "check": "webp"
+        }
+      ]
+    },
+    {
+      "name": "generate-png",
+      "args": [
+        "generate",
+        "--kind",
+        "rosette",
+        "--format",
+        "png",
+        "--size",
+        "48"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 0,
+      "stdout": null,
+      "stderr": null,
+      "files": [
+        {
+          "path": "pattern-rosette-1.png",
+          "check": "png",
+          "width": 152,
+          "height": 152
+        }
+      ]
+    },
+    {
+      "name": "generate-max-seed",
+      "args": [
+        "generate",
+        "--seed",
+        "4294967295",
+        "--out",
+        "-"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 0,
+      "stdout": "generate-max-seed/stdout",
+      "stderr": null,
+      "files": []
+    },
+    {
+      "name": "generate-bad-count",
+      "args": [
+        "generate",
+        "--count",
+        "4"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 1,
+      "stdout": null,
+      "stderr": "generate-bad-count/stderr",
+      "files": []
+    },
+    {
+      "name": "generate-bad-kind",
+      "args": [
+        "generate",
+        "--kind",
+        "spiral"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 2,
+      "stdout": null,
+      "stderr": "generate-bad-kind/stderr",
+      "files": []
+    },
+    {
+      "name": "generate-bad-seed",
+      "args": [
+        "generate",
+        "--seed",
+        "12345678901"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 2,
+      "stdout": null,
+      "stderr": "generate-bad-seed/stderr",
+      "files": []
+    },
+    {
+      "name": "generate-unknown-motif",
+      "args": [
+        "generate",
+        "--motifs",
+        "no-such-shape"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 1,
+      "stdout": null,
+      "stderr": "generate-unknown-motif/stderr",
+      "files": []
+    },
+    {
+      "name": "generate-border-small",
+      "args": [
+        "generate",
+        "--kind",
+        "border",
+        "--rows",
+        "2"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 1,
+      "stdout": null,
+      "stderr": "generate-border-small/stderr",
+      "files": []
+    },
+    {
+      "name": "generate-no-param",
+      "args": [
+        "generate",
+        "--param",
+        "rays=9"
+      ],
+      "setup": [],
+      "nodeOnly": false,
+      "exit": 2,
+      "stdout": null,
+      "stderr": "generate-no-param/stderr",
+      "files": []
     }
   ]
 }

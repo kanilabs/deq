@@ -31,6 +31,8 @@ The CLI writes the same formats; the others (AI, EPS, PSD, AVIF, favicons, compo
 | `deq render <shape...>`  | Render shapes to files, or to stdout with `--out -`.           |
 | `deq export <shape...>`  | Export in several formats and sizes (`--all` for every shape). |
 | `deq flag`               | Draw the flag of Kurdistan.                                    |
+| `deq leet [text]`        | Write text as Deq Leet, or read it back with `--decode`.       |
+| `deq generate`           | Draw a seeded band, grid, rosette or border pattern.           |
 | `deq validate <file>`    | Check a shape spec file and render every parameter variant.    |
 | `deq completion <shell>` | Print a bash, zsh, fish or PowerShell completion script.       |
 
@@ -39,6 +41,9 @@ deq render roj-half-sun --size 48 --color "#d4a017" --out sun.svg
 deq render kurdish-sun --param rays=12 --format png --size 512
 deq export --all --format svg,pdf --sizes 24,48 --out icons/
 deq flag --format png --width 1200
+deq leet "Hello Kurdistan" --level advanced --seed 7 --out hello.svg
+deq leet --decode hello.svg
+deq generate --kind rosette --petals 12 --format png --size 48
 ```
 
 Run `deq <command> --help` for every option. Exit codes: 0 success, 1 invalid shape, option or spec,

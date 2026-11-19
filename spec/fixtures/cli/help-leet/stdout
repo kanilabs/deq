@@ -1,0 +1,59 @@
+Usage: deq leet [<text>] [options]
+
+Write text with Deq glyphs (Deq Leet), or read it back with --decode.
+
+Arguments:
+  [<text>]  Latin, Kurmanji or Sorani text, at most 1024 characters.
+
+Options:
+      --decode <file>          Print the text of a Deq Leet SVG written at the
+                               basic level; pass the render flags used to write
+                               it.
+      --level <level>          basic is readable and decodable, advanced mixes
+                               in seeded alternatives, full uses motifs. Default
+                               basic. Values: basic, advanced, full.
+      --script <script>        Glyph table. Default sorani for Arabic-script
+                               text, else latin. Values: latin, sorani.
+      --seed <n>               Seed for the advanced level, 0 to 4294967295.
+                               Default 1.
+      --letter-spacing <n>     Space between glyphs in grid units, 0 to 24.
+                               Default 2.
+      --line-spacing <n>       Space between lines in grid units, 0 to 48.
+                               Default 6.
+      --align <align>          Line alignment; start is the right edge for
+                               Sorani. Default start. Values: start, center,
+                               end.
+      --format <format>        Output format. Default svg. Values: svg, png,
+                               jpg, webp.
+      --size <px>              Size in px of one 24 x 24 cell, 1 to 8192.
+                               Default 24.
+      --colors <list>          Comma-separated colours given to the glyphs in
+                               turn (1 to 16).
+      --title <text>           Accessible title. Default the normalised text; ""
+                               marks the image decorative.
+      --out <path>             Output file or directory; - writes to stdout.
+                               Default: the current directory.
+      --color <color>          Stroke and dot colour (any CSS colour). Default
+                               currentColor.
+      --stroke-width <n>       Stroke width in grid units, 0.05 to 12. Default
+                               2.
+      --absolute-stroke-width  Keep the stroke the same width in px at any size.
+      --fill <color>           Fill for closed outlines, or none. Default none.
+      --fill-opacity <0-1>     Opacity of the fill. Default 1.
+      --stroke-opacity <0-1>   Opacity of strokes and dots. Default 1.
+      --linecap <linecap>      Line ends. Default round. Values: round, butt,
+                               square.
+      --linejoin <linejoin>    Line corners. Default round. Values: round,
+                               miter, bevel.
+      --dot-scale <n>          Multiply every dot radius, 0.1 to 4. Default 1.
+      --padding <n>            Space around the 24 x 24 canvas in grid units, 0
+                               to 24. Default 0.
+      --background <color>     Background colour, or none. Default none.
+      --current-color <color>  What currentColor means in PDF and image formats.
+                               Default black.
+      --matte <color>          JPG background behind transparent pixels. Default
+                               white.
+      --quality <0-100>        JPG and WebP quality. Default 90.
+      --force                  Overwrite existing files.
+  -h, --help                   Show help.
+  -V, --version                Print the version.

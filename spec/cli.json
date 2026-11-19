@@ -1,5 +1,5 @@
 {
-  "$comment": "The shared interface of the three deq CLIs (Node, Python, Rust; PRD 8.9, ADR 0011). packages/cli/scripts/generate.ts turns it into help texts and shell completions for every port. Flag types: bool, string, number, int, choice, list (comma separated), intlist, pair (name=value, repeatable).",
+  "$comment": "The shared interface of the three deq CLIs (Node, Python, Rust; PRD 8.9, ADR 0011). packages/cli/scripts/generate.ts turns it into help texts and shell completions for every port. Flag types: bool, string, number, int, choice, list (comma separated; with choices, each item at most once), intlist, pair (name=value, repeatable).",
   "name": "deq",
   "summary": "Draw Deq shapes, traditional Kurdish tattoo motifs, as SVG, PDF and images.",
   "globalFlags": [
@@ -40,7 +40,8 @@
       "spec-json"
     ],
     "ports": ["svg", "svg-layered", "svg-sprite", "pdf", "png", "jpg", "webp", "ico"],
-    "flag": ["svg", "png", "jpg", "webp"]
+    "flag": ["svg", "png", "jpg", "webp"],
+    "scene": ["svg", "png", "jpg", "webp"]
   },
   "flagSets": {
     "render": [
@@ -338,6 +339,206 @@
         }
       ],
       "use": ["write"]
+    },
+    {
+      "name": "leet",
+      "summary": "Write text with Deq glyphs (Deq Leet), or read it back with --decode.",
+      "args": [
+        {
+          "name": "text",
+          "optional": true,
+          "help": "Latin, Kurmanji or Sorani text, at most 1024 characters."
+        }
+      ],
+      "flags": [
+        {
+          "name": "decode",
+          "type": "string",
+          "value": "file",
+          "complete": "file",
+          "help": "Print the text of a Deq Leet SVG written at the basic level; pass the render flags used to write it."
+        },
+        {
+          "name": "level",
+          "type": "choice",
+          "choices": ["basic", "advanced", "full"],
+          "option": "level",
+          "help": "basic is readable and decodable, advanced mixes in seeded alternatives, full uses motifs. Default basic."
+        },
+        {
+          "name": "script",
+          "type": "choice",
+          "choices": ["latin", "sorani"],
+          "option": "script",
+          "help": "Glyph table. Default sorani for Arabic-script text, else latin."
+        },
+        {
+          "name": "seed",
+          "type": "int",
+          "value": "n",
+          "option": "seed",
+          "help": "Seed for the advanced level, 0 to 4294967295. Default 1."
+        },
+        {
+          "name": "letter-spacing",
+          "type": "number",
+          "value": "n",
+          "option": "letterSpacing",
+          "help": "Space between glyphs in grid units, 0 to 24. Default 2."
+        },
+        {
+          "name": "line-spacing",
+          "type": "number",
+          "value": "n",
+          "option": "lineSpacing",
+          "help": "Space between lines in grid units, 0 to 48. Default 6."
+        },
+        {
+          "name": "align",
+          "type": "choice",
+          "choices": ["start", "center", "end"],
+          "option": "align",
+          "help": "Line alignment; start is the right edge for Sorani. Default start."
+        },
+        {
+          "name": "format",
+          "type": "choice",
+          "choices": "formats.scene",
+          "default": "svg",
+          "help": "Output format. Default svg."
+        },
+        {
+          "name": "size",
+          "type": "number",
+          "value": "px",
+          "option": "size",
+          "help": "Size in px of one 24 x 24 cell, 1 to 8192. Default 24."
+        },
+        {
+          "name": "colors",
+          "type": "list",
+          "value": "list",
+          "option": "colors",
+          "help": "Comma-separated colours given to the glyphs in turn (1 to 16)."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "value": "text",
+          "option": "title",
+          "help": "Accessible title. Default the normalised text; \"\" marks the image decorative."
+        },
+        {
+          "name": "out",
+          "type": "string",
+          "value": "path",
+          "complete": "file",
+          "help": "Output file or directory; - writes to stdout. Default: the current directory."
+        }
+      ],
+      "use": ["render", "write"],
+      "omit": ["rotation", "flip-x", "flip-y", "layer-color", "param", "title"]
+    },
+    {
+      "name": "generate",
+      "summary": "Generate a seeded pattern of Deq motifs.",
+      "args": [],
+      "flags": [
+        {
+          "name": "kind",
+          "type": "choice",
+          "choices": ["band", "grid", "rosette", "border"],
+          "option": "kind",
+          "help": "Pattern kind. Default band."
+        },
+        {
+          "name": "seed",
+          "type": "int",
+          "value": "n",
+          "option": "seed",
+          "help": "Seed, 0 to 4294967295; the same seed gives the same pattern. Default 1."
+        },
+        {
+          "name": "motifs",
+          "type": "list",
+          "value": "list",
+          "option": "motifs",
+          "complete": "shape",
+          "help": "Comma-separated shape ids to choose from (1 to 64). Default every shape."
+        },
+        {
+          "name": "count",
+          "type": "int",
+          "value": "n",
+          "option": "count",
+          "help": "Band length, odd, 3 to 63. Default 9."
+        },
+        {
+          "name": "cols",
+          "type": "int",
+          "value": "n",
+          "option": "cols",
+          "help": "Grid or border columns, 1 to 32 (border at least 3). Default 5 (grid), 7 (border)."
+        },
+        {
+          "name": "rows",
+          "type": "int",
+          "value": "n",
+          "option": "rows",
+          "help": "Grid or border rows, 1 to 32 (border at least 3). Default 5 (grid), 3 (border)."
+        },
+        {
+          "name": "petals",
+          "type": "int",
+          "value": "n",
+          "option": "petals",
+          "help": "Rosette petals, 3 to 24. Default 8."
+        },
+        {
+          "name": "spacing",
+          "type": "number",
+          "value": "n",
+          "option": "spacing",
+          "help": "Space between cells in grid units, 0 to 24. Default 2."
+        },
+        {
+          "name": "format",
+          "type": "choice",
+          "choices": "formats.scene",
+          "default": "svg",
+          "help": "Output format. Default svg."
+        },
+        {
+          "name": "size",
+          "type": "number",
+          "value": "px",
+          "option": "size",
+          "help": "Size in px of one 24 x 24 cell, 1 to 8192. Default 24."
+        },
+        {
+          "name": "colors",
+          "type": "list",
+          "value": "list",
+          "option": "colors",
+          "help": "Comma-separated colours given to the glyphs in turn (1 to 16)."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "value": "text",
+          "option": "title",
+          "help": "Accessible title. Default \"Deq <kind> pattern\"; \"\" marks the image decorative."
+        },
+        {
+          "name": "out",
+          "type": "string",
+          "value": "path",
+          "complete": "file",
+          "help": "Output file or directory; - writes to stdout. Default: the current directory."
+        }
+      ],
+      "use": ["render", "write"],
+      "omit": ["rotation", "flip-x", "flip-y", "layer-color", "param", "title"]
     },
     {
       "name": "validate",

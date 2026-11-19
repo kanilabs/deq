@@ -83,7 +83,7 @@ impl ResolvedOptions {
     }
 }
 
-fn number(v: &Value, lo: f64, hi: f64, exclusive_lo: bool) -> Option<String> {
+pub(crate) fn number(v: &Value, lo: f64, hi: f64, exclusive_lo: bool) -> Option<String> {
     let Some(x) = v.as_f64().filter(|_| is_number(v)) else {
         return Some("must be a finite number".to_owned());
     };
@@ -102,7 +102,7 @@ fn boolean(v: &Value) -> Option<String> {
     (!v.is_boolean()).then(|| "must be true or false".to_owned())
 }
 
-fn color(v: &Value) -> Option<String> {
+pub(crate) fn color(v: &Value) -> Option<String> {
     match v.as_str() {
         Some(s) if s.chars().count() <= 80 && COLOR.is_match(s) => None,
         _ => Some("must be a CSS colour".to_owned()),
@@ -124,7 +124,7 @@ fn text(v: &Value) -> Option<String> {
     }
 }
 
-fn picklist(v: &Value, values: &[&str]) -> Option<String> {
+pub(crate) fn picklist(v: &Value, values: &[&str]) -> Option<String> {
     match v.as_str() {
         Some(s) if values.contains(&s) => None,
         _ => Some(format!("must be one of {}", values.join(", "))),

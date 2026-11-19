@@ -15,7 +15,7 @@ Phase 6, ADR 0011. Usage: `python/deq-shapes/README.md`, `rust/deq-shapes/README
 - Rasters are compared by dimensions and signatures only. Rust WebP is lossless (`--quality` affects JPG only).
 - Ports write `svg`, `svg-layered`, `svg-sprite`, `pdf`, `png`, `jpg`, `webp`, `ico`; any other format must exit 4 with `format "X" is only available in the Node CLI (npx @0xdolan/deq-cli)`.
 
-- Leet and patterns (ADR 0015, from 9b): ports read the tables from generated data, use mulberry32 (`Random` in `packages/generator/src/random.ts`; `below(n) = floor(next() * n / 2**32)`), and must write every file in `spec/fixtures/leet/` byte for byte and decode every `decoded` case.
+- Leet and patterns (ADR 0015, from 9b): ports read the tables from generated data, use mulberry32 (`Random` in `packages/generator/src/random.ts`; `below(n) = next() % n`), and must write every file in `spec/fixtures/leet/` byte for byte and decode every `decoded` case. Sines and cosines go through the fdlibm ports (`_trig.py`, `trig.rs`) so they match V8 to the last bit; never use the platform `sin`/`cos` in geometry or colour code.
 
 ## CLI
 
@@ -23,6 +23,8 @@ Phase 6, ADR 0011. Usage: `python/deq-shapes/README.md`, `rust/deq-shapes/README
 - Parsers are hand-written in each language and must give identical messages; no argument-parsing libraries.
 - Exit codes: 0 ok, 1 invalid shape/option/spec, 2 usage (adds `Run "deq <cmd> --help" for usage.`), 3 file error, 4 Node-only format.
 - Writing is safe: check every target before writing, `--force` to overwrite, never replace a directory or symlink; `validate` refuses symlinks, non-regular files and files over 256 KB.
+- A command lists the flag sets it shares in `use` and drops single flags with `omit` (`leet` and `generate` omit rotation, flips, params and layer colours); the generator throws when an omitted name is in no used set. A `list` flag without `choices` (colours, shape ids) takes items as they are and may repeat them.
+- `leet` and `generate` write scenes as `svg`, `png`, `jpg` or `webp`. Rasters are capped at 8192 × 8192 px (`LIMIT_EXCEEDED`); `--decode` reads at most 4 MiB through the same checks as `validate` and refuses the output flags. When a message comes from a port's own option checks (valibot ranges in Node), the case sets `"stderr": false`.
 - New behaviour gets a case in `spec/fixtures/cli-cases.json`, then `pnpm --filter @0xdolan/deq-cli fixtures` (records the Node results in `spec/fixtures/cli/`). Python (`test_cli_cases.py`) and Rust (`rust/deq-cli/tests/cases.rs`) replay every case on Linux, macOS and Windows.
 
 ## Rust rules

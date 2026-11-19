@@ -40,6 +40,8 @@ interface RawSpec {
     readonly args: readonly Arg[];
     readonly flags: readonly RawFlag[];
     readonly use?: readonly string[];
+    /** Flags of the used sets that this command leaves out. */
+    readonly omit?: readonly string[];
   }[];
 }
 
@@ -368,9 +370,13 @@ export function buildData(): CliData {
   const resolveFlag = (f: RawFlag): Flag =>
     f.choices === undefined ? (f as Flag) : { ...f, choices: resolveChoices(spec, f.choices) };
   const commands: Command[] = spec.commands.map((c) => {
-    const flags = [...c.flags, ...(c.use ?? []).flatMap((u) => spec.flagSets[u] ?? [])].map(
-      resolveFlag,
-    );
+    const used = (c.use ?? []).flatMap((u) => spec.flagSets[u] ?? []);
+    const omit = new Set(c.omit ?? []);
+    for (const name of omit) {
+      if (!used.some((f) => f.name === name))
+        throw new Error(`spec/cli.json: ${c.name} omits --${name}, which no used set has`);
+    }
+    const flags = [...c.flags, ...used.filter((f) => !omit.has(f.name))].map(resolveFlag);
     const names = new Set<string>();
     for (const f of flags) {
       if (names.has(f.name)) throw new Error(`spec/cli.json: ${c.name} repeats --${f.name}`);

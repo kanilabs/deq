@@ -8,6 +8,9 @@ Commands:
   render      Render shapes to files.
   export      Export shapes in several formats and sizes.
   flag        Draw the flag of Kurdistan.
+  leet        Write text with Deq glyphs (Deq Leet), or read it back with
+              --decode.
+  generate    Generate a seeded pattern of Deq motifs.
   validate    Check a shape spec file and render every parameter variant.
   completion  Print a shell completion script.
 

@@ -7,6 +7,7 @@ Accepts everything option validation accepts: hex, named colours, ``transparent`
 import math
 import re
 
+from . import _trig
 from ._format import js_json, js_mod, js_round
 from .errors import DeqError
 
@@ -165,7 +166,7 @@ def _oklab_to_rgb(lightness: float, a: float, b: float, alpha: float) -> Rgba:
 
 
 def _polar(c: float, h: float) -> tuple[float, float]:
-    return (c * math.cos((h * math.pi) / 180), c * math.sin((h * math.pi) / 180))
+    return (c * _trig.cos((h * math.pi) / 180), c * _trig.sin((h * math.pi) / 180))
 
 
 def _hue(x: float) -> float:

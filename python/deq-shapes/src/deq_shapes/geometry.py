@@ -5,6 +5,7 @@ import re
 from dataclasses import dataclass, replace
 from typing import Literal
 
+from . import _trig
 from ._format import js_json, js_mod
 from .errors import DeqError
 
@@ -64,7 +65,7 @@ def cos_sin(deg: float) -> Vec:
     if m == 270:
         return (0, -1)
     t = (deg * math.pi) / 180
-    return (math.cos(t), math.sin(t))
+    return (_trig.cos(t), _trig.sin(t))
 
 
 def rotate(deg: float, center: Vec = (0, 0)) -> Transform:

@@ -11,10 +11,13 @@ mod parse;
 
 use deq_shapes::color::{BLACK, parse_color, to_hex};
 use deq_shapes::export::export_shapes;
-use deq_shapes::format::js_str;
+use deq_shapes::format::{js_round, js_str};
 use deq_shapes::raster::{RasterFormat, encode_svg};
 use deq_shapes::validate::{MAX_SPEC_BYTES, validate_spec};
-use deq_shapes::{DeqError, ErrorCode, get_shape, list_categories, list_shapes, render_flag};
+use deq_shapes::{
+    DeqError, ErrorCode, decode_leet, get_shape, leet, list_categories, list_shapes, pattern,
+    render_flag,
+};
 use output::{File, emit, errno, join_path, write_all};
 use parse::{Flags, Parsed, arr, param_value, parse_args, s};
 use serde_json::{Map, Value, json};
@@ -23,6 +26,26 @@ use std::process::ExitCode;
 
 /// Exit code for formats only the Node CLI writes.
 const EXIT_NODE_ONLY: u8 = 4;
+/// Largest raster image side, in px.
+const MAX_PX: f64 = 8192.0;
+/// Largest SVG `deq leet --decode` reads, in bytes.
+const MAX_DECODE_BYTES: usize = 4 * 1024 * 1024;
+/// Flags that `deq leet --decode` refuses, in the order they are checked.
+const NOT_WITH_DECODE: [&str; 13] = [
+    "format",
+    "out",
+    "force",
+    "level",
+    "script",
+    "seed",
+    "letter-spacing",
+    "line-spacing",
+    "align",
+    "colors",
+    "current-color",
+    "matte",
+    "quality",
+];
 
 /// Everything that stops a command, by exit code.
 #[derive(Debug)]
@@ -369,21 +392,8 @@ fn export_cmd(data: &Value, command: &Value, ids: &[String], flags: &Flags) -> R
 }
 
 /// The flag file for the `flag` command: its name and contents.
-fn flag_file(flags: &Flags) -> Res<(String, Vec<u8>)> {
-    let variant = flag_str(flags, "variant").unwrap_or("full-color");
-    let width = flags.get("width").and_then(Value::as_i64).unwrap_or(900);
-    let fmt = flag_str(flags, "format").unwrap_or("svg");
-    let mut options = Map::new();
-    options.insert("variant".to_owned(), Value::from(variant));
-    options.insert("width".to_owned(), Value::from(width));
-    if let Some(title) = flags.get("title") {
-        options.insert("title".to_owned(), title.clone());
-    }
-    let svg = render_flag(&Value::Object(options))?;
-    let name = format!("kurdish-flag-{variant}.{fmt}");
-    if fmt == "svg" {
-        return Ok((name, format!("{svg}\n").into_bytes()));
-    }
+/// `svg` as a raster image `width` px wide, with currentColor made concrete.
+fn raster(svg: &str, width: f64, fmt: &str, flags: &Flags, what: &str) -> Res<Vec<u8>> {
     let quality = flags.get("quality").and_then(Value::as_i64);
     let quality = match quality {
         Some(q) => match u8::try_from(q) {
@@ -391,7 +401,7 @@ fn flag_file(flags: &Flags) -> Res<(String, Vec<u8>)> {
             _ => {
                 let issue = format!("quality: must be 0 to 100 (got {q})");
                 return Err(invalid_options(
-                    format!("invalid flag options: {issue}"),
+                    format!("invalid {what} options: {issue}"),
                     issue,
                 ));
             }
@@ -409,18 +419,118 @@ fn flag_file(flags: &Flags) -> Res<(String, Vec<u8>)> {
         "webp" => RasterFormat::Webp,
         other => return Err(CliError::NodeOnly(other.to_owned())),
     };
-    #[allow(clippy::cast_precision_loss)]
-    let data = encode_svg(
+    Ok(encode_svg(
         &svg.replace("currentColor", &current),
-        width as f64,
+        width,
         kind,
         quality,
         matte,
-    )?;
+    )?)
+}
+
+fn flag_file(flags: &Flags) -> Res<(String, Vec<u8>)> {
+    let variant = flag_str(flags, "variant").unwrap_or("full-color");
+    let width = flags.get("width").and_then(Value::as_i64).unwrap_or(900);
+    let fmt = flag_str(flags, "format").unwrap_or("svg");
+    let mut options = Map::new();
+    options.insert("variant".to_owned(), Value::from(variant));
+    options.insert("width".to_owned(), Value::from(width));
+    if let Some(title) = flags.get("title") {
+        options.insert("title".to_owned(), title.clone());
+    }
+    let svg = render_flag(&Value::Object(options))?;
+    let name = format!("kurdish-flag-{variant}.{fmt}");
+    if fmt == "svg" {
+        return Ok((name, format!("{svg}\n").into_bytes()));
+    }
+    #[allow(clippy::cast_precision_loss)]
+    let data = raster(&svg, width as f64, fmt, flags, "flag")?;
     Ok((name, data))
 }
 
-fn validate(file: &str) -> Res<()> {
+/// The `width` and `height` attributes of the root `<svg>` (24 when missing).
+fn svg_size(svg: &str) -> (f64, f64) {
+    let head = svg.split('>').next().unwrap_or("");
+    let attr = |name: &str| {
+        head.split_once(&format!(" {name}=\""))
+            .and_then(|(_, rest)| rest.split('"').next())
+            .and_then(|v| v.parse::<f64>().ok())
+            .unwrap_or(24.0)
+    };
+    (attr("width"), attr("height"))
+}
+
+/// A scene (Leet text or pattern) as `<stem>.<format>`; images are as wide as the SVG in px.
+fn scene_file(stem: &str, svg: &str, flags: &Flags) -> Res<(String, Vec<u8>)> {
+    let fmt = flag_str(flags, "format").unwrap_or("svg");
+    let name = format!("{stem}.{fmt}");
+    if fmt == "svg" {
+        return Ok((name, format!("{svg}\n").into_bytes()));
+    }
+    let (sw, sh) = svg_size(svg);
+    let w = js_round(sw).max(1.0);
+    let h = js_round(sh).max(1.0);
+    if w > MAX_PX || h > MAX_PX {
+        return Err(DeqError::new(
+            ErrorCode::LimitExceeded,
+            format!(
+                "the image would be {w} x {h} px; the largest is {MAX_PX} x {MAX_PX} (lower --size)"
+            ),
+        )
+        .into());
+    }
+    Ok((name, raster(svg, w, fmt, flags, "scene")?))
+}
+
+fn leet_cmd(command: &Value, text: Option<&String>, flags: &Flags) -> Res<()> {
+    let usage = |m: String| CliError::Usage(m, Some("leet".to_owned()));
+    if let Some(file) = flag_str(flags, "decode") {
+        if text.is_some() {
+            return Err(usage("give text or --decode, not both".to_owned()));
+        }
+        if let Some(bad) = NOT_WITH_DECODE.iter().find(|n| flags.contains_key(**n)) {
+            return Err(usage(format!("--decode cannot be combined with --{bad}")));
+        }
+        let svg = read_text(file, MAX_DECODE_BYTES)?;
+        let out = decode_leet(&svg, &Value::Object(render_options(command, flags)))?;
+        if out.unmatched > 0 {
+            stderr(&format!(
+                "deq: warning: {} glyphs could not be read (shown as U+FFFD); pass the render flags used to write the file\n",
+                out.unmatched
+            ));
+        }
+        stdout(format!("{}\n", out.text).as_bytes());
+        return Ok(());
+    }
+    let Some(text) = text else {
+        return Err(usage("give text or --decode".to_owned()));
+    };
+    let r = leet(text, &Value::Object(render_options(command, flags)))?;
+    if !r.unknown.is_empty() {
+        let points: Vec<String> = r
+            .unknown
+            .iter()
+            .filter_map(|c| c.chars().next())
+            .map(|c| format!("U+{:04X}", u32::from(c)))
+            .collect();
+        stderr(&format!(
+            "deq: warning: left out characters with no glyph: {}\n",
+            points.join(", ")
+        ));
+    }
+    emit("leet", vec![scene_file("leet", &r.svg, flags)?], flags)
+}
+
+fn generate_cmd(command: &Value, flags: &Flags) -> Res<()> {
+    let r = pattern(&Value::Object(render_options(command, flags)))?;
+    let kind = flag_str(flags, "kind").unwrap_or("band");
+    let seed = flags.get("seed").and_then(Value::as_i64).unwrap_or(1);
+    let stem = format!("pattern-{kind}-{seed}");
+    emit("generate", vec![scene_file(&stem, &r.svg, flags)?], flags)
+}
+
+/// A regular file of at most `max_bytes` as UTF-8, refusing symbolic links.
+fn read_text(file: &str, max_bytes: usize) -> Res<String> {
     let Ok(meta) = std::fs::symlink_metadata(file) else {
         return Err(CliError::Io(format!("cannot read {file}: not found")));
     };
@@ -432,17 +542,22 @@ fn validate(file: &str) -> Res<()> {
     if !meta.is_file() {
         return Err(CliError::Io(format!("{file} is not a regular file")));
     }
-    if meta.len() > MAX_SPEC_BYTES as u64 {
+    if meta.len() > max_bytes as u64 {
         return Err(CliError::Io(format!(
             "{file} is larger than {} KB",
-            MAX_SPEC_BYTES / 1024
+            max_bytes / 1024
         )));
     }
     let mut bytes = Vec::new();
     std::fs::File::open(file)
-        .and_then(|fh| fh.take(MAX_SPEC_BYTES as u64 + 1).read_to_end(&mut bytes))
+        .and_then(|fh| fh.take(max_bytes as u64 + 1).read_to_end(&mut bytes))
         .map_err(|e| CliError::Io(format!("cannot read {file}: {}", errno(&e))))?;
-    let value: Value = serde_json::from_str(&String::from_utf8_lossy(&bytes))
+    Ok(String::from_utf8_lossy(&bytes).into_owned())
+}
+
+fn validate(file: &str) -> Res<()> {
+    let text = read_text(file, MAX_SPEC_BYTES)?;
+    let value: Value = serde_json::from_str(&text)
         .map_err(|_| DeqError::new(ErrorCode::InvalidShape, format!("{file}: not valid JSON")))?;
     let (shape_id, count) = validate_spec(&value).map_err(|e| DeqError {
         code: e.code,
@@ -472,6 +587,8 @@ fn dispatch(data: &Value, line: &[String]) -> Res<()> {
         "render" => render_cmd(data, command, &args, &flags),
         "export" => export_cmd(data, command, &args, &flags),
         "flag" => emit("flag", vec![flag_file(&flags)?], &flags),
+        "leet" => leet_cmd(command, args.first(), &flags),
+        "generate" => generate_cmd(command, &flags),
         "validate" => validate(first),
         _ => {
             stdout(

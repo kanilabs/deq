@@ -300,7 +300,8 @@ fn oklab_to_rgb(lightness: f64, a: f64, b: f64, alpha: f64) -> Rgba {
 }
 
 fn polar(c: f64, h: f64) -> (f64, f64) {
-    (c * ((h * PI) / 180.0).cos(), c * ((h * PI) / 180.0).sin())
+    let t = (h * PI) / 180.0;
+    (c * crate::trig::cos(t), c * crate::trig::sin(t))
 }
 
 fn hue(x: f64) -> f64 {
