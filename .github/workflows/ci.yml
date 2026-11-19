@@ -122,10 +122,14 @@ jobs:
       DEQ_REQUIRE_TOOLS: "1"
     steps:
       - name: Install Inkscape and Ghostscript
+        # The Azure mirror that GitHub's own runners use; archive.ubuntu.com has had outages.
+        # apt still checks the archive signatures, so the mirror needs no trust.
         run: |
-          apt-get update
-          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-            ca-certificates git inkscape ghostscript
+          sed -i -E 's#http://(archive|security)\.ubuntu\.com#http://azure.archive.ubuntu.com#g' \
+            /etc/apt/sources.list.d/ubuntu.sources
+          apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 update
+          DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 \
+            install -y --no-install-recommends ca-certificates git inkscape ghostscript
           inkscape --version
           gs --version
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
