@@ -739,7 +739,15 @@ test("every export format downloads one file or a ZIP", async ({ page }) => {
     .evaluateAll((els) => els.map((el) => (el as HTMLOptionElement).value));
   expect(formats).toHaveLength(23);
   const download = exporter(page).locator('[data-action="download"]');
-  for (const format of formats) {
+  for (const [i, format] of formats.entries()) {
+    // Mobile Chromium stops after 20 downloads from one page; a reload resets that (the
+    // design persists).
+    if (i > 0 && i % 10 === 0) {
+      await page.reload();
+      await expect(page.locator(".studio.ready")).toBeVisible();
+      await file(page, "export").click();
+      await expect(exporter(page)).toBeVisible();
+    }
     await exporter(page).locator("select").selectOption(format);
     const { name, data } = await readDownload(page, () => download.click());
     expect(name, format).toMatch(/^(?:kurdish-?sun|deq-)[\w.-]+$/iu);
