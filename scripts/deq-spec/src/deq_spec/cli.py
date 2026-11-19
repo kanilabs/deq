@@ -7,7 +7,7 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
-from deq_spec import SpecError, brand, jsonfmt, lint, metrics, render, sheet
+from deq_spec import SpecError, brand, jsonfmt, leet, lint, metrics, render, sheet
 from deq_spec.spec import ParamValue, expand, read_json
 
 SHEETS = {
@@ -47,6 +47,9 @@ def format_files(root: Path, *, check: bool) -> list[Path]:
             raise SpecError(f"{path}: cannot compute metrics: {exc}") from exc
         changed += _format(path, data, check=check)
     for path in (repo.spec / "grid.json", repo.spec / "catalog.json", repo.spec / "flag.json"):
+        if path.is_file():
+            changed += _format(path, read_json(path), check=check)
+    for path in leet.table_paths(repo):
         if path.is_file():
             changed += _format(path, read_json(path), check=check)
     return changed

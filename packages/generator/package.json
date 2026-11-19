@@ -15,6 +15,7 @@
   "sideEffects": false,
   "exports": {
     ".": {
+      "@0xdolan/source": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     }
@@ -26,6 +27,8 @@
     "node": ">=24"
   },
   "scripts": {
+    "generate": "node scripts/generate-leet.ts",
+    "fixtures": "tsc -p tsconfig.build.json && node scripts/fixtures.ts && node scripts/chart.ts",
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --coverage"
@@ -33,5 +36,9 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
+  },
+  "dependencies": {
+    "@0xdolan/deq-core": "workspace:*",
+    "valibot": "1.5.0"
   }
 }

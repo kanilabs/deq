@@ -167,14 +167,23 @@ export interface Prepared {
 }
 
 /**
- * Build the SVG document for prepared geometry. With no hooks this is exactly what
- * {@link render} returns.
+ * The opening `<svg>` tag with its title and background, for a canvas of `width` x
+ * `height` grid units (24 x 24 for a shape). `o.size` is the pixel size of the padded
+ * 24-unit box, so wider canvases keep the same scale. Used by {@link svgDocument} and by
+ * scenes made of several shapes, such as Deq Leet text.
  */
-export function svgDocument(p: Prepared, hooks: SvgHooks = {}): string {
-  const o = p.options;
+export function svgRoot(
+  o: ResolvedOptions,
+  defaultTitle: string,
+  hooks: SvgHooks = {},
+  width: number = CANVAS,
+  height: number = CANVAS,
+): string {
   const box = CANVAS + 2 * o.padding;
+  const w = width + 2 * o.padding;
+  const h = height + 2 * o.padding;
   const stroke = o.absoluteStrokeWidth ? (o.strokeWidth * box) / o.size : o.strokeWidth;
-  const title = o.title ?? p.defaultTitle;
+  const title = o.title ?? defaultTitle;
   const label = o.ariaLabel ?? title;
   const a11y =
     title === "" && label === ""
@@ -182,17 +191,26 @@ export function svgDocument(p: Prepared, hooks: SvgHooks = {}): string {
       : ` role="img" aria-label="${escapeXml(label)}"`;
   const colorAttr = o.color === "currentColor" ? "" : ` color="${escapeXml(o.color)}"`;
   const opacity = o.strokeOpacity === 1 ? "" : ` stroke-opacity="${num(o.strokeOpacity)}"`;
-  const vb = `${num(-o.padding)} ${num(-o.padding)} ${num(box)} ${num(box)}`;
+  const vb = `${num(-o.padding)} ${num(-o.padding)} ${num(w)} ${num(h)}`;
+  const pw = width === CANVAS ? o.size : (o.size * w) / box;
+  const ph = height === CANVAS ? o.size : (o.size * h) / box;
   let out =
-    `<svg xmlns="http://www.w3.org/2000/svg"${hooks.rootAttrs ?? ""} width="${num(o.size)}" height="${num(o.size)}" viewBox="${vb}"` +
+    `<svg xmlns="http://www.w3.org/2000/svg"${hooks.rootAttrs ?? ""} width="${num(pw)}" height="${num(ph)}" viewBox="${vb}"` +
     ` fill="none" stroke="currentColor" stroke-width="${num(stroke)}"` +
     ` stroke-linecap="${o.linecap}" stroke-linejoin="${o.linejoin}"${colorAttr}${opacity}${a11y}>`;
   if (title !== "") out += `<title>${escapeXml(title)}</title>`;
   if (o.background !== "none") {
-    out += `<rect x="${num(-o.padding)}" y="${num(-o.padding)}" width="${num(box)}" height="${num(box)}" fill="${escapeXml(o.background)}" stroke="none"/>`;
+    out += `<rect x="${num(-o.padding)}" y="${num(-o.padding)}" width="${num(w)}" height="${num(h)}" fill="${escapeXml(o.background)}" stroke="none"/>`;
   }
-  out += body(p.items, o, hooks);
-  return `${out}</svg>`;
+  return out;
+}
+
+/**
+ * Build the SVG document for prepared geometry. With no hooks this is exactly what
+ * {@link render} returns.
+ */
+export function svgDocument(p: Prepared, hooks: SvgHooks = {}): string {
+  return `${svgRoot(p.options, p.defaultTitle, hooks)}${body(p.items, p.options, hooks)}</svg>`;
 }
 
 function checkLayers(shape: ShapeData, o: ResolvedOptions): void {

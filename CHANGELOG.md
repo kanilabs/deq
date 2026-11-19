@@ -94,6 +94,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   - Save and Open for design files, plus custom shape specs and SVG files, with Open, Save, Share and Export in the toolbar and on shortcuts;
   - SVG import that rebuilds the file from an allowlist of geometry, fits it into the keylines and adds it to My shapes, leaving out gradients, text, images and effects with a notice;
   - end-to-end tests for every export format, files, SVG import and share links on desktop and mobile.
+- Phase 9a Deq Leet and the pattern generator (ADR 0015):
+  - Leet tables for Latin and Kurmanji (50 characters, digits as dot counts) and Sorani (49 characters, RTL) in `spec/leet/`, with a schema, aliases and `deq-spec lint` rules for readability, canvas bounds and unique basic glyphs;
+  - `@0xdolan/deq-generator`: `leet` at the basic, advanced (seeded) and full levels with one layer per character, `decodeLeet` for basic output, and `pattern` for seeded bands, grids, rosettes and borders, all with capped plain-text input;
+  - `svgRoot` in `@0xdolan/deq-core` for scenes wider than one shape;
+  - 28 golden Leet and pattern fixtures in `spec/fixtures/leet/` for the ports, and the mapping chart `docs/design/leet-chart.svg`.
 
 ### Changed
 

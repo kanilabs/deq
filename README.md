@@ -89,7 +89,7 @@ Full guide: [docs/dev/setup.md](docs/dev/setup.md).
 | 6     | Python and Rust ports, CLIs            | ✅     |
 | 7     | Website foundation (themes, i18n, PWA) | ✅     |
 | 8     | Studio                                 | ⏳     |
-| 9     | Deq Leet and pattern generator         | ⏳     |
+| 9     | Deq Leet and pattern generator         | 🚧     |
 | 10    | Story, sources and showcase            | ⏳     |
 | 11    | Documentation and screenshots          | ⏳     |
 | 12    | Branding and marketing                 | ⏳     |

@@ -29,6 +29,7 @@ packages/icons/src/generated/
 packages/react/src/generated/
 packages/vue/src/generated/
 packages/svelte/src/generated/
+packages/generator/src/generated/
 # Written by `uv run deq-fonts codepoints` (checked by `deq-fonts codepoints --check`)
 fonts/codepoints.json
 docs/fonts/codepoints.md

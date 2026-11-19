@@ -37,6 +37,14 @@ function cosSin(deg: number): Vec
 
 Cosine and sine of `deg` degrees, exact at multiples of 90.
 
+### `element`
+
+```ts
+function element(item: Flat, o: ResolvedOptions): string
+```
+
+One SVG element; stroke attributes are inherited from the root.
+
 ### `escapeXml`
 
 ```ts
@@ -197,6 +205,17 @@ function svgDocument(p: Prepared, hooks?: SvgHooks): string
 
 Build the SVG document for prepared geometry. With no hooks this is exactly what
 `render` returns.
+
+### `svgRoot`
+
+```ts
+function svgRoot(o: ResolvedOptions, defaultTitle: string, hooks?: SvgHooks, width?: number, height?: number): string
+```
+
+The opening `<svg>` tag with its title and background, for a canvas of `width` x
+`height` grid units (24 x 24 for a shape). `o.size` is the pixel size of the padded
+24-unit box, so wider canvases keep the same scale. Used by `svgDocument` and by
+scenes made of several shapes, such as Deq Leet text.
 
 ## Classes
 

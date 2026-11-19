@@ -15,6 +15,8 @@ Phase 6, ADR 0011. Usage: `python/deq-shapes/README.md`, `rust/deq-shapes/README
 - Rasters are compared by dimensions and signatures only. Rust WebP is lossless (`--quality` affects JPG only).
 - Ports write `svg`, `svg-layered`, `svg-sprite`, `pdf`, `png`, `jpg`, `webp`, `ico`; any other format must exit 4 with `format "X" is only available in the Node CLI (npx @0xdolan/deq-cli)`.
 
+- Leet and patterns (ADR 0015, from 9b): ports read the tables from generated data, use mulberry32 (`Random` in `packages/generator/src/random.ts`; `below(n) = floor(next() * n / 2**32)`), and must write every file in `spec/fixtures/leet/` byte for byte and decode every `decoded` case.
+
 ## CLI
 
 - `spec/cli.json` is the single source of commands, flags, exit codes and formats. After editing it run `pnpm --filter @0xdolan/deq-cli generate` (help texts and completions for all three CLIs); a test fails when a copy is stale.

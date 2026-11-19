@@ -10,7 +10,7 @@ from typing import Any
 
 from jsonschema import Draft202012Validator
 
-from deq_spec import SpecError, flag, jsonfmt, metrics
+from deq_spec import SpecError, flag, jsonfmt, leet, metrics
 from deq_spec import geometry as g
 from deq_spec.spec import Json, Registry, expand, read_json
 
@@ -260,6 +260,7 @@ def lint(root: Path) -> Report:
         lint_shape(reg.paths[sid], reg.shapes[sid], reg, repo, ctx, report)
 
     _lint_catalog(repo, reg, report)
+    leet.lint_tables(repo, reg, report)
     for path in (repo.spec / "grid.json", repo.spec / "catalog.json", repo.spec / "flag.json"):
         if path.is_file() and path.read_text(encoding="utf-8") != jsonfmt.dumps(read_json(path)):
             report.add(_rel(path, root), "not canonically formatted: run `uv run deq-spec fmt`")

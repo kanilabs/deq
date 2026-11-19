@@ -32,10 +32,12 @@ export {
   CANVAS,
   compose,
   composeShape,
+  element,
   prepare,
   render,
   renderShapeData,
   svgDocument,
+  svgRoot,
 } from "./svg.js";
 export type { CompositionPart, Prepared, SvgHooks } from "./svg.js";
 export type * from "./types.js";
