@@ -1,14 +1,15 @@
 # Deq icon fonts
 
-Three fonts carry every Deq shape:
+Three fonts carry every Deq shape, and a fourth writes text as Deq Leet:
 
 | Font                 | Files                                    | Use it for                                    |
 | -------------------- | ---------------------------------------- | --------------------------------------------- |
 | Deq Icons            | `DeqIcons-Regular.otf`, `.ttf`, `.woff2` | One-colour icons at the default stroke width. |
 | Deq Icons (variable) | `DeqIcons[DOTS,wght].ttf`, `.woff2`      | Any stroke weight and dot size.               |
 | Deq Icons Color      | `DeqIconsColor-Regular.ttf`, `.woff2`    | Icons in the Kurdish flag colours.            |
+| Deq Leet             | `DeqLeet-Regular.otf`, `.ttf`, `.woff2`  | Text written as Deq Leet (see below).         |
 
-The built files, `deq-icons.css` and `codepoints.json` are attached to each GitHub release as `deq-fonts-<version>.zip`. They are not committed; until the first release, build them with `just fonts`. The fonts are licensed under GPL-3.0-or-later with the Font Exception, so you can embed them in websites, apps and documents under any license (see [`fonts/LICENSE.md`](../../fonts/LICENSE.md)).
+The built files, `deq-icons.css`, `deq-leet.css`, `codepoints.json` and `leet-codepoints.json` are attached to each GitHub release as `deq-fonts-<version>.zip`. They are not committed; until the first release, build them with `just fonts`. The fonts are licensed under GPL-3.0-or-later with the Font Exception, so you can embed them in websites, apps and documents under any license (see [`fonts/LICENSE.md`](../../fonts/LICENSE.md)).
 
 ## Typing icons
 
@@ -80,9 +81,27 @@ Pick one with `font-palette`:
 
 The OT-SVG copy always uses the light palette.
 
+## Deq Leet
+
+Text set in Deq Leet shows the [Deq Leet](../design/leet.md) glyph of each character, in Latin and Kurmanji (A–Z, Ç Ê Î Ş Û, digits, punctuation) and in Sorani. Every glyph sits in a 26-unit cell, so the font is monospaced, and the line height matches a default Leet scene.
+
+- **Basic level.** Plain text shows the basic glyphs. Lower case, look-alike characters (dashes, Persian digits, Arabic kaf and yeh) and decomposed letters (`C` + U+0327) show the same glyphs. Characters both tables share, and ASCII digits, switch to the Sorani glyphs in Arabic-script text (`locl`).
+- **Alternatives.** Stylistic set `ss01` shows each character's first advanced alternative, `ss02` the second and `ss03` the full motif. `salt` offers all of them in apps with a glyph picker.
+- **Exact glyphs.** Every glyph also has a Private Use Area code point from U+F000, listed in [`leet-codepoints.md`](leet-codepoints.md) and, for tools, `leet-codepoints.json`. Text copied from a Leet scene in these code points keeps the exact glyphs, including the seeded advanced level. Code points never change and are never reused.
+
+```html
+<link rel="stylesheet" href="deq-leet.css" />
+
+<p class="deq-leet" lang="ku">Deq!</p>
+<p class="deq-leet" style="font-feature-settings: 'ss03'">Deq</p>
+<p class="deq-leet" lang="ckb" dir="rtl">دەق</p>
+```
+
+Leet text is still the real text, so screen readers read it out as normal letters. Text written in PUA code points is not: give it a label (`aria-label`) with the plain text.
+
 ## Installing on a computer
 
-- **Linux:** copy the `.otf` or `.ttf` files to `~/.local/share/fonts/` and run `fc-cache -f`. Check with `fc-list | grep "Deq Icons"`.
+- **Linux:** copy the `.otf` or `.ttf` files to `~/.local/share/fonts/` and run `fc-cache -f`. Check with `fc-list | grep "Deq"`.
 - **macOS:** double-click a font file and click **Install Font** in Font Book, or copy the files to `~/Library/Fonts/`.
 - **Windows:** right-click the font files and choose **Install** (or **Install for all users**).
 
@@ -95,4 +114,4 @@ just fonts        # build into fonts/dist and check the code point table
 just fonts-check  # also run fontbakery (with ots) and a fontconfig install check
 ```
 
-`just fonts` builds `@0xdolan/deq-core`, writes the shape geometry with `pnpm --filter @0xdolan/deq-icons font-data fonts/build/geometry.json`, and runs `uv run deq-fonts build`. After adding shapes, run `uv run deq-fonts codepoints` to assign their code points and update [`codepoints.md`](codepoints.md). How the outlines are made is in [ADR 0010](../decisions/0010-icon-packages-and-fonts.md).
+`just fonts` builds `@0xdolan/deq-core` and `@0xdolan/deq-generator`, writes the shape geometry with `pnpm --filter @0xdolan/deq-icons font-data fonts/build/geometry.json` and the Leet glyphs with `pnpm --filter @0xdolan/deq-generator font-data fonts/build/leet.json`, and runs `uv run deq-fonts build`. After adding shapes or Leet characters, run `uv run deq-fonts codepoints` to assign their code points and update [`codepoints.md`](codepoints.md) and [`leet-codepoints.md`](leet-codepoints.md). How the outlines are made is in [ADR 0010](../decisions/0010-icon-packages-and-fonts.md), and the Leet font design in [ADR 0016](../decisions/0016-deq-leet-font.md).

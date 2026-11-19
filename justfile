@@ -65,16 +65,23 @@ site-lighthouse:
     for _ in $(seq 30); do curl -sf -o /dev/null http://localhost:4321/deq/ && break; sleep 1; done
     pnpm lighthouse
 
-# Build the icon fonts into fonts/dist (checks that the code point table is fresh)
+# Build the icon and Leet fonts into fonts/dist (checks that the code point tables are fresh)
 fonts:
-    pnpm exec turbo run build --filter=@0xdolan/deq-core
+    pnpm exec turbo run build --filter=@0xdolan/deq-core --filter=@0xdolan/deq-generator
     pnpm --filter @0xdolan/deq-icons font-data fonts/build/geometry.json
+    pnpm --filter @0xdolan/deq-generator font-data fonts/build/leet.json
     uv run deq-fonts codepoints --check
     uv run deq-fonts build
 
-# Check the fonts with fontbakery (including ots) and install them into a private fontconfig
+# Check the fonts with fontbakery (including ots) and install them into a private fontconfig.
+# fontbakery 1.1.0's monospace check crashes on CFF fonts (no glyf table), so the Leet OTF skips it.
 fonts-check: fonts
-    for f in fonts/dist/*.ttf fonts/dist/*.otf; do uv run --group fonts fontbakery check-universal --loglevel WARN --succinct "$f"; done
+    #!/usr/bin/env bash
+    set -euo pipefail
+    for f in fonts/dist/*.ttf fonts/dist/*.otf; do
+      skip=(); [[ "$f" == *DeqLeet-Regular.otf ]] && skip=(-x opentype/monospace)
+      uv run --group fonts fontbakery check-universal --loglevel WARN --succinct "${skip[@]}" "$f"
+    done
     uv run deq-fonts install-check
 
 # Build all packages

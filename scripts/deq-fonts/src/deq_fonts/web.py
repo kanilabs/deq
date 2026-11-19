@@ -9,7 +9,8 @@ from pathlib import Path
 from deq_fonts.build import COLOR_FAMILY, FAMILY, Shape, ligatures
 
 FIRST = 0xE000
-LAST = 0xF8FF
+#: The icons stop below U+F000, where the Deq Leet code points start (ADR 0016).
+LAST = 0xEFFF
 
 
 def assign(ids: Sequence[str], current: Mapping[str, str]) -> dict[str, str]:
@@ -18,7 +19,7 @@ def assign(ids: Sequence[str], current: Mapping[str, str]) -> dict[str, str]:
     out = dict(current)
     used = {int(v, 16) for v in out.values()}
     if len(used) != len(out) or any(not FIRST <= c <= LAST for c in used):
-        raise ValueError("code points must be unique and in U+E000-U+F8FF")
+        raise ValueError("code points must be unique and in U+E000-U+EFFF")
     nxt = max(used, default=FIRST - 1) + 1
     for i in ids:
         if i not in out:
