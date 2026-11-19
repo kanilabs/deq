@@ -15,12 +15,14 @@ from dataclasses import dataclass
 from typing import Any
 
 from ._data import load
-from ._format import js_str
+from ._format import js_round, js_str
 from .color import parse_color, to_hex
 from .errors import DeqError
 from .export import export_shapes
 from .flag import render_flag
-from .raster import encode_svg
+from .leet import decode_leet, leet
+from .patterns import pattern
+from .raster import RasterFormat, encode_svg
 from .registry import Shape, get_shape, list_categories, list_shapes
 from .validate import MAX_SPEC_BYTES, validate_spec
 
@@ -28,10 +30,15 @@ Flags = dict[str, Any]
 Writer = Callable[[bytes], None]
 
 _NUMBER = re.compile(r"-?(?:[0-9]+(?:\.[0-9]+)?|\.[0-9]+)")
-_INT = re.compile(r"-?[0-9]{1,9}")
+_INT = re.compile(r"-?[0-9]{1,10}")  # 10 digits, so seeds up to 4294967295 fit
 _UINT = re.compile(r"[0-9]{1,9}")
 _PAIR = re.compile(r"([^=]+)=(.*)", re.DOTALL)
 _ENDS_WITH_SEP = re.compile(r"[/\\]\Z")
+_SVG_SIZE = re.compile(r'<svg [^>]*? width="([0-9.]+)" height="([0-9.]+)"')
+#: Largest raster image side, in px.
+MAX_PX = 8192
+#: Largest SVG ``deq leet --decode`` reads, in bytes.
+MAX_DECODE_BYTES = 4 * 1024 * 1024
 #: Exit code for formats only the Node CLI writes.
 EXIT_NODE_ONLY = 4
 
@@ -126,6 +133,9 @@ def _convert(flag: Mapping[str, Any], raw: str, command: str) -> Any:
         return raw
     if kind in ("list", "intlist"):
         items = raw.split(",")
+        # A list without choices (colours, shape ids) is free text and may repeat items.
+        if kind == "list" and "choices" not in flag:
+            return items
         seen: set[str] = set()
         for item in items:
             if kind == "list" and item not in choices:
@@ -470,6 +480,19 @@ def _export(
     _write_all(targets, flags.get("force") is True)
 
 
+def _raster(svg: str, width: int, fmt: RasterFormat, flags: Mapping[str, Any], what: str) -> bytes:
+    """``svg`` as a raster image ``width`` px wide, with currentColor made concrete."""
+    quality = flags.get("quality")
+    if quality is not None and not 0 <= quality <= 100:
+        issue = f"quality: must be 0 to 100 (got {quality})"
+        raise DeqError("INVALID_OPTIONS", f"invalid {what} options: {issue}", (issue,))
+    current = to_hex(parse_color(flags.get("current-color", "#000000")))
+    matte = parse_color(flags.get("matte", "#ffffff"))
+    return encode_svg(
+        svg.replace("currentColor", current), width, fmt, quality=quality, matte=matte
+    )
+
+
 def flag_file(flags: Mapping[str, Any]) -> tuple[str, str | bytes]:
     """The flag file for the ``flag`` command: its name and contents."""
     variant = flags.get("variant", "full-color")
@@ -482,23 +505,77 @@ def flag_file(flags: Mapping[str, Any]) -> tuple[str, str | bytes]:
     name = f"kurdish-flag-{variant}.{fmt}"
     if fmt == "svg":
         return name, f"{svg}\n"
-    quality = flags.get("quality")
-    if quality is not None and not 0 <= quality <= 100:
-        issue = f"quality: must be 0 to 100 (got {quality})"
-        raise DeqError("INVALID_OPTIONS", f"invalid flag options: {issue}", (issue,))
-    current = to_hex(parse_color(flags.get("current-color", "#000000")))
-    matte = parse_color(flags.get("matte", "#ffffff"))
-    return name, encode_svg(
-        svg.replace("currentColor", current), width, fmt, quality=quality, matte=matte
-    )
+    return name, _raster(svg, width, fmt, flags, "flag")
 
 
-def _parse_constant(token: str) -> Any:
-    msg = f"invalid JSON constant {token}"
-    raise ValueError(msg)
+def scene_file(stem: str, svg: str, flags: Mapping[str, Any]) -> tuple[str, str | bytes]:
+    """A scene (Leet text or pattern) as ``<stem>.<format>``; images are as wide as the SVG."""
+    fmt = flags.get("format", "svg")
+    name = f"{stem}.{fmt}"
+    if fmt == "svg":
+        return name, f"{svg}\n"
+    m = _SVG_SIZE.match(svg)
+    w = max(1, int(js_round(float(m.group(1) if m else "24"))))
+    h = max(1, int(js_round(float(m.group(2) if m else "24"))))
+    if w > MAX_PX or h > MAX_PX:
+        msg = f"the image would be {w} x {h} px; the largest is {MAX_PX} x {MAX_PX} (lower --size)"
+        raise DeqError("LIMIT_EXCEEDED", msg)
+    return name, _raster(svg, w, fmt, flags, "scene")
 
 
-def _validate(io: Io, file: str) -> None:
+#: Flags that ``deq leet --decode`` refuses, in the order they are checked.
+_NOT_WITH_DECODE = (
+    "format",
+    "out",
+    "force",
+    "level",
+    "script",
+    "seed",
+    "letter-spacing",
+    "line-spacing",
+    "align",
+    "colors",
+    "current-color",
+    "matte",
+    "quality",
+)
+
+
+def _leet(io: Io, command: Mapping[str, Any], text: str | None, flags: Mapping[str, Any]) -> None:
+    name = command["name"]
+    decode = flags.get("decode")
+    if decode is not None:
+        if text is not None:
+            raise UsageError("give text or --decode, not both", name)
+        bad = next((n for n in _NOT_WITH_DECODE if n in flags), None)
+        if bad is not None:
+            raise UsageError(f"--decode cannot be combined with --{bad}", name)
+        svg = _read_text(io, decode, MAX_DECODE_BYTES)
+        out = decode_leet(svg, _render_options(command, flags))
+        if out.unmatched > 0:
+            io.stderr(
+                f"deq: warning: {out.unmatched} glyphs could not be read (shown as U+FFFD);"
+                " pass the render flags used to write the file\n".encode()
+            )
+        io.stdout(f"{out.text}\n".encode())
+        return
+    if text is None:
+        raise UsageError("give text or --decode", name)
+    r = leet(text, _render_options(command, flags))
+    if r.unknown:
+        points = ", ".join(f"U+{ord(c):04X}" for c in r.unknown)
+        io.stderr(f"deq: warning: left out characters with no glyph: {points}\n".encode())
+    _emit(io, name, [scene_file("leet", r.svg, flags)], flags)
+
+
+def _generate(io: Io, command: Mapping[str, Any], flags: Mapping[str, Any]) -> None:
+    r = pattern(_render_options(command, flags))
+    stem = f"pattern-{flags.get('kind', 'band')}-{flags.get('seed', 1)}"
+    _emit(io, command["name"], [scene_file(stem, r.svg, flags)], flags)
+
+
+def _read_text(io: Io, file: str, max_bytes: int) -> str:
+    """A regular file of at most ``max_bytes`` as UTF-8, refusing symbolic links."""
     path = _resolve(io, file)
     st = _lstat(path)
     if st is None:
@@ -510,16 +587,26 @@ def _validate(io: Io, file: str) -> None:
     if not stat.S_ISREG(st.st_mode):
         msg = f"{file} is not a regular file"
         raise IoError(msg)
-    if st.st_size > MAX_SPEC_BYTES:
-        msg = f"{file} is larger than {MAX_SPEC_BYTES // 1024} KB"
+    if st.st_size > max_bytes:
+        msg = f"{file} is larger than {max_bytes // 1024} KB"
         raise IoError(msg)
     try:
         with open(path, "rb") as fh:
-            text = fh.read(MAX_SPEC_BYTES + 1).decode("utf-8", errors="replace")
-        value = json.loads(text, parse_constant=_parse_constant)
+            return fh.read(max_bytes + 1).decode("utf-8", errors="replace")
     except OSError as error:
         msg = f"cannot read {file}: {errno.errorcode.get(error.errno or 0, 'error')}"
         raise IoError(msg) from None
+
+
+def _parse_constant(token: str) -> Any:
+    msg = f"invalid JSON constant {token}"
+    raise ValueError(msg)
+
+
+def _validate(io: Io, file: str) -> None:
+    text = _read_text(io, file, MAX_SPEC_BYTES)
+    try:
+        value = json.loads(text, parse_constant=_parse_constant)
     except (ValueError, RecursionError):
         raise DeqError("INVALID_SHAPE", f"{file}: not valid JSON") from None
     try:
@@ -549,6 +636,10 @@ def main(argv: Sequence[str], io: Io, data: Mapping[str, Any] | None = None) -> 
             _export(io, d, command, args, flags)
         elif name == "flag":
             _emit(io, name, [flag_file(flags)], flags)
+        elif name == "leet":
+            _leet(io, command, args[0] if args else None, flags)
+        elif name == "generate":
+            _generate(io, command, flags)
         elif name == "validate":
             _validate(io, args[0])
         else:

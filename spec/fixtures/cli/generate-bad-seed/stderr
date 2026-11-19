@@ -1,0 +1,2 @@
+deq: error: option --seed: "12345678901" is not an integer
+Run "deq generate --help" for usage.

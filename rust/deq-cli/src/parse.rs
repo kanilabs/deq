@@ -55,8 +55,10 @@ fn is_uint(raw: &str) -> bool {
     digits(raw) && raw.len() <= 9
 }
 
+/// Up to 10 digits, so seeds up to 4294967295 fit.
 fn is_int(raw: &str) -> bool {
-    is_uint(raw.strip_prefix('-').unwrap_or(raw))
+    let body = raw.strip_prefix('-').unwrap_or(raw);
+    digits(body) && body.len() <= 10
 }
 
 fn number(raw: &str) -> Value {
@@ -96,6 +98,10 @@ fn convert(flag: &Value, raw: &str, command: &str) -> Result<Value, CliError> {
         }
         "list" | "intlist" => {
             let items: Vec<&str> = raw.split(',').collect();
+            // A list without choices (colours, shape ids) is free text and may repeat items.
+            if kind == "list" && flag.get("choices").is_none() {
+                return Ok(Value::Array(items.into_iter().map(Value::from).collect()));
+            }
             let mut seen: Vec<&str> = Vec::new();
             for item in &items {
                 if kind == "list" && !choices.contains(item) {
@@ -309,9 +315,11 @@ mod tests {
     }
 
     #[test]
-    fn integers_have_at_most_nine_digits() {
-        assert!(is_int("-123456789"));
-        assert!(!is_int("1234567890"));
+    fn integers_have_at_most_ten_digits() {
+        assert!(is_int("-1234567890"));
+        assert!(is_int("4294967295"));
+        assert!(!is_int("12345678901"));
+        assert!(!is_uint("1234567890"));
         assert!(!is_uint("-1"));
     }
 }

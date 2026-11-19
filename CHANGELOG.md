@@ -99,6 +99,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   - `@0xdolan/deq-generator`: `leet` at the basic, advanced (seeded) and full levels with one layer per character, `decodeLeet` for basic output, and `pattern` for seeded bands, grids, rosettes and borders, all with capped plain-text input;
   - `svgRoot` in `@0xdolan/deq-core` for scenes wider than one shape;
   - 28 golden Leet and pattern fixtures in `spec/fixtures/leet/` for the ports, and the mapping chart `docs/design/leet-chart.svg`.
+- Phase 9b Leet and patterns in the ports and CLIs (ADR 0015):
+  - Python and Rust `deq-shapes` ports of `leet`, `decode_leet` and `pattern`, writing every Leet fixture byte for byte, with fdlibm `sin`/`cos` so rotations match V8;
+  - `deq leet` (with `--decode`) and `deq generate` in the Node, Python and Rust CLIs, exporting SVG, PNG, JPG or WebP, with 44 new shared CLI cases;
+  - `omit` in `spec/cli.json` to drop single flags from a shared flag set.
 
 ### Changed
 
@@ -116,3 +120,4 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - ESLint and Prettier ignore Astro's generated `.astro/` folder and Playwright output; `pnpm lint` runs `astro sync` first so the site's types exist on a clean checkout.
 - pnpm override `workbox-build>glob` to 14.0.4: glob 11 finds no files with the `minimatch` 11.0.3 override. Remove it when `workbox-build` depends on glob 14+.
 - `pnpm audit` and dependency review allow GHSA-fc5q-39xc-vjpf (picomatch ReDoS, no patched release, build tools only); remove when a fix ships (ADR 0004).
+- The CLIs accept integers of up to 10 digits (seeds up to 4294967295), and a list flag without choices may repeat items.

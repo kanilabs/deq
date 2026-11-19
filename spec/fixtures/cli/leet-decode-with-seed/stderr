@@ -1,0 +1,2 @@
+deq: error: --decode cannot be combined with --seed
+Run "deq leet --help" for usage.

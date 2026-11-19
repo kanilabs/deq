@@ -1,0 +1,2 @@
+deq: error: give text or --decode, not both
+Run "deq leet --help" for usage.

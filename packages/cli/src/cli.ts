@@ -9,6 +9,7 @@ import { DeqError, getShape, listCategories, listShapes, renderFlag } from "@0xd
 import type { ParamValue, RenderOptions, ShapeData } from "@0xdolan/deq-core";
 import { encodeSvg, exportShapes, parseColor, toHex } from "@0xdolan/deq-exporters";
 import type { ExportFormat, ExportOptions } from "@0xdolan/deq-exporters";
+import { decodeLeet, leet, pattern } from "@0xdolan/deq-generator";
 
 import { CLI } from "./generated/cli.js";
 import { UsageError, parseArgs } from "./parse.js";
@@ -277,6 +278,28 @@ async function exportCommand(
   writeAll(list, flags.get("force") === true);
 }
 
+/** Largest raster image side, in px. */
+export const MAX_PX = 8192;
+/** Largest SVG `deq leet --decode` reads, in bytes. */
+export const MAX_DECODE_BYTES = 4 * 1024 * 1024;
+
+/** `svg` as a raster image `width` px wide, with currentColor made concrete. */
+async function raster(svg: string, width: number, format: string, flags: Flags, what: string) {
+  const quality = flags.get("quality") as number | undefined;
+  if (quality !== undefined && (quality < 0 || quality > 100)) {
+    const issue = `quality: must be 0 to 100 (got ${String(quality)})`;
+    throw new DeqError("INVALID_OPTIONS", `invalid ${what} options: ${issue}`, [issue]);
+  }
+  const current = toHex(
+    parseColor((flags.get("current-color") as string | undefined) ?? "#000000"),
+  );
+  const matte = parseColor((flags.get("matte") as string | undefined) ?? "#ffffff");
+  return encodeSvg(svg.replaceAll("currentColor", current), width, format as "png", {
+    matte,
+    ...(quality === undefined ? {} : { quality }),
+  });
+}
+
 /** The flag file for `deq flag`, with currentColor made concrete for raster formats. */
 export async function flagFile(flags: Flags): Promise<OutFile> {
   const variant = (flags.get("variant") as string | undefined) ?? "full-color";
@@ -286,34 +309,113 @@ export async function flagFile(flags: Flags): Promise<OutFile> {
   const svg = renderFlag({ variant, width, ...(title === undefined ? {} : { title }) });
   const name = `kurdish-flag-${variant}.${format}`;
   if (format === "svg") return { name, data: `${svg}\n` };
-  const quality = flags.get("quality") as number | undefined;
-  if (quality !== undefined && (quality < 0 || quality > 100)) {
-    const issue = `quality: must be 0 to 100 (got ${String(quality)})`;
-    throw new DeqError("INVALID_OPTIONS", `invalid flag options: ${issue}`, [issue]);
-  }
-  const current = toHex(
-    parseColor((flags.get("current-color") as string | undefined) ?? "#000000"),
-  );
-  const matte = parseColor((flags.get("matte") as string | undefined) ?? "#ffffff");
-  const data = await encodeSvg(svg.replaceAll("currentColor", current), width, format as "png", {
-    matte,
-    ...(quality === undefined ? {} : { quality }),
-  });
-  return { name, data };
+  return { name, data: await raster(svg, width, format, flags, "flag") };
 }
 
-function validate(io: Io, file: string): void {
+const SVG_SIZE = /^<svg [^>]*? width="([0-9.]+)" height="([0-9.]+)"/u;
+
+/** A scene (Leet text or pattern) as `<stem>.<format>`; images are as wide as the SVG in px. */
+export async function sceneFile(stem: string, svg: string, flags: Flags): Promise<OutFile> {
+  const format = (flags.get("format") as string | undefined) ?? "svg";
+  const name = `${stem}.${format}`;
+  if (format === "svg") return { name, data: `${svg}\n` };
+  const m = SVG_SIZE.exec(svg);
+  const w = Math.max(1, Math.round(Number(m?.[1] ?? "24")));
+  const h = Math.max(1, Math.round(Number(m?.[2] ?? "24")));
+  if (w > MAX_PX || h > MAX_PX) {
+    const size = `${String(w)} x ${String(h)}`;
+    throw new DeqError(
+      "LIMIT_EXCEEDED",
+      `the image would be ${size} px; the largest is ${String(MAX_PX)} x ${String(MAX_PX)} (lower --size)`,
+    );
+  }
+  return { name, data: await raster(svg, w, format, flags, "scene") };
+}
+
+/** Flags that `deq leet --decode` refuses, in the order they are checked. */
+const NOT_WITH_DECODE = [
+  "format",
+  "out",
+  "force",
+  "level",
+  "script",
+  "seed",
+  "letter-spacing",
+  "line-spacing",
+  "align",
+  "colors",
+  "current-color",
+  "matte",
+  "quality",
+];
+
+/** `U+XXXX` for each character. */
+function codePoints(chars: readonly string[]): string {
+  return chars
+    .map((c) => `U+${(c.codePointAt(0) ?? 0).toString(16).toUpperCase().padStart(4, "0")}`)
+    .join(", ");
+}
+
+async function leetCommand(
+  io: Io,
+  command: Command,
+  text: string | undefined,
+  flags: Flags,
+): Promise<void> {
+  const decode = flags.get("decode") as string | undefined;
+  if (decode !== undefined) {
+    if (text !== undefined) throw new UsageError("give text or --decode, not both", command.name);
+    const bad = NOT_WITH_DECODE.find((n) => flags.has(n));
+    if (bad !== undefined) {
+      throw new UsageError(`--decode cannot be combined with --${bad}`, command.name);
+    }
+    const out = decodeLeet(readText(io, decode, MAX_DECODE_BYTES), renderOptions(command, flags));
+    if (out.unmatched > 0) {
+      io.stderr(
+        `deq: warning: ${String(out.unmatched)} glyphs could not be read (shown as U+FFFD); pass the render flags used to write the file\n`,
+      );
+    }
+    io.stdout(`${out.text}\n`);
+    return;
+  }
+  if (text === undefined) throw new UsageError("give text or --decode", command.name);
+  const r = leet(text, renderOptions(command, flags));
+  if (r.unknown.length > 0) {
+    io.stderr(`deq: warning: left out characters with no glyph: ${codePoints(r.unknown)}\n`);
+  }
+  emit(io, command.name, [await sceneFile("leet", r.svg, flags)], flags);
+}
+
+async function generate(io: Io, command: Command, flags: Flags): Promise<void> {
+  const r = pattern(renderOptions(command, flags));
+  const kind = (flags.get("kind") as string | undefined) ?? "band";
+  const seed = (flags.get("seed") as number | undefined) ?? 1;
+  emit(io, command.name, [await sceneFile(`pattern-${kind}-${String(seed)}`, r.svg, flags)], flags);
+}
+
+/** Read a regular file of at most `maxBytes` as UTF-8, refusing symbolic links. */
+function readText(io: Io, file: string, maxBytes: number): string {
   const path = resolve(io.cwd, file);
   const st = lstat(path);
   if (st === undefined) throw new IoError(`cannot read ${file}: not found`);
   if (st.isSymbolicLink()) throw new IoError(`${file} is a symbolic link; pass the real file`);
   if (!st.isFile()) throw new IoError(`${file} is not a regular file`);
-  if (st.size > MAX_SPEC_BYTES) {
-    throw new IoError(`${file} is larger than ${String(MAX_SPEC_BYTES / 1024)} KB`);
+  if (st.size > maxBytes) {
+    throw new IoError(`${file} is larger than ${String(maxBytes / 1024)} KB`);
   }
+  try {
+    return readFileSync(path, "utf8");
+  } catch (error) {
+    const code = (error as { code?: string }).code ?? "error";
+    throw new IoError(`cannot read ${file}: ${code}`);
+  }
+}
+
+function validate(io: Io, file: string): void {
+  const text = readText(io, file, MAX_SPEC_BYTES);
   let json: unknown;
   try {
-    json = JSON.parse(readFileSync(path, "utf8"));
+    json = JSON.parse(text);
   } catch {
     throw new DeqError("INVALID_SHAPE", `${file}: not valid JSON`);
   }
@@ -352,6 +454,12 @@ export async function main(argv: readonly string[], io: Io, data: CliData = CLI)
         break;
       case "flag":
         emit(io, command.name, [await flagFile(flags)], flags);
+        break;
+      case "leet":
+        await leetCommand(io, command, args[0], flags);
+        break;
+      case "generate":
+        await generate(io, command, flags);
         break;
       case "validate":
         validate(io, args[0] ?? "");

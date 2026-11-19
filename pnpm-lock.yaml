@@ -239,6 +239,9 @@ importers:
       '@0xdolan/deq-exporters':
         specifier: workspace:*
         version: link:../exporters
+      '@0xdolan/deq-generator':
+        specifier: workspace:*
+        version: link:../generator
 
   packages/core:
     dependencies:

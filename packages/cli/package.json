@@ -41,6 +41,7 @@
   },
   "dependencies": {
     "@0xdolan/deq-core": "workspace:*",
-    "@0xdolan/deq-exporters": "workspace:*"
+    "@0xdolan/deq-exporters": "workspace:*",
+    "@0xdolan/deq-generator": "workspace:*"
   }
 }

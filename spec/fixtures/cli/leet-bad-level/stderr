@@ -1,0 +1,2 @@
+deq: error: option --level: "loud" is not one of basic, advanced, full
+Run "deq leet --help" for usage.

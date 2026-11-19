@@ -1,0 +1,53 @@
+Usage: deq generate [options]
+
+Generate a seeded pattern of Deq motifs.
+
+Options:
+      --kind <kind>            Pattern kind. Default band. Values: band, grid,
+                               rosette, border.
+      --seed <n>               Seed, 0 to 4294967295; the same seed gives the
+                               same pattern. Default 1.
+      --motifs <list>          Comma-separated shape ids to choose from (1 to
+                               64). Default every shape.
+      --count <n>              Band length, odd, 3 to 63. Default 9.
+      --cols <n>               Grid or border columns, 1 to 32 (border at least
+                               3). Default 5 (grid), 7 (border).
+      --rows <n>               Grid or border rows, 1 to 32 (border at least 3).
+                               Default 5 (grid), 3 (border).
+      --petals <n>             Rosette petals, 3 to 24. Default 8.
+      --spacing <n>            Space between cells in grid units, 0 to 24.
+                               Default 2.
+      --format <format>        Output format. Default svg. Values: svg, png,
+                               jpg, webp.
+      --size <px>              Size in px of one 24 x 24 cell, 1 to 8192.
+                               Default 24.
+      --colors <list>          Comma-separated colours given to the glyphs in
+                               turn (1 to 16).
+      --title <text>           Accessible title. Default "Deq <kind> pattern";
+                               "" marks the image decorative.
+      --out <path>             Output file or directory; - writes to stdout.
+                               Default: the current directory.
+      --color <color>          Stroke and dot colour (any CSS colour). Default
+                               currentColor.
+      --stroke-width <n>       Stroke width in grid units, 0.05 to 12. Default
+                               2.
+      --absolute-stroke-width  Keep the stroke the same width in px at any size.
+      --fill <color>           Fill for closed outlines, or none. Default none.
+      --fill-opacity <0-1>     Opacity of the fill. Default 1.
+      --stroke-opacity <0-1>   Opacity of strokes and dots. Default 1.
+      --linecap <linecap>      Line ends. Default round. Values: round, butt,
+                               square.
+      --linejoin <linejoin>    Line corners. Default round. Values: round,
+                               miter, bevel.
+      --dot-scale <n>          Multiply every dot radius, 0.1 to 4. Default 1.
+      --padding <n>            Space around the 24 x 24 canvas in grid units, 0
+                               to 24. Default 0.
+      --background <color>     Background colour, or none. Default none.
+      --current-color <color>  What currentColor means in PDF and image formats.
+                               Default black.
+      --matte <color>          JPG background behind transparent pixels. Default
+                               white.
+      --quality <0-100>        JPG and WebP quality. Default 90.
+      --force                  Overwrite existing files.
+  -h, --help                   Show help.
+  -V, --version                Print the version.

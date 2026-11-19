@@ -1,0 +1,2 @@
+deq: error: --decode cannot be combined with --format
+Run "deq leet --help" for usage.
