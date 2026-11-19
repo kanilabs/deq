@@ -54,3 +54,33 @@ RING: dict[str, Any] = {
 
 SHAPES = [Shape.load(SUN), Shape.load(RING)]
 CODEPOINTS = {"roj-half-sun": "E000", "ring-dot": "E001"}
+
+
+def _line(y: float) -> list[dict[str, Any]]:
+    return [{"kind": "poly", "points": [[2, y], [22, y]], "closed": False, "paint": "stroke"}]
+
+
+def _glyph(char: str, alts: int) -> dict[str, Any]:
+    return {
+        "char": char,
+        "basic": _line(8),
+        "advanced": [_line(10 + i) for i in range(alts)],
+        "full": _line(16),
+    }
+
+
+#: A small `font-data` output: `!` is in both tables, `1` is taken in Sorani by an alias.
+LEET: dict[str, Any] = {
+    "scripts": {
+        "latin": {
+            "direction": "ltr",
+            "aliases": {"·": "!"},
+            "glyphs": [_glyph(c, n) for c, n in (("A", 2), ("B", 0), ("Ç", 1), ("!", 0), ("1", 0))],
+        },
+        "sorani": {
+            "direction": "rtl",
+            "aliases": {"1": "\u0661", "ٮ": "ب", "،": "!"},
+            "glyphs": [_glyph("ب", 1), _glyph("!", 0), _glyph("\u0661", 0)],
+        },
+    }
+}

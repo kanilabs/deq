@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from deq_fonts import cli
-from fonts_samples import RING, SUN
+from fonts_samples import LEET, RING, SUN
 
 
 @pytest.fixture
@@ -18,6 +18,7 @@ def repo(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     geometry = tmp_path / "fonts" / "build" / "geometry.json"
     geometry.parent.mkdir(parents=True)
     geometry.write_text(json.dumps({"shapes": [SUN, RING]}), encoding="utf-8")
+    (geometry.parent / "leet.json").write_text(json.dumps(LEET), encoding="utf-8")
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr("deq_fonts.cli.ROOT", tmp_path)
     return tmp_path
@@ -33,6 +34,8 @@ def test_codepoints_write_then_check(repo: Path, capsys: pytest.CaptureFixture[s
     assert cli.main(["codepoints"]) == 0
     assert (repo / "fonts" / "codepoints.json").exists()
     assert "U+E001" in (repo / "docs" / "fonts" / "codepoints.md").read_text("utf-8")
+    assert "U+F000" in (repo / "docs" / "fonts" / "leet-codepoints.md").read_text("utf-8")
+    assert (repo / "fonts" / "leet-codepoints.json").exists()
     assert cli.main(["codepoints", "--check"]) == 0
     assert cli.main(["codepoints"]) == 0
     assert "wrote" not in capsys.readouterr().out.split("codepoints.md")[-1]
@@ -41,6 +44,11 @@ def test_codepoints_write_then_check(repo: Path, capsys: pytest.CaptureFixture[s
 def test_missing_geometry(repo: Path) -> None:
     with pytest.raises(SystemExit, match="font-data"):
         cli.main(["codepoints", "--geometry", "nope.json"])
+
+
+def test_missing_leet(repo: Path) -> None:
+    with pytest.raises(SystemExit, match="deq-generator font-data"):
+        cli.main(["build", "--leet", "nope.json"])
 
 
 def test_build(repo: Path, capsys: pytest.CaptureFixture[str]) -> None:
@@ -55,9 +63,16 @@ def test_build(repo: Path, capsys: pytest.CaptureFixture[str]) -> None:
         "DeqIconsColor-Regular.woff2",
         "DeqIcons[DOTS,wght].ttf",
         "DeqIcons[DOTS,wght].woff2",
+        "DeqLeet-Regular.otf",
+        "DeqLeet-Regular.ttf",
+        "DeqLeet-Regular.woff2",
         "codepoints.json",
         "deq-icons.css",
+        "deq-leet.css",
+        "leet-codepoints.json",
     ]
+    used = json.loads((repo / "dist" / "leet-codepoints.json").read_text("utf-8"))
+    assert used["codepoints"]["latin"]["A"]["advanced"] == ["F001", "F002"]
     assert f"wrote {Path('dist', 'DeqIcons-Regular.ttf')}" in capsys.readouterr().out
 
 
@@ -97,7 +112,10 @@ def test_install_check_passes(
     (tmp_path / "a.ttf").write_bytes(b"")
     (tmp_path / "b.otf").write_bytes(b"")
     (tmp_path / "c.css").write_text("")
-    _fake_fontconfig(monkeypatch, "Deq Icons|Regular|/x/b.otf\nDeq Icons Color|Regular|/x/a.ttf\n")
+    _fake_fontconfig(
+        monkeypatch,
+        "Deq Icons|Regular|/x/b.otf\nDeq Icons Color|Regular|/x/a.ttf\nDeq Leet|Regular|/x/a.ttf\n",
+    )
     assert cli.main(["install-check", str(tmp_path)]) == 0
     assert "2 fonts found" in capsys.readouterr().out
 

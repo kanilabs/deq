@@ -40,8 +40,9 @@ jobs:
       - uses: ./.github/actions/setup
         with:
           rust: "false"
-      - run: pnpm exec turbo run build --filter=@0xdolan/deq-core
+      - run: pnpm exec turbo run build --filter=@0xdolan/deq-core --filter=@0xdolan/deq-generator
       - run: pnpm --filter @0xdolan/deq-icons font-data fonts/build/geometry.json
+      - run: pnpm --filter @0xdolan/deq-generator font-data fonts/build/leet.json
       - run: uv run --frozen deq-fonts codepoints --check
       - run: uv run --frozen deq-fonts build
       - run: pnpm exec turbo run build --filter=@0xdolan/deq-site

@@ -103,9 +103,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   - Python and Rust `deq-shapes` ports of `leet`, `decode_leet` and `pattern`, writing every Leet fixture byte for byte, with fdlibm `sin`/`cos` so rotations match V8;
   - `deq leet` (with `--decode`) and `deq generate` in the Node, Python and Rust CLIs, exporting SVG, PNG, JPG or WebP, with 44 new shared CLI cases;
   - `omit` in `spec/cli.json` to drop single flags from a shared flag set.
+- Phase 9c the Deq Leet font (ADR 0016):
+  - `DeqLeet-Regular.otf`, `.ttf` and `.woff2`, monospaced, drawn from the generator's glyphs, with `deq-leet.css`;
+  - normal Latin, Kurmanji and Sorani text shows the basic glyphs, including lower case, aliases and decomposed letters; `locl` picks the Sorani glyphs in Arabic-script text, `ss01`–`ss03` and `salt` the advanced alternatives and full motifs;
+  - a Private Use Area code point from U+F000 for every glyph in `fonts/leet-codepoints.json` and `docs/fonts/leet-codepoints.md`, so text copied as PUA keeps its exact glyphs;
+  - fontbakery with no FAIL in CI, and the generator's `font-data` script.
 
 ### Changed
 
+- The icon fonts' code points are capped at U+E000–U+EFFF, leaving U+F000–U+F8FF to the Leet font.
 - The site's header logo, favicon, app icons, share-card mark and Brand page use the Dot rosette instead of the chin mark (concept A).
 - cargo-deny allows the IJG licence for the `jpeg-encoder` crate only (permissive and GPL-compatible).
 - The repository moved to the `kanilabs` organisation: repository, issue, badge and security links now point to `github.com/kanilabs/deq`, and the site, schema `$id`s and CSP allowlist to `kanilabs.github.io`. The npm scope stays `@0xdolan`.

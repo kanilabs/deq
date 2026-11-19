@@ -33,6 +33,8 @@ packages/generator/src/generated/
 # Written by `uv run deq-fonts codepoints` (checked by `deq-fonts codepoints --check`)
 fonts/codepoints.json
 docs/fonts/codepoints.md
+fonts/leet-codepoints.json
+docs/fonts/leet-codepoints.md
 # Generated for the ports by packages/core and packages/cli (checked by tests)
 python/deq-shapes/src/deq_shapes/data/
 rust/deq-shapes/data/

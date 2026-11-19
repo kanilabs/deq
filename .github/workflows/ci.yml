@@ -122,10 +122,14 @@ jobs:
       DEQ_REQUIRE_TOOLS: "1"
     steps:
       - name: Install Inkscape and Ghostscript
+        # The Azure mirror that GitHub's own runners use; archive.ubuntu.com has had outages.
+        # apt still checks the archive signatures, so the mirror needs no trust.
         run: |
-          apt-get update
-          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-            ca-certificates git inkscape ghostscript
+          sed -i -E 's#http://(archive|security)\.ubuntu\.com#http://azure.archive.ubuntu.com#g' \
+            /etc/apt/sources.list.d/ubuntu.sources
+          apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 update
+          DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 \
+            install -y --no-install-recommends ca-certificates git inkscape ghostscript
           inkscape --version
           gs --version
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -154,15 +158,18 @@ jobs:
         with:
           rust: "false"
       - run: uv sync --frozen --group fonts
-      - run: pnpm exec turbo run build --filter=@0xdolan/deq-core
+      - run: pnpm exec turbo run build --filter=@0xdolan/deq-core --filter=@0xdolan/deq-generator
       - run: pnpm --filter @0xdolan/deq-icons font-data fonts/build/geometry.json
+      - run: pnpm --filter @0xdolan/deq-generator font-data fonts/build/leet.json
       - run: uv run --frozen deq-fonts codepoints --check
       - run: uv run --frozen deq-fonts build
-      # One run per file: the static, variable and colour fonts are separate families.
+      # One run per file: the static, variable, colour and Leet fonts are separate families.
+      # fontbakery 1.1.0's monospace check crashes on CFF fonts, so the Leet OTF skips it (ADR 0016).
       - name: fontbakery (fails on any FAIL)
         run: |
           for f in fonts/dist/*.ttf fonts/dist/*.otf; do
-            uv run --frozen --group fonts fontbakery check-universal --loglevel WARN --succinct "$f"
+            skip=(); [[ "$f" == *DeqLeet-Regular.otf ]] && skip=(-x opentype/monospace)
+            uv run --frozen --group fonts fontbakery check-universal --loglevel WARN --succinct "${skip[@]}" "$f"
           done
       - run: uv run --frozen deq-fonts install-check
 
@@ -180,8 +187,9 @@ jobs:
       - uses: ./.github/actions/setup
         with:
           rust: "false"
-      - run: pnpm exec turbo run build --filter=@0xdolan/deq-core
+      - run: pnpm exec turbo run build --filter=@0xdolan/deq-core --filter=@0xdolan/deq-generator
       - run: pnpm --filter @0xdolan/deq-icons font-data fonts/build/geometry.json
+      - run: pnpm --filter @0xdolan/deq-generator font-data fonts/build/leet.json
       - run: uv run --frozen deq-fonts build
       - run: pnpm exec turbo run build --filter=@0xdolan/deq-site
       - run: pnpm --filter @0xdolan/deq-site exec playwright install --with-deps chromium

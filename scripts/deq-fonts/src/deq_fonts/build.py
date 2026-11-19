@@ -45,7 +45,7 @@ from fontTools.ttLib.tables.S_V_G_ import SVGDocument, table_S_V_G_
 from fontTools.varLib import build as build_variable
 
 from deq_fonts.letters import CHARACTERS, LETTERS, NOTDEF
-from deq_fonts.outline import BASELINE, SCALE, UPM, Contour, draw, outline, to_font
+from deq_fonts.outline import BASELINE, SCALE, UPM, Contour, Node, draw, outline, to_font
 
 FAMILY = "Deq Icons"
 COLOR_FAMILY = "Deq Icons Color"
@@ -88,6 +88,7 @@ LICENSE = (
 )
 LICENSE_URL = "https://www.gnu.org/licenses/gpl-faq.html#FontException"
 URL = "https://kanilabs.github.io/deq/"
+DESCRIPTION = "Icons from traditional Kurdish tattoo (deq) motifs."
 
 
 @dataclass
@@ -98,6 +99,8 @@ class Glyph:
     codepoint: int | None = None
     #: Colour layers: (palette index, items), for the colour font.
     layers: list[tuple[int, list[Mapping[str, Any]]]] = field(default_factory=list)
+    #: Horizontal shift of the outline in canvas units.
+    offset: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -184,8 +187,11 @@ def features(ligs: Mapping[str, str]) -> str:
     )
 
 
-def _contours(items: Iterable[Mapping[str, Any]], stroke: float, dots: float) -> list[Contour]:
-    return to_font(outline(items, stroke, dots))
+def _contours(
+    items: Iterable[Mapping[str, Any]], stroke: float, dots: float, offset: float = 0.0
+) -> list[Contour]:
+    dx = offset * SCALE
+    return [[Node(n.x + dx, n.y, n.on) for n in c] for c in to_font(outline(items, stroke, dots))]
 
 
 def _bounds(contours: Sequence[Contour]) -> tuple[float, float, float, float] | None:
@@ -194,7 +200,9 @@ def _bounds(contours: Sequence[Contour]) -> tuple[float, float, float, float] | 
     return pen.bounds  # type: ignore[no-any-return]
 
 
-def _names(family: str, style: str, version: str, postscript: str) -> dict[str, str]:
+def _names(
+    family: str, style: str, version: str, postscript: str, description: str
+) -> dict[str, str]:
     return {
         "copyright": "Copyright 2026 0xdolan and the Deq contributors",
         "familyName": family,
@@ -205,7 +213,7 @@ def _names(family: str, style: str, version: str, postscript: str) -> dict[str, 
         "psName": postscript,
         "manufacturer": "Kani Labs",
         "designer": "0xdolan",
-        "description": "Icons from traditional Kurdish tattoo (deq) motifs.",
+        "description": description,
         "vendorURL": URL,
         "designerURL": URL,
         "licenseDescription": LICENSE,
@@ -223,17 +231,27 @@ def font(
     cff: bool = False,
     overlaps: bool = False,
     weight: int = 400,
+    cmap: Mapping[int, str] | None = None,
+    leading: int = 0,
+    description: str = DESCRIPTION,
 ) -> TTFont:
-    """One static font. ``overlaps`` keeps the overlapping contours (variable masters)."""
+    """One static font. ``overlaps`` keeps the overlapping contours (variable masters).
+    Without ``cmap`` each glyph maps its own code point, and capitals share the lowercase
+    letter glyphs. ``leading`` (font units) is added half above and half below the line."""
+    ascent = ASCENT + leading // 2
+    descent = DESCENT + leading - leading // 2
     style = "Regular"
     postscript = f"{family.replace(' ', '')}-{style}"
     fb = FontBuilder(UPM, isTTF=not cff)
     fb.setupGlyphOrder([g.name for g in glyph_list])
-    cmap = {g.codepoint: g.name for g in glyph_list if g.codepoint is not None}
-    # Capitals share the lowercase glyphs, so `Roj` and `ROJ` ligate too.
-    cmap |= {ord(c.upper()): n for n, c in CHARACTERS.items() if c.isalpha() and n in cmap.values()}
-    fb.setupCharacterMap(cmap)
-    contours = {g.name: _contours(g.items, stroke, dots) for g in glyph_list}
+    if cmap is None:
+        cmap = {g.codepoint: g.name for g in glyph_list if g.codepoint is not None}
+        # Capitals share the lowercase glyphs, so `Roj` and `ROJ` ligate too.
+        cmap |= {
+            ord(c.upper()): n for n, c in CHARACTERS.items() if c.isalpha() and n in cmap.values()
+        }
+    fb.setupCharacterMap(dict(cmap))
+    contours = {g.name: _contours(g.items, stroke, dots, g.offset) for g in glyph_list}
     metrics: dict[str, tuple[int, int]] = {}
     for g in glyph_list:
         box = _bounds(contours[g.name])
@@ -255,19 +273,19 @@ def font(
                 tt[g.name].flags[0] |= flagOverlapSimple
         fb.setupGlyf(tt)
     fb.setupHorizontalMetrics(metrics)
-    fb.setupHorizontalHeader(ascent=ASCENT, descent=-DESCENT, lineGap=0)
-    fb.setupNameTable(_names(family, style, version, postscript))
+    fb.setupHorizontalHeader(ascent=ascent, descent=-descent, lineGap=0)
+    fb.setupNameTable(_names(family, style, version, postscript, description))
     fb.setupOS2(
         version=4,
         achVendID=VENDOR,
         usWeightClass=weight,
         fsType=0,
         fsSelection=(1 << 6) | (1 << 7),  # REGULAR, USE_TYPO_METRICS
-        sTypoAscender=ASCENT,
-        sTypoDescender=-DESCENT,
+        sTypoAscender=ascent,
+        sTypoDescender=-descent,
         sTypoLineGap=0,
-        usWinAscent=ASCENT,
-        usWinDescent=DESCENT,
+        usWinAscent=ascent,
+        usWinDescent=descent,
         sxHeight=round((BASELINE - 11) * SCALE),
         sCapHeight=round((BASELINE - 6) * SCALE),
         usDefaultChar=0,
@@ -302,8 +320,8 @@ def _finish(tt: TTFont) -> None:
             if pen.bounds:
                 ys += [pen.bounds[1], pen.bounds[3]]
         head.yMin, head.yMax = math.floor(min(ys)), math.ceil(max(ys))
-    os2.usWinAscent = max(ASCENT, head.yMax)
-    os2.usWinDescent = max(DESCENT, -head.yMin)
+    os2.usWinAscent = max(os2.sTypoAscender, head.yMax)
+    os2.usWinDescent = max(-os2.sTypoDescender, -head.yMin)
 
 
 #: ``prep`` program that turns on smart dropout control for unhinted TrueType outlines.
@@ -311,9 +329,14 @@ DROPOUT = "PUSHW[ ] 511 SCANCTRL[ ] PUSHB[ ] 4 SCANTYPE[ ]"
 
 
 def _features(tt: TTFont, ligs: Mapping[str, str]) -> None:
-    """Last step for every font: ligatures, Windows-only names and dropout control."""
+    """Last step for every icon font: ligatures, then :func:`finish_tables`."""
     addOpenTypeFeaturesFromString(tt, features(ligs))
     tt["OS/2"].usMaxContext = max(len(t) for t in ligs)
+    finish_tables(tt)
+
+
+def finish_tables(tt: TTFont) -> None:
+    """Windows-only names and, for TrueType, dropout control."""
     tt["name"].removeNames(platformID=1)
     if "glyf" in tt:
         prep = newTable("prep")

@@ -1,11 +1,12 @@
-"""``deq-fonts``: build and check the Deq icon fonts.
+"""``deq-fonts``: build and check the Deq icon fonts and the Deq Leet font.
 
-    deq-fonts codepoints [--check]    assign code points, write the code point table
-    deq-fonts build                   build every font, the CSS and codepoints.json
+    deq-fonts codepoints [--check]    assign code points, write the code point tables
+    deq-fonts build                   build every font, the CSS and the code point maps
     deq-fonts install-check [DIR]     install the fonts into a private fontconfig and list them
 
 The geometry comes from ``pnpm --filter @0xdolan/deq-icons font-data fonts/build/geometry.json``
-(``just fonts`` runs both steps).
+and ``pnpm --filter @0xdolan/deq-generator font-data fonts/build/leet.json`` (``just fonts``
+runs every step).
 """
 
 from __future__ import annotations
@@ -19,14 +20,28 @@ import tempfile
 from pathlib import Path
 
 from deq_fonts.build import Shape, color_font, static_fonts, variable_font, write
+from deq_fonts.leet import (
+    LeetCodepoints,
+    LeetScript,
+    assign_leet,
+    leet_codepoints_json,
+    leet_css,
+    leet_fonts,
+    leet_table,
+    load_leet,
+    load_leet_codepoints,
+)
 from deq_fonts.web import assign, codepoints_json, css, load_codepoints, table
 
 ROOT = Path.cwd()
 GEOMETRY = Path("fonts/build/geometry.json")
 CODEPOINTS = Path("fonts/codepoints.json")
 TABLE = Path("docs/fonts/codepoints.md")
+LEET = Path("fonts/build/leet.json")
+LEET_CODEPOINTS = Path("fonts/leet-codepoints.json")
+LEET_TABLE = Path("docs/fonts/leet-codepoints.md")
 DIST = Path("fonts/dist")
-EXPECTED = {"Deq Icons", "Deq Icons Color"}
+EXPECTED = {"Deq Icons", "Deq Icons Color", "Deq Leet"}
 
 
 def load_shapes(path: Path) -> list[Shape]:
@@ -44,11 +59,33 @@ def version() -> str:
     return f"{int(major)}.{int(minor):03d}"
 
 
-def cmd_codepoints(check: bool, geometry: Path) -> int:
+def _leet_used(scripts: list[LeetScript], cps: LeetCodepoints) -> str:
+    """The code points of the current table characters only."""
+    used = {
+        s.name: {
+            g.char: {
+                "basic": cps[s.name][g.char]["basic"],
+                "advanced": cps[s.name][g.char]["advanced"][: len(g.advanced)],
+                "full": cps[s.name][g.char]["full"],
+            }
+            for g in s.glyphs
+        }
+        for s in scripts
+    }
+    return leet_codepoints_json(used)
+
+
+def cmd_codepoints(check: bool, geometry: Path, leet: Path) -> int:
     shapes = load_shapes(geometry)
-    current = load_codepoints(CODEPOINTS)
-    cps = assign([s.id for s in shapes], current)
-    files = {CODEPOINTS: codepoints_json(cps), TABLE: table(shapes, cps)}
+    scripts = load_leet(leet)
+    cps = assign([s.id for s in shapes], load_codepoints(CODEPOINTS))
+    leet_cps = assign_leet(scripts, load_leet_codepoints(LEET_CODEPOINTS))
+    files = {
+        CODEPOINTS: codepoints_json(cps),
+        TABLE: table(shapes, cps),
+        LEET_CODEPOINTS: leet_codepoints_json(leet_cps),
+        LEET_TABLE: leet_table(scripts, leet_cps),
+    }
     stale = [p for p, text in files.items() if not p.exists() or p.read_text("utf-8") != text]
     if check:
         for p in stale:
@@ -61,18 +98,23 @@ def cmd_codepoints(check: bool, geometry: Path) -> int:
     return 0
 
 
-def cmd_build(geometry: Path, out: Path) -> int:
+def cmd_build(geometry: Path, leet: Path, out: Path) -> int:
     shapes = load_shapes(geometry)
+    scripts = load_leet(leet)
     cps = load_codepoints(CODEPOINTS)
+    leet_cps = load_leet_codepoints(LEET_CODEPOINTS)
     ver = version()
     fonts = static_fonts(shapes, cps, ver)
     fonts["DeqIcons[DOTS,wght].ttf"] = variable_font(shapes, cps, ver)
     fonts["DeqIconsColor-Regular.ttf"] = color_font(shapes, cps, ver)
+    fonts |= leet_fonts(scripts, leet_cps, ver)
     for path in write(fonts, out):
         print(f"wrote {path}")
     (out / "deq-icons.css").write_text(css(shapes, cps), encoding="utf-8")
+    (out / "deq-leet.css").write_text(leet_css(), encoding="utf-8")
     used = {s.id: cps[s.id] for s in shapes}
     (out / "codepoints.json").write_text(codepoints_json(used), encoding="utf-8")
+    (out / "leet-codepoints.json").write_text(_leet_used(scripts, leet_cps), encoding="utf-8")
     return 0
 
 
@@ -127,16 +169,18 @@ def main(argv: list[str] | None = None) -> int:
     p = sub.add_parser("codepoints", help="assign code points and write the table")
     p.add_argument("--check", action="store_true", help="fail if a file is out of date")
     p.add_argument("--geometry", type=Path, default=GEOMETRY)
+    p.add_argument("--leet", type=Path, default=LEET)
     p = sub.add_parser("build", help="build the fonts and CSS")
     p.add_argument("--geometry", type=Path, default=GEOMETRY)
+    p.add_argument("--leet", type=Path, default=LEET)
     p.add_argument("--out", type=Path, default=DIST)
     p = sub.add_parser("install-check", help="check that fontconfig finds the fonts")
     p.add_argument("fonts", nargs="?", type=Path, default=DIST)
     args = parser.parse_args(argv)
     if args.command == "codepoints":
-        return cmd_codepoints(args.check, args.geometry)
+        return cmd_codepoints(args.check, args.geometry, args.leet)
     if args.command == "build":
-        return cmd_build(args.geometry, args.out)
+        return cmd_build(args.geometry, args.leet, args.out)
     return cmd_install_check(args.fonts)
 
 
