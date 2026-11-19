@@ -1,0 +1,39 @@
+---
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+import { BASE } from "../../lib/base.ts";
+import { CATALOGS, localePaths, localizedPath } from "../../i18n/index.ts";
+import { pageContext } from "../../lib/page.ts";
+import Panel from "../../studio/components/LeetPanel.svelte";
+import { studioMessages } from "../../studio/i18n.ts";
+
+export const getStaticPaths = localePaths;
+
+const { locale, t } = pageContext(Astro.params.locale);
+const messages = studioMessages(CATALOGS[locale]);
+---
+
+<StarlightPage
+  frontmatter={{
+    title: t("leet.title"),
+    description: t("leet.description"),
+    tableOfContents: false,
+    head: [{ tag: "link", attrs: { rel: "stylesheet", href: `${BASE}fonts/deq-leet.css` } }],
+  }}
+>
+  <p>{t("leet.intro")} <a href={localizedPath(locale, "docs/leet/")}>{t("leet.guide")}</a></p>
+  <div class="panel-host not-content">
+    <Panel client:only="svelte" {messages} mode="page">
+      <p slot="fallback" class="panel-fallback">{t("leet.loading")}</p>
+    </Panel>
+    <noscript><p>{t("leet.noscript")}</p></noscript>
+  </div>
+</StarlightPage>
+
+<style>
+  .panel-fallback {
+    /* Taller than the viewport, so the footer does not jump when the panel mounts. */
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+  }
+</style>

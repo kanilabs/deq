@@ -15,7 +15,7 @@ import { buildDrawing } from "./drawing.js";
 import { writeEps } from "./eps.js";
 import { ICO_SIZES, toFaviconPack, toIco } from "./favicon.js";
 import type { FaviconOptions } from "./favicon.js";
-import { resolveItems } from "./input.js";
+import { SCENE_UNSUPPORTED, canvasPixels, resolveItems } from "./input.js";
 import type { ExportFile, ExportItem, Resolved } from "./input.js";
 import { writePdf } from "./pdf.js";
 import type { ColorSpace } from "./pdf.js";
@@ -167,11 +167,14 @@ const RASTER_TYPES: Record<RasterFormat, string> = {
 
 const suffix = (scale: number): string => (scale === 1 ? "" : `@${String(scale)}x`);
 
+/** The raster width at `scale`; both sides of a wide or tall scene must fit. */
 function pixelWidth(r: Resolved, scale: number): number {
-  const width = Math.round(r.prepared.options.size * scale);
-  if (width > MAX_RASTER) {
+  const px = canvasPixels(r.prepared);
+  const width = Math.round(px.width * scale);
+  const longest = Math.max(width, Math.round(px.height * scale));
+  if (longest > MAX_RASTER) {
     invalid([
-      `scales: ${r.name} at ${String(scale)}x is ${String(width)} px, more than ${String(MAX_RASTER)}`,
+      `scales: ${r.name} at ${String(scale)}x is ${String(longest)} px, more than ${String(MAX_RASTER)}`,
     ]);
   }
   return width;
@@ -293,6 +296,10 @@ export async function exportShapes(
   if (options.currentColor !== undefined) parseColor(options.currentColor);
   if (options.matte !== undefined) parseColor(options.matte);
   const resolved = resolveItems(items, options.render ?? {});
+  const scene = resolved.find((r) => r.scene !== undefined);
+  if (scene && (SCENE_UNSUPPORTED as readonly string[]).includes(format)) {
+    invalid([`items: ${scene.name} is a scene; ${format} takes single shapes only`]);
+  }
   let files: ExportFile[];
   switch (format) {
     case "svg-sprite":
@@ -336,13 +343,16 @@ export { writeEps } from "./eps.js";
 export type { EpsOptions } from "./eps.js";
 export { ICO_SIZES, packIco, toFaviconPack, toIco } from "./favicon.js";
 export type { FaviconOptions } from "./favicon.js";
-export { MAX_ITEMS, resolveItem, resolveItems } from "./input.js";
+export { MAX_ITEMS, SCENE_UNSUPPORTED, canvasPixels, resolveItem, resolveItems } from "./input.js";
 export type {
   CompositionItem,
   DataItem,
   ExportFile,
   ExportItem,
+  LeetItem,
+  PatternItem,
   Resolved,
+  SceneItem,
   ShapeItem,
 } from "./input.js";
 export { writePdf } from "./pdf.js";

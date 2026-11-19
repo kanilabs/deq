@@ -16,6 +16,7 @@ description: Export formats and the exporter contract for Deq shapes (SVG, layer
 - File names are unique without case; a format that writes one file for many items (sprite, CSS, favicon) handles that in `exportShapes`.
 - Limits: 512 items, raster width 8192 px, scales 1 to 8.
 - Items are a catalog id, a `ShapeItem`, a `CompositionItem` or a `DataItem` (shape spec as data, validated by `shape-data.ts` before core renders it; `use` only resolves catalog ids). The Studio exports custom shapes as `DataItem`s, one file per canvas item, ZIPped when there are several (ADR 0014, 8d).
+- Scene items (ADR 0017, 9d): `LeetItem` (`leet`), `PatternItem` (`pattern`) and `SceneItem` (`scene`, schema-checked). They go through the generator's `prepareScene`, keep the scene's aspect ratio (`canvasPixels`, rasters within `MAX_RASTER`), and give one layer per cell (`c1`, `c2`, …). Formats that need one square shape are listed in `SCENE_UNSUPPORTED`; the site mirrors it in `apps/site/src/studio/formats.ts` (a test keeps them equal). A new format goes in both places as needed.
 - In browsers, raster formats need `initRaster({ resvg })` first, and the page needs `'wasm-unsafe-eval'`.
 - Keep layers: layered SVG (Inkscape attributes), PDF/AI (one OCG per layer, `background` first), PSD (one pixel layer per used layer), Figma (named groups), spec JSON.
 

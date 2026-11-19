@@ -22,6 +22,10 @@ Deq Leet writes text as deq motifs. The tables in `spec/leet/` are the source; t
 - A glyph is a list of parts: a catalog `shape`, optional `params` and an optional `transform` with `rotate`, `scale` and `translate` in grid units. Ink must stay inside the 24-unit canvas.
 - `aliases` at the top map look-alike input to table characters, such as `—` to `-` or `۲` to `٢`.
 
+## On the site
+
+The `/leet` and `/generate` pages and the Studio tabs are described in [ADR 0017](../decisions/0017-leet-and-patterns-on-the-site.md), and for users in the site guides (`apps/site/src/content/docs/docs/leet.md`, `generate.md`). Frames and the font text are site features and never reach the fixtures.
+
 ## Changing a table
 
 1. Edit `spec/leet/<script>.json`, then run `uv run deq-spec fmt` and `uv run deq-spec lint`.

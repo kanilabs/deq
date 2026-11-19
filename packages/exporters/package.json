@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@0xdolan/deq-core": "workspace:*",
+    "@0xdolan/deq-generator": "workspace:*",
     "@jsquash/avif": "2.1.1",
     "@jsquash/jpeg": "1.6.0",
     "@jsquash/webp": "1.5.0",

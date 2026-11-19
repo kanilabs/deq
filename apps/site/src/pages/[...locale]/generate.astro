@@ -1,0 +1,38 @@
+---
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+
+import { CATALOGS, localePaths, localizedPath } from "../../i18n/index.ts";
+import { pageContext } from "../../lib/page.ts";
+import Panel from "../../studio/components/GeneratePanel.svelte";
+import { studioMessages } from "../../studio/i18n.ts";
+
+export const getStaticPaths = localePaths;
+
+const { locale, t } = pageContext(Astro.params.locale);
+const messages = studioMessages(CATALOGS[locale]);
+---
+
+<StarlightPage
+  frontmatter={{
+    title: t("generate.title"),
+    description: t("generate.description"),
+    tableOfContents: false,
+  }}
+>
+  <p>{t("generate.intro")} <a href={localizedPath(locale, "docs/generate/")}>{t("generate.guide")}</a></p>
+  <div class="panel-host not-content">
+    <Panel client:only="svelte" {messages} mode="page">
+      <p slot="fallback" class="panel-fallback">{t("generate.loading")}</p>
+    </Panel>
+    <noscript><p>{t("generate.noscript")}</p></noscript>
+  </div>
+</StarlightPage>
+
+<style>
+  .panel-fallback {
+    /* Taller than the viewport, so the footer does not jump when the panel mounts. */
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+  }
+</style>

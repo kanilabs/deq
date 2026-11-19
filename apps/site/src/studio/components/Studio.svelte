@@ -10,10 +10,14 @@
   import { translator, type StudioMessages } from "../i18n.ts";
   import { actionFor, loadBindings, saveBindings, type Action, type Bindings } from "../shortcuts.ts";
   import { Studio } from "../store.svelte.ts";
+  import { InsertError, type InsertOptions } from "../generate.ts";
+  import type { Scene } from "@0xdolan/deq-generator";
   import Canvas from "./Canvas.svelte";
   import ExportDialog from "./ExportDialog.svelte";
+  import GeneratePanel from "./GeneratePanel.svelte";
   import Inspector from "./Inspector.svelte";
   import Layers from "./Layers.svelte";
+  import LeetPanel from "./LeetPanel.svelte";
   import Library from "./Library.svelte";
   import ShapeEditor from "./ShapeEditor.svelte";
   import Shortcuts from "./Shortcuts.svelte";
@@ -40,7 +44,7 @@
   /** Which panel shows on narrow screens. */
   let panel = $state<"library" | "canvas" | "inspector">("canvas");
   /** Which list the left pane shows. */
-  let side = $state<"library" | "layers">("library");
+  let side = $state<"library" | "layers" | "leet" | "generate">("library");
   let ready = $state(false);
   /** The shape editor: closed, or open on a shape (null for a new one). */
   let editing = $state<{ def: CustomDef | undefined; n: number } | undefined>();
@@ -136,6 +140,18 @@
     if (item) {
       studio.announce(t("studio.act.add", { name }));
       panel = "canvas";
+    }
+  }
+
+  /** Add a Leet text or a pattern from the side panels as one group. */
+  function insertScene(scene: Scene, insert: Omit<InsertOptions, "x" | "y">): void {
+    try {
+      const ids = studio.insertScene(scene, insert, t("studio.act.insertScene"), viewport());
+      studio.announce(t("studio.scene.inserted", { count: ids.length }));
+      panel = "canvas";
+    } catch (e) {
+      if (!(e instanceof InsertError)) throw e;
+      tell(t(e.limit === "items" ? "studio.scene.full.items" : "studio.scene.full.shapes"), true);
     }
   }
 
@@ -345,7 +361,7 @@
   <div class="panes">
     <div class="pane pane-library" id="studio-pane-library">
       <div class="side-tabs" role="group" aria-label={t("studio.panels")}>
-        {#each [["library", "studio.tab.library"], ["layers", "studio.tab.layers"]] as const as [id, key] (id)}
+        {#each [["library", "studio.tab.library"], ["layers", "studio.tab.layers"], ["leet", "studio.tab.leet"], ["generate", "studio.tab.generate"]] as const as [id, key] (id)}
           <button type="button" data-side={id} aria-pressed={side === id} onclick={() => (side = id)}>{t(key)}</button>
         {/each}
       </div>
@@ -355,6 +371,14 @@
       {#if side === "layers"}
         <div class="side-body">
           <Layers {studio} {t} {locale} />
+        </div>
+      {:else if side === "leet"}
+        <div class="side-body side-panel">
+          <LeetPanel {messages} mode="studio" oninsert={insertScene} />
+        </div>
+      {:else if side === "generate"}
+        <div class="side-body side-panel">
+          <GeneratePanel {messages} mode="studio" oninsert={insertScene} />
         </div>
       {/if}
     </div>
@@ -440,6 +464,10 @@
   }
   .side-body[hidden] {
     display: none;
+  }
+  .side-panel {
+    overflow: auto;
+    padding: 0.75rem;
   }
   .pane-inspector {
     border-inline-start: 1px solid var(--sl-color-gray-5);

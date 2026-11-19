@@ -3,6 +3,7 @@
  * Every document change goes through {@link Studio.commit}, which records history.
  */
 import { DEFAULT_OPTIONS, prepare } from "@0xdolan/deq-core";
+import type { Scene } from "@0xdolan/deq-generator";
 
 import {
   align,
@@ -26,6 +27,7 @@ import {
   type CustomDef,
 } from "./custom.ts";
 import type { ShapeStore } from "./db.ts";
+import { insertScene, type InsertOptions } from "./generate.ts";
 import { History } from "./history.ts";
 import {
   DocError,
@@ -214,6 +216,27 @@ export class Studio {
     this.commit({ ...this.doc, items: [...this.doc.items, item] }, label);
     this.selection = [item.id];
     return item;
+  }
+
+  /**
+   * Add a Leet or pattern scene as one group, centred in the viewport, and select it.
+   * @throws {InsertError} when the design has no room for it.
+   */
+  insertScene(
+    scene: Scene,
+    insert: Omit<InsertOptions, "x" | "y">,
+    label: string,
+    viewport: { w: number; h: number },
+  ): string[] {
+    const k = insert.size / 24;
+    const cx = this.view.x + viewport.w / 2 / this.view.zoom;
+    const cy = this.view.y + viewport.h / 2 / this.view.zoom;
+    const x = Math.round((cx - (scene.width * k) / 2) / GRID) * GRID;
+    const y = Math.round((cy - (scene.height * k) / 2) / GRID) * GRID;
+    const { doc, ids } = insertScene(this.doc, scene, { ...insert, x, y });
+    this.commit(doc, label);
+    this.selection = ids;
+    return ids;
   }
 
   remove(ids: readonly string[], label: string): void {

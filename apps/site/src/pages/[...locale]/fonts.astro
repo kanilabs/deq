@@ -2,7 +2,7 @@
 import { BASE } from "../../lib/base.ts";
 import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
 
-import { localePaths } from "../../i18n/index.ts";
+import { localePaths, localizedPath } from "../../i18n/index.ts";
 import { codepoint, SHAPES, shapeName } from "../../lib/data.ts";
 import { pageContext } from "../../lib/page.ts";
 
@@ -10,6 +10,13 @@ export const getStaticPaths = localePaths;
 
 const { locale, t } = pageContext(Astro.params.locale);
 const specimen = SHAPES.slice(0, 24);
+const leetSamples = [
+  { text: "Deq Leet 2026", lang: "en", dir: "ltr" },
+  { text: "Kurdistan, Kurdî!", lang: "kmr", dir: "ltr" },
+  { text: "دەقی کوردی", lang: "ckb", dir: "rtl" },
+] as const;
+const leetSets = ["ss01", "ss02", "ss03"] as const;
+const leetHref = localizedPath(locale, "leet/");
 const kinds = [
   { key: "static", body: "fonts.static.body", cls: "deq" },
   { key: "variable", body: "fonts.variable.body", cls: "deq" },
@@ -21,7 +28,10 @@ const kinds = [
   frontmatter={{
     title: t("fonts.title"),
     description: t("fonts.description"),
-    head: [{ tag: "link", attrs: { rel: "stylesheet", href: `${BASE}fonts/deq-icons.css` } }],
+    head: [
+      { tag: "link", attrs: { rel: "stylesheet", href: `${BASE}fonts/deq-icons.css` } },
+      { tag: "link", attrs: { rel: "stylesheet", href: `${BASE}fonts/deq-leet.css` } },
+    ],
   }}
 >
   <p>{t("fonts.intro")}</p>
@@ -39,6 +49,39 @@ const kinds = [
       </section>
     ))
   }
+
+  <section>
+    <h2>{t("fonts.leet")}</h2>
+    <p>{t("fonts.leet.body")}</p>
+    {
+      leetSamples.map((l) => (
+        <figure class="leet-sample not-content">
+          <p class="deq-leet" lang={l.lang} dir={l.dir} aria-hidden="true">
+            {l.text}
+          </p>
+          <figcaption lang={l.lang} dir={l.dir}>
+            {l.text}
+          </figcaption>
+        </figure>
+      ))
+    }
+    <h3>{t("fonts.leet.alternates")}</h3>
+    {
+      leetSets.map((set) => (
+        <figure class="leet-sample not-content">
+          <p class={`deq-leet leet-${set}`} aria-hidden="true">
+            {leetSamples[0].text}
+          </p>
+          <figcaption>
+            <code>{set}</code>
+          </figcaption>
+        </figure>
+      ))
+    }
+    <p>
+      <a href={leetHref}>{t("fonts.leet.try")}</a>
+    </p>
+  </section>
 
   <section>
     <h2>{t("fonts.specimen")}</h2>
@@ -115,6 +158,28 @@ const kinds = [
     display: flex;
     align-items: center;
     gap: var(--deq-space-3);
+  }
+  .leet-sample {
+    margin-block: var(--deq-space-3);
+  }
+  .leet-sample .deq-leet {
+    margin: 0;
+    font-size: 2rem;
+    color: var(--deq-icon);
+    overflow-wrap: anywhere;
+  }
+  .leet-sample figcaption {
+    color: var(--sl-color-gray-3);
+    font-size: var(--sl-text-sm);
+  }
+  .leet-ss01 {
+    font-feature-settings: "ss01";
+  }
+  .leet-ss02 {
+    font-feature-settings: "ss02";
+  }
+  .leet-ss03 {
+    font-feature-settings: "ss03";
   }
   .glyph-cell {
     width: 3rem;

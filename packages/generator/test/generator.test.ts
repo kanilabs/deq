@@ -19,7 +19,9 @@ import {
   leetTable,
   normalize,
   packageName,
+  expandGlyph,
   pattern,
+  prepareScene,
   sceneSvg,
 } from "../src/index.ts";
 import type { LeetLevel, Script } from "../src/index.ts";
@@ -262,6 +264,55 @@ describe("sceneSvg", () => {
     const glyph = [{ shape: "dot" }];
     const cells = Array.from({ length: MAX_SCENE_ITEMS + 1 }, () => ({ x: 0, y: 0, glyph }));
     expect(err(() => sceneSvg({ width: 24, height: 24, cells })).code).toBe("LIMIT_EXCEEDED");
+  });
+});
+
+describe("prepareScene", () => {
+  it("moves each glyph into place, one layer per cell", () => {
+    const { scene } = leet("DEQ", { level: "basic" });
+    const p = prepareScene(scene, { size: 48 }, "DEQ");
+    expect(p.width).toBe(scene.width);
+    expect(p.height).toBe(scene.height);
+    expect(p.layers).toEqual(scene.cells.map((_c, i) => `c${String(i + 1)}`));
+    expect(p.defaultTitle).toBe("DEQ");
+    expect(p.options.layerColors).toEqual({});
+    const sizes = scene.cells.map((c) => expandGlyph(c.glyph).length);
+    expect(p.items).toHaveLength(sizes.reduce((a, b) => a + b, 0));
+    const cell = scene.cells[1];
+    const own = expandGlyph(cell?.glyph ?? []);
+    const placed = p.items.filter((it) => it.layer === "c2");
+    expect(placed).toHaveLength(own.length);
+    own.forEach((item, k) => {
+      const moved = placed[k];
+      if (item.kind === "poly" && moved?.kind === "poly") {
+        item.points.forEach(([x, y], j) => {
+          expect(moved.points[j]?.[0]).toBeCloseTo(x + (cell?.x ?? 0), 9);
+          expect(moved.points[j]?.[1]).toBeCloseTo(y + (cell?.y ?? 0), 9);
+        });
+      } else if (item.kind === "circle" && moved?.kind === "circle") {
+        expect(moved.cx).toBeCloseTo(item.cx + (cell?.x ?? 0), 9);
+        expect(moved.cy).toBeCloseTo(item.cy + (cell?.y ?? 0), 9);
+      }
+    });
+  });
+
+  it("keeps part transforms and gives colours to cells in turn", () => {
+    const glyph = [{ shape: "dot", transform: { translate: [2, 3] as const, scale: 0.5 } }];
+    const scene = { width: 72, height: 24, cells: [0, 24, 48].map((x) => ({ x, y: 0, glyph })) };
+    const p = prepareScene(scene, { colors: ["red", "blue"] });
+    expect(p.options.layerColors).toEqual({ c1: "red", c2: "blue", c3: "red" });
+    const xs = p.items.map((it) => (it.kind === "circle" ? it.cx : NaN));
+    const base = expandGlyph(glyph)[0];
+    const cx = base?.kind === "circle" ? base.cx : NaN;
+    expect(xs).toEqual([cx, cx + 24, cx + 48]);
+  });
+
+  it("validates options and caps the number of elements", () => {
+    const glyph = [{ shape: "dot" }];
+    const one = { width: 24, height: 24, cells: [{ x: 0, y: 0, glyph }] };
+    expect(err(() => prepareScene(one, { rotation: 9 } as never)).code).toBe("INVALID_OPTIONS");
+    const cells = Array.from({ length: MAX_SCENE_ITEMS + 1 }, () => ({ x: 0, y: 0, glyph }));
+    expect(err(() => prepareScene({ width: 24, height: 24, cells })).code).toBe("LIMIT_EXCEEDED");
   });
 });
 

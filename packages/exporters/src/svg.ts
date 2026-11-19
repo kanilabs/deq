@@ -1,9 +1,9 @@
 /** SVG-based exporters: optimised, layered, sprite, HTML, data URI, CSS and Figma. */
-import { DeqError, escapeXml, svgDocument } from "@0xdolan/deq-core";
+import { DeqError, escapeXml, num, svgDocument } from "@0xdolan/deq-core";
 
 import { BLACK, parseColor, toHex } from "./color.js";
 import type { Rgba } from "./color.js";
-import { resolveItem } from "./input.js";
+import { canvasPixels, resolveItem } from "./input.js";
 import type { ExportItem, Resolved } from "./input.js";
 
 /** The root attributes and inner markup of an SVG produced by core. */
@@ -39,9 +39,13 @@ export function splitSvg(svg: string): SvgParts {
 const asItem = (item: ExportItem | Resolved): Resolved =>
   typeof item === "object" && "prepared" in item ? item : resolveItem(item);
 
-/** Optimised SVG: core's minimal, deterministic output (`currentColor` by default). */
+/**
+ * Optimised SVG: core's minimal, deterministic output (`currentColor` by default). For a
+ * scene, the generator's SVG.
+ */
 export function toSvg(item: ExportItem | Resolved): string {
-  return svgDocument(asItem(item).prepared);
+  const r = asItem(item);
+  return r.scene ?? svgDocument(r.prepared);
 }
 
 const INKSCAPE = "http://www.inkscape.org/namespaces/inkscape";
@@ -131,9 +135,9 @@ export function cssClass(r: Resolved, className?: string): string {
  */
 export function toCssBackground(item: ExportItem | Resolved, className?: string): string {
   const r = asItem(item);
-  const uri = svgDataUri(svgDocument(r.prepared));
-  const size = r.prepared.options.size;
-  return `.${cssClass(r, className)} {\n  display: inline-block;\n  width: ${String(size)}px;\n  height: ${String(size)}px;\n  background: url("${uri}") no-repeat center / contain;\n}\n`;
+  const uri = svgDataUri(toSvg(r));
+  const { width, height } = canvasPixels(r.prepared);
+  return `.${cssClass(r, className)} {\n  display: inline-block;\n  width: ${num(width)}px;\n  height: ${num(height)}px;\n  background: url("${uri}") no-repeat center / contain;\n}\n`;
 }
 
 /**
@@ -142,10 +146,10 @@ export function toCssBackground(item: ExportItem | Resolved, className?: string)
  */
 export function toCssMask(item: ExportItem | Resolved, className?: string): string {
   const r = asItem(item);
-  const uri = svgDataUri(svgDocument(r.prepared));
-  const size = r.prepared.options.size;
+  const uri = svgDataUri(toSvg(r));
+  const { width, height } = canvasPixels(r.prepared);
   const mask = `url("${uri}") no-repeat center / contain`;
-  return `.${cssClass(r, className)} {\n  display: inline-block;\n  width: ${String(size)}px;\n  height: ${String(size)}px;\n  background-color: currentColor;\n  -webkit-mask: ${mask};\n  mask: ${mask};\n}\n`;
+  return `.${cssClass(r, className)} {\n  display: inline-block;\n  width: ${num(width)}px;\n  height: ${num(height)}px;\n  background-color: currentColor;\n  -webkit-mask: ${mask};\n  mask: ${mask};\n}\n`;
 }
 
 /**

@@ -11,7 +11,7 @@ import { fileURLToPath } from "node:url";
 import type { AstroIntegration } from "astro";
 
 const SOURCE = fileURLToPath(new URL("../../../fonts/dist/", import.meta.url));
-const WANTED = /^(?:Deq[\w[\],-]*\.woff2|deq-icons\.css)$/u;
+const WANTED = /^(?:Deq[\w[\],-]*\.woff2|deq-(?:icons|leet)\.css)$/u;
 
 export function fonts(): AstroIntegration {
   return {

@@ -30,6 +30,16 @@ await exportShapes("favicon", ["kurdish-sun"], {
 
 An item is a catalog id, `{ shape, name?, params?, options? }`, a composition `{ parts, name? }` (parts as in core's `compose`), or a shape given as data `{ data, name?, params?, options? }` (a shape spec that is not in the catalog, validated against the shape schema first; `use` may only point at catalog shapes). `name` (kebab case) sets the file name and defaults to the shape id. Up to 512 items per call. Item options win over `options.render`.
 
+### Scenes
+
+Three items export a whole scene from `@0xdolan/deq-generator` (ADR 0017), with one layer per glyph or motif (`c1`, `c2`, … in reading order):
+
+- `{ leet, options?, name? }`: Leet text, with the generator's `leet` options and its render options. Default name `deq-leet`.
+- `{ pattern, name? }`: a seeded pattern; `pattern` holds the `pattern` options. Default name `deq-<kind>`.
+- `{ scene, options?, title?, name? }`: a scene built by the caller, such as Leet text in a frame. It is checked against a strict schema and core's limits first. Default name `deq-scene`.
+
+Scenes keep their aspect ratio: `size` is the pixel size of one 24-unit cell, and rasters stay within 8192 × 8192 px. `svg-sprite`, `ico`, `favicon`, `figma` and `spec-json` need one square shape and refuse scenes (`SCENE_UNSUPPORTED`).
+
 ## Formats
 
 | Format           | Output                                | Layers                                 |
