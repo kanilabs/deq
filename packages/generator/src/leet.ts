@@ -5,7 +5,7 @@ import * as v from "valibot";
 import { Random, MAX_SEED } from "./random.js";
 import { glyphMarkup, resolveSceneOptions, sceneSvg } from "./scene.js";
 import type { Cell, Scene, SceneOptions } from "./scene.js";
-import { detectScript, leetTable, normalize } from "./tables.js";
+import { MAX_GLYPHS, MAX_LINES, detectScript, leetTable, normalize } from "./tables.js";
 import type { Glyph, LeetEntry, Script } from "./tables.js";
 
 /** How much a text is transformed. */
@@ -138,10 +138,15 @@ export interface DecodedLeet {
 /** Largest SVG {@link decodeLeet} reads, in UTF-16 code units. */
 export const MAX_DECODE_INPUT = 4 * 1024 * 1024;
 
-const META =
-  /^<svg [^>]*?data-deq-leet="(latin|sorani) (basic|advanced|full) ([0-9.]+) ([0-9.]+)"/u;
-const GROUP =
-  /<g data-layer="c[0-9]+" transform="translate\((-?[0-9.]+) (-?[0-9.]+)\)"(?: color="[^"<>]*" stroke="currentColor")?>([^]*?)<\/g>/gu;
+const NUM = "[0-9]+(?:\\.[0-9]+)?";
+const META = new RegExp(
+  `^<svg [^>]*?data-deq-leet="(latin|sorani) (basic|advanced|full) (${NUM}) (${NUM})"`,
+  "u",
+);
+const GROUP = new RegExp(
+  `<g data-layer="c[0-9]+" transform="translate\\((-?${NUM}) (-?${NUM})\\)"(?: color="[^"<>]*" stroke="currentColor")?>([^]*?)</g>`,
+  "gu",
+);
 
 /**
  * Read the text back from Leet SVG written by {@link leet} at the `basic` level. Each
@@ -150,7 +155,7 @@ const GROUP =
  * treated as text and only matched against what {@link leet} writes.
  *
  * @throws {DeqError} `INVALID_OPTIONS` when the input is not Deq Leet SVG, or
- * `LIMIT_EXCEEDED`.
+ * `LIMIT_EXCEEDED` (input over {@link MAX_DECODE_INPUT}, more than {@link MAX_GLYPHS} glyphs).
  */
 export function decodeLeet(svg: string, options: SceneOptions = {}): DecodedLeet {
   if (typeof svg !== "string" || svg.length > MAX_DECODE_INPUT) {
@@ -164,25 +169,34 @@ export function decodeLeet(svg: string, options: SceneOptions = {}): DecodedLeet
     const issue = "svg: not Deq Leet SVG (no data-deq-leet attribute)";
     throw new DeqError("INVALID_OPTIONS", `invalid input: ${issue}`, [issue]);
   }
-  const script = meta[1] as Script;
+  const script = meta[1] === "sorani" ? "sorani" : "latin";
   const ax = Number(meta[3]);
   const ay = Number(meta[4]);
+  // The advances leet() can write: 24 plus the letter (0..24) or line (0..48) spacing.
+  if (ax < 24 || ax > 48 || ay < 24 || ay > 72) {
+    const issue = "svg: data-deq-leet advances out of range";
+    throw new DeqError("INVALID_OPTIONS", `invalid input: ${issue}`, [issue]);
+  }
   const o = resolveSceneOptions(options).render;
   const byMarkup = new Map<string, string>();
   for (const entry of leetTable(script).glyphs)
     byMarkup.set(glyphMarkup(entry.basic, o), entry.char);
   let text = "";
   let unmatched = 0;
+  let glyphs = 0;
   let prev: [number, number] | undefined;
   for (const [, xs, ys, inner] of svg.matchAll(GROUP)) {
+    glyphs += 1;
+    if (glyphs > MAX_GLYPHS) {
+      throw new DeqError("LIMIT_EXCEEDED", `SVG has more than ${String(MAX_GLYPHS)} glyphs`);
+    }
     const x = Number(xs);
     const y = Number(ys);
     if (prev) {
-      const rows = Math.round((y - prev[1]) / ay);
-      text +=
-        rows > 0
-          ? "\n".repeat(rows)
-          : " ".repeat(Math.max(0, Math.round(Math.abs(x - prev[0]) / ax) - 1));
+      // Gaps are capped at what leet() can write, so crafted offsets cannot blow up the text.
+      const rows = Math.min(Math.round((y - prev[1]) / ay), MAX_LINES);
+      const gap = Math.round(Math.abs(x - prev[0]) / ax) - 1;
+      text += rows > 0 ? "\n".repeat(rows) : " ".repeat(Math.min(Math.max(0, gap), MAX_GLYPHS));
     }
     prev = [x, y];
     const char = byMarkup.get(inner ?? "");

@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 
 import { CHART_FILE, leetChart } from "../scripts/chart.ts";
 import { LEET_FIXTURES, leetCases, leetFiles } from "../scripts/fixture-cases.ts";
-import { OUT_FILE, generateLeet } from "../scripts/generate-leet.ts";
+import { OUT_FILE, PORT_FILES, generateLeet, generatePortData } from "../scripts/generate-leet.ts";
 import {
   MAX_GLYPHS,
   MAX_INPUT,
@@ -43,6 +43,7 @@ const groups = (svg: string) => [
 describe("tables", () => {
   it("are generated from spec/leet", () => {
     expect(readFileSync(OUT_FILE, "utf8")).toBe(generateLeet());
+    for (const file of PORT_FILES) expect(readFileSync(file, "utf8")).toBe(generatePortData());
     expect(packageName).toBe("@0xdolan/deq-generator");
   });
 
@@ -154,6 +155,29 @@ describe("decodeLeet", () => {
     expect(err(() => decodeLeet("<svg/>")).code).toBe("INVALID_OPTIONS");
     expect(err(() => decodeLeet(" ".repeat(4 * 1024 * 1024 + 1))).code).toBe("LIMIT_EXCEEDED");
     expect(err(() => decodeLeet(1 as unknown as string)).code).toBe("LIMIT_EXCEEDED");
+    expect(err(() => decodeLeet('<svg data-deq-leet="latin basic 0 0">')).issues).toEqual([
+      "svg: data-deq-leet advances out of range",
+    ]);
+    const g = (x: number, y: number) =>
+      `<g data-layer="c1" transform="translate(${String(x)} ${String(y)})"></g>`;
+    const many = `<svg data-deq-leet="latin basic 26 30">${g(0, 0).repeat(MAX_GLYPHS + 1)}`;
+    expect(err(() => decodeLeet(many)).message).toMatch(/more than 256 glyphs/u);
+  });
+
+  it("caps the gaps it reads from crafted offsets", () => {
+    const g = (x: number, y: number) =>
+      `<g data-layer="c1" transform="translate(${String(x)} ${String(y)})"></g>`;
+    const head = '<svg data-deq-leet="latin basic 26 30">';
+    expect(decodeLeet(`${head}${g(0, 0)}${g(0, 1e12)}`).text).toBe(
+      `\uFFFD${"\n".repeat(MAX_LINES)}\uFFFD`,
+    );
+    expect(decodeLeet(`${head}${g(0, 0)}${g(1e12, 0)}`).text).toBe(
+      `\uFFFD${" ".repeat(MAX_GLYPHS)}\uFFFD`,
+    );
+    expect(
+      decodeLeet(`${head}${g(0, 0)}<g data-layer="c2" transform="translate(1.2.3 0)"></g>`)
+        .unmatched,
+    ).toBe(1);
   });
 
   it("marks glyphs it cannot read and needs the render options used", () => {
