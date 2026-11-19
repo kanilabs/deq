@@ -17,6 +17,7 @@ import {
   renderShapeData,
   resolveOptions,
   svgDocument,
+  svgRoot,
 } from "./index.js";
 
 const err = (fn: () => unknown): DeqError => {
@@ -311,5 +312,21 @@ describe("prepare and composeShape", () => {
 
   it("composeShape rejects bad parts", () => {
     expect(err(() => composeShape([])).code).toBe("INVALID_OPTIONS");
+  });
+});
+
+describe("svgRoot", () => {
+  it("scales wide canvases like the 24-unit box", () => {
+    const o = resolveOptions({
+      size: 48,
+      padding: 2,
+      absoluteStrokeWidth: true,
+      background: "#fff",
+    });
+    const root = svgRoot(o, "Wide", {}, 52, 24);
+    expect(root).toContain('width="96" height="48" viewBox="-2 -2 56 28"');
+    expect(root).toContain('stroke-width="1.167"');
+    expect(root).toContain('<rect x="-2" y="-2" width="56" height="28"');
+    expect(svgRoot(resolveOptions({}), "x", {}, 24, 48)).toContain('width="24" height="48"');
   });
 });
