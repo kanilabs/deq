@@ -184,3 +184,50 @@ def test_module_radii(repo: Path, edit: Editor) -> None:
     errs = "\n".join(errors(repo))
     assert "circle r 4 is not a module radius [2, 3, 5]" in errs
     assert "dot r 1.5 is not a module radius [1, 2]" in errs
+
+
+LATIN = "spec/leet/latin.json"
+SORANI = "spec/leet/sorani.json"
+
+
+def test_leet_rules(repo: Path, edit: Editor) -> None:
+    def latin(d: dict[str, Any]) -> None:
+        d["script"] = "sorani"
+        g = d["glyphs"]
+        g[1]["basic"] = g[0]["basic"]
+        g[2]["char"] = "A"
+        g[3]["char"] = "d"
+        g[4]["full"] = [{"shape": "ghost"}]
+        g[5]["advanced"] = [[{"shape": "comb", "params": {"teeth": 99}}]]
+        g[6]["basic"] = [{"shape": "ring", "transform": {"translate": [20, 0]}}]
+        d["aliases"] = {"A": "B", "~": "@"}
+
+    edit(LATIN, latin)
+    edit(SORANI, lambda d: d.update(direction="ltr") or None)
+    (repo / "spec/leet/extra.json").write_text("{}", encoding="utf-8")
+    errs = "\n".join(errors(repo))
+    for needle in [
+        "latin.json: script 'sorani' does not match the file name",
+        "latin.json: direction of sorani must be rtl",
+        "sorani.json: direction of sorani must be rtl",
+        "'B' basic glyph is the same as 'A'",
+        "'A' is listed twice",
+        "'d' must be upper case",
+        "'E' full: shape 'ghost' does not exist",
+        "'F' advanced[0]: comb: teeth=99 is outside",
+        "'G' basic: ink [",
+        "alias 'A' is also a character",
+        "alias '~' points to '@'",
+        "spec/leet/extra.json: unexpected file",
+    ]:
+        assert needle in errs
+
+
+def test_leet_missing_invalid_or_unformatted(repo: Path, edit: Editor) -> None:
+    edit(LATIN, lambda d: d.update(version=0) or None)
+    assert any(e.startswith(f"{LATIN}: schema") for e in errors(repo))
+    path = repo / SORANI
+    path.write_text(path.read_text(encoding="utf-8").replace("\n", "\n "), encoding="utf-8")
+    assert f"{SORANI}: not canonically formatted: run `uv run deq-spec fmt`" in errors(repo)
+    path.unlink()
+    assert f"{SORANI}: missing" in errors(repo)
