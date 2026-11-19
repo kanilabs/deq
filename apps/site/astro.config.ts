@@ -72,6 +72,8 @@ export default defineConfig({
         { ...label("nav.home"), link: "/" },
         { ...label("nav.icons"), link: "/icons/" },
         { ...label("nav.studio"), link: "/studio/" },
+        { ...label("nav.leet"), link: "/leet/" },
+        { ...label("nav.generate"), link: "/generate/" },
         { ...label("nav.flag"), link: "/flag/" },
         { ...label("nav.fonts"), link: "/fonts/" },
         { ...label("nav.brand"), link: "/brand/" },

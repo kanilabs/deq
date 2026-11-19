@@ -164,6 +164,10 @@ export interface Prepared {
   readonly layers: readonly string[];
   /** The title used when `options.title` is not set (the English name). */
   readonly defaultTitle: string;
+  /** Canvas width in grid units when it is not 24 (scenes). Default: 24. */
+  readonly width?: number;
+  /** Canvas height in grid units when it is not 24 (scenes). Default: 24. */
+  readonly height?: number;
 }
 
 /**
@@ -210,7 +214,8 @@ export function svgRoot(
  * {@link render} returns.
  */
 export function svgDocument(p: Prepared, hooks: SvgHooks = {}): string {
-  return `${svgRoot(p.options, p.defaultTitle, hooks)}${body(p.items, p.options, hooks)}</svg>`;
+  const root = svgRoot(p.options, p.defaultTitle, hooks, p.width ?? CANVAS, p.height ?? CANVAS);
+  return `${root}${body(p.items, p.options, hooks)}</svg>`;
 }
 
 function checkLayers(shape: ShapeData, o: ResolvedOptions): void {

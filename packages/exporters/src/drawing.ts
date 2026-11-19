@@ -7,6 +7,7 @@ import type { Flat, Prepared, Vec } from "@0xdolan/deq-core";
 
 import { BLACK, parseColor } from "./color.js";
 import type { Rgba } from "./color.js";
+import { canvasPixels } from "./input.js";
 
 /** A path command in canvas units. */
 export type PathCmd =
@@ -186,8 +187,12 @@ const JOIN = { miter: 0, round: 1, bevel: 2 } as const;
 export function buildDrawing(p: Prepared, currentColor: Rgba = BLACK): Drawing {
   const o = p.options;
   const box = CANVAS + 2 * o.padding;
-  const width = o.size * 0.75;
-  const k = width / box;
+  const px = canvasPixels(p);
+  const width = px.width * 0.75;
+  const height = px.height * 0.75;
+  const k = (o.size * 0.75) / box;
+  const w = p.width ?? CANVAS;
+  const h = p.height ?? CANVAS;
   const root = parseColor(o.color, currentColor);
   const layerInk = new Map<string, Rgba>();
   const ink = (layer: string): Rgba => {
@@ -245,9 +250,9 @@ export function buildDrawing(p: Prepared, currentColor: Rgba = BLACK): Drawing {
       : {
           path: [
             ["m", -o.padding, -o.padding],
-            ["l", CANVAS + o.padding, -o.padding],
-            ["l", CANVAS + o.padding, CANVAS + o.padding],
-            ["l", -o.padding, CANVAS + o.padding],
+            ["l", w + o.padding, -o.padding],
+            ["l", w + o.padding, h + o.padding],
+            ["l", -o.padding, h + o.padding],
             ["h"],
           ],
           fill: parseColor(o.background, root),
@@ -255,8 +260,8 @@ export function buildDrawing(p: Prepared, currentColor: Rgba = BLACK): Drawing {
 
   return {
     width,
-    height: width,
-    base: [k, 0, 0, -k, k * o.padding, width - k * o.padding],
+    height,
+    base: [k, 0, 0, -k, k * o.padding, height - k * o.padding],
     transforms,
     lineWidth: o.absoluteStrokeWidth ? (o.strokeWidth * box) / o.size : o.strokeWidth,
     linecap: CAP[o.linecap],

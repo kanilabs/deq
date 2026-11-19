@@ -14,35 +14,13 @@ import {
 } from "@0xdolan/deq-exporters";
 
 import { isCustomId, toShapeData, type CustomDef } from "./custom.ts";
+import { RASTER } from "./formats.ts";
 import type { Item } from "./model.ts";
 import { zip } from "./zip.ts";
 
 export { FORMATS, type ExportFormat };
 
-/** Formats grouped for the export dialog. */
-export const FORMAT_GROUPS: readonly { id: string; formats: readonly ExportFormat[] }[] = [
-  { id: "vector", formats: ["svg", "svg-layered", "svg-sprite", "pdf", "ai", "eps"] },
-  { id: "raster", formats: ["png", "jpg", "webp", "avif", "ico", "favicon", "psd"] },
-  {
-    id: "code",
-    formats: ["html", "jsx", "tsx", "vue", "svelte", "data-uri", "css-background", "css-mask"],
-  },
-  { id: "data", formats: ["figma", "spec-json"] },
-];
-
-/** Formats drawn by the WebAssembly rasteriser (see {@link runExport}'s `prepare`). */
-export const RASTER: ReadonlySet<ExportFormat> = new Set([
-  "png",
-  "jpg",
-  "webp",
-  "avif",
-  "ico",
-  "favicon",
-  "psd",
-]);
-
-/** Formats that use the scale factors. */
-export const SCALED: ReadonlySet<ExportFormat> = new Set(["png", "jpg", "webp", "avif", "psd"]);
+export { FORMAT_GROUPS, RASTER, SCALED, SCENE_FORMAT_GROUPS } from "./formats.ts";
 
 /** Kebab-case file name from a label, or `fallback` when nothing usable is left. */
 export function slug(label: string, fallback: string): string {

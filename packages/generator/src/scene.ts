@@ -11,7 +11,7 @@ import {
   resolveOptions,
   svgRoot,
 } from "@0xdolan/deq-core";
-import type { Flat, RenderOptions, ResolvedOptions, ShapeData } from "@0xdolan/deq-core";
+import type { Flat, Prepared, RenderOptions, ResolvedOptions, ShapeData } from "@0xdolan/deq-core";
 import * as v from "valibot";
 
 import type { Glyph } from "./tables.js";
@@ -161,4 +161,62 @@ export function sceneSvg(
     out += `<g data-layer="c${String(i + 1)}" transform="translate(${num(cell.x)} ${num(cell.y)})"${style}>${inner}</g>`;
   });
   return `${out}</svg>`;
+}
+
+/** The glyph of `cell` moved to its place in the scene, in layer `layer`. */
+function placedShape(cell: Cell, layer: string): ShapeData {
+  const base = glyphShape(cell.glyph);
+  return {
+    ...base,
+    layers: [layer],
+    primitives: cell.glyph.map((part) => {
+      // The translation is applied last (after scale and rotation), so the cell offset adds.
+      const [dx, dy] = part.transform?.translate ?? [0, 0];
+      return {
+        type: "use" as const,
+        shape: part.shape,
+        layer,
+        ...(part.params ? { params: part.params } : {}),
+        transform: { ...part.transform, translate: [dx + cell.x, dy + cell.y] as const },
+      };
+    }),
+  };
+}
+
+/**
+ * Prepare `scene` for exporters: the geometry of every cell moved into place, one layer
+ * `cN` per cell and `colors` as layer colours, on a `width` x `height` canvas. With no
+ * colours the layers stay ungrouped, like a single shape; {@link sceneSvg} is the SVG
+ * writer, this is for the other formats.
+ *
+ * @param title The default title.
+ * @throws {DeqError} like {@link sceneSvg}.
+ */
+export function prepareScene(scene: Scene, options: SceneOptions = {}, title = ""): Prepared {
+  const { render, colors } = resolveSceneOptions(options);
+  const items: Flat[] = [];
+  const layers: string[] = [];
+  const layerColors: Record<string, string> = {};
+  scene.cells.forEach((cell, i) => {
+    const layer = `c${String(i + 1)}`;
+    const flats = expandShape(placedShape(cell, layer), {});
+    if (items.length + flats.length > MAX_SCENE_ITEMS) {
+      throw new DeqError(
+        "LIMIT_EXCEEDED",
+        `scene expands to more than ${String(MAX_SCENE_ITEMS)} elements`,
+      );
+    }
+    items.push(...flats);
+    layers.push(layer);
+    const c = colors.length > 0 ? colors[i % colors.length] : undefined;
+    if (c !== undefined) layerColors[layer] = c;
+  });
+  return {
+    options: { ...render, layerColors },
+    items,
+    layers,
+    defaultTitle: title,
+    width: scene.width,
+    height: scene.height,
+  };
 }

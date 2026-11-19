@@ -13,7 +13,7 @@
  */
 import { createHash } from "node:crypto";
 import { readdir, readFile, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type { AstroIntegration } from "astro";
@@ -46,8 +46,11 @@ export function hashInlineScripts(html: string): { html: string; added: number }
   return { html: html.replace(META, `$1${updated}$3`), added: missing.size };
 }
 
-/** Pages that compile WebAssembly: the Studio in every locale. */
-export const WASM_PAGES = /(?:^|[/\\])studio[/\\]index\.html$/u;
+/**
+ * Pages that compile WebAssembly (the rasteriser): the Studio, Leet and pattern pages in every
+ * locale. Matched against the path relative to the build folder.
+ */
+export const WASM_PAGES = /^(?:(?:ckb|kmr)[/\\])?(?:studio|leet|generate)[/\\]index\.html$/u;
 
 /** Add `source` to the page's `script-src` (once). */
 export function addScriptSource(html: string, source: string): string {
@@ -77,10 +80,11 @@ export function csp(): AstroIntegration {
     hooks: {
       "astro:build:done": async ({ dir, logger }) => {
         let pages = 0;
-        for (const file of await htmlFiles(fileURLToPath(dir))) {
+        const root = fileURLToPath(dir);
+        for (const file of await htmlFiles(root)) {
           const original = await readFile(file, "utf8");
           const { html: hashed } = hashInlineScripts(original);
-          const html = WASM_PAGES.test(file)
+          const html = WASM_PAGES.test(relative(root, file))
             ? addScriptSource(hashed, "'wasm-unsafe-eval'")
             : hashed;
           if (html !== original) {

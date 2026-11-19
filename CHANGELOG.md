@@ -108,6 +108,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   - normal Latin, Kurmanji and Sorani text shows the basic glyphs, including lower case, aliases and decomposed letters; `locl` picks the Sorani glyphs in Arabic-script text, `ss01`–`ss03` and `salt` the advanced alternatives and full motifs;
   - a Private Use Area code point from U+F000 for every glyph in `fonts/leet-codepoints.json` and `docs/fonts/leet-codepoints.md`, so text copied as PUA keeps its exact glyphs;
   - fontbakery with no FAIL in CI, and the generator's `font-data` script.
+- Phase 9d Leet and patterns on the site and in the Studio (ADR 0017):
+  - a `/leet` page with a live preview, level, script, seed, spacing and alignment, band or border frames, line guides, colours, export in every scene format, copy as Deq Leet font text (PUA) and reading basic Leet back;
+  - a `/generate` page for seeded bands, grids, rosettes and borders, with a random seed and a motif filter;
+  - "Leet" and "Patterns" tabs in the Studio that add text or a pattern as one editable group, with custom shapes for glyphs of several motifs;
+  - scene items in `@0xdolan/deq-exporters` (`leet`, `pattern` and `scene`), with one layer per glyph and `SCENE_UNSUPPORTED`; `prepareScene` in the generator, and `width` and `height` on core's prepared SVG;
+  - a Leet specimen with the stylistic sets on the Fonts page, user guides for Leet and patterns, and e2e tests on desktop and mobile.
 
 ### Changed
 

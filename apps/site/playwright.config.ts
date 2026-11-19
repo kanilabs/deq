@@ -10,7 +10,7 @@ export default defineConfig({
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
     // Studio is also checked on a phone (PRD §8.5 definition of done).
-    { name: "mobile", use: { ...devices["Pixel 7"] }, testMatch: /studio\.spec\.ts$/u },
+    { name: "mobile", use: { ...devices["Pixel 7"] }, testMatch: /(?:studio|leet)\.spec\.ts$/u },
   ],
   webServer: {
     command: "pnpm exec astro preview --port 4321 --ignore-lock",

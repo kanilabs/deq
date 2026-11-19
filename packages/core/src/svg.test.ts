@@ -290,6 +290,11 @@ describe("svgDocument hooks", () => {
     const svg = render("kurdish-flag", { rotation: 90, layerColors: { sun: "#FEBD11" } });
     expect(svg).toMatch(/<g transform="rotate\(90 12 12\)"><g data-layer=/);
   });
+
+  it("uses the canvas size of a wide prepared scene", () => {
+    const p = { ...prepare(getShape("dot"), { size: 24 }), width: 48, height: 24 };
+    expect(svgDocument(p)).toContain('width="48" height="24" viewBox="0 0 48 24"');
+  });
 });
 
 describe("prepare and composeShape", () => {

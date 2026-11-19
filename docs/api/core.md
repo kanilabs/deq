@@ -564,6 +564,8 @@ A shape ready to draw: resolved options and flat geometry in canvas units.
 - `items: readonly Flat[]`: The geometry, in drawing order.
 - `layers: readonly string[]`: The layer ids of the shape, in declaration order.
 - `defaultTitle: string`: The title used when `options.title` is not set (the English name).
+- `width?: number`: Canvas width in grid units when it is not 24 (scenes). Default: 24.
+- `height?: number`: Canvas height in grid units when it is not 24 (scenes). Default: 24.
 
 ### `RadialPrimitive`
 

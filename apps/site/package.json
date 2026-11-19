@@ -18,6 +18,7 @@
   "dependencies": {
     "@0xdolan/deq-core": "workspace:*",
     "@0xdolan/deq-exporters": "workspace:*",
+    "@0xdolan/deq-generator": "workspace:*",
     "@astrojs/starlight": "0.42.10",
     "@astrojs/svelte": "9.1.2",
     "@fontsource-variable/noto-sans": "5.3.0",

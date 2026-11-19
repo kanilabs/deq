@@ -1,6 +1,7 @@
 import { inflateRawSync } from "node:zlib";
 
 import { DeqError, render } from "@0xdolan/deq-core";
+import { SCENE_UNSUPPORTED } from "@0xdolan/deq-exporters";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -13,6 +14,7 @@ import {
   FORMATS,
   FORMAT_GROUPS,
   RASTER,
+  SCENE_FORMAT_GROUPS,
   exportItems,
   runExport,
   slug,
@@ -164,6 +166,8 @@ const moon: CustomDef = parseCustomDef({
 describe("export", () => {
   it("groups every format exactly once", () => {
     expect(FORMAT_GROUPS.flatMap((g) => g.formats).toSorted()).toEqual([...FORMATS].toSorted());
+    const scene = SCENE_FORMAT_GROUPS.flatMap((g) => g.formats);
+    expect([...scene, ...SCENE_UNSUPPORTED].toSorted()).toEqual([...FORMATS].toSorted());
   });
 
   it("makes kebab-case names", () => {

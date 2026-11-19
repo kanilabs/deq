@@ -52,18 +52,22 @@ describe("addScriptSource", () => {
     expect(() => addScriptSource("<head></head>", "'x'")).toThrow(/CSP/);
   });
 
-  it("matches only the Studio pages", () => {
+  it("matches only the Studio, Leet and pattern pages", () => {
     for (const file of [
-      "dist/studio/index.html",
-      "dist/ckb/studio/index.html",
-      "C:\\d\\kmr\\studio\\index.html",
+      "studio/index.html",
+      "ckb/studio/index.html",
+      "kmr\\studio\\index.html",
+      "leet/index.html",
+      "kmr/generate/index.html",
     ]) {
       expect(WASM_PAGES.test(file)).toBe(true);
     }
     for (const file of [
-      "dist/index.html",
-      "dist/icons/studio-x/index.html",
-      "dist/studio/x/index.html",
+      "index.html",
+      "icons/studio-x/index.html",
+      "studio/x/index.html",
+      "docs/leet/index.html",
+      "ckb/docs/generate/index.html",
     ]) {
       expect(WASM_PAGES.test(file)).toBe(false);
     }

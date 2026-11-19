@@ -26,3 +26,4 @@ Phase 9 adds Deq Leet, which writes text as deq motifs, and a generator for seed
 - A new table character needs a unique basic glyph, a lint pass, and fresh fixtures and chart. It also needs code points from `uv run deq-fonts codepoints` for the Leet font (ADR 0016).
 - Decoding needs the render options used for the output. Other options read as U+FFFD instead of guessing.
 - The Leet font (9c, ADR 0016) gives every glyph a PUA code point. Copy as PUA text ships with the site page in 9d.
+- The site's Leet and pattern pages, the Studio tabs and scene export are in ADR 0017 (9d). Frames and the PUA text are site features; the generator, ports and fixtures are unchanged.

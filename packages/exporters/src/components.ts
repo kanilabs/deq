@@ -25,7 +25,10 @@ interface Model {
   /** Static root attributes (without size, colour, stroke width and accessibility). */
   readonly attrs: readonly (readonly [string, string])[];
   readonly inner: string;
+  /** Default `size` in px: the width and height, or the height of a wide scene. */
   readonly size: number;
+  /** A scene: `size` sets the height and the width follows the aspect ratio. */
+  readonly wide: boolean;
   readonly color: string;
   readonly strokeWidth: string;
   readonly title: string;
@@ -47,11 +50,13 @@ function model(r: Resolved): Model {
   const svg = svgDocument({ ...p, options: { ...p.options, title: "", ariaLabel: "" } });
   const { attrs, inner } = splitSvg(svg);
   const get = (k: string): string | undefined => attrs.find(([a]) => a === k)?.[1];
+  const wide = p.width !== undefined || p.height !== undefined;
   return {
     component: componentName(r.name),
     attrs: attrs.filter(([k]) => !DYNAMIC.has(k)),
     inner,
-    size: p.options.size,
+    size: wide ? Number(get("height")) : p.options.size,
+    wide,
     color: p.options.color,
     strokeWidth: get("stroke-width") ?? "2",
     title: p.options.title ?? p.defaultTitle,
@@ -66,6 +71,10 @@ function jsxMarkup(markup: string): string {
   return markup.replace(/ ([a-z]+(?:-[a-z]+)+)="/g, (_m, k: string) => ` ${camel(k)}="`);
 }
 
+/** The doc comment of the `size` prop. */
+const sizeDoc = (m: Model): string =>
+  m.wide ? "Height in px; the width follows the aspect ratio." : "Width and height in px.";
+
 /** The numeric default of the stroke width prop. */
 const strokeDefault = (m: Model): string => String(Number(m.strokeWidth));
 
@@ -77,12 +86,12 @@ export function toReact(r: Resolved, typescript: boolean): string {
   const attrs = m.attrs.map(([k, v]) => ` ${camel(k)}="${v}"`).join("");
   const props = `{\n  size = ${String(m.size)},\n  color = ${lit(m.color)},\n  strokeWidth = ${strokeDefault(m)},\n  title = ${lit(m.title)},\n  ...props\n}`;
   const types = typescript
-    ? `import type { SVGProps } from "react";\n\nexport interface ${m.component}Props extends SVGProps<SVGSVGElement> {\n  /** Width and height in px. */\n  size?: number | string;\n  /** Stroke and dot colour. */\n  color?: string;\n  /** Stroke width in grid units. */\n  strokeWidth?: number | string;\n  /** Accessible title; "" marks the icon decorative. */\n  title?: string;\n}\n\n`
+    ? `import type { SVGProps } from "react";\n\nexport interface ${m.component}Props extends SVGProps<SVGSVGElement> {\n  /** ${sizeDoc(m)} */\n  size?: number | string;\n  /** Stroke and dot colour. */\n  color?: string;\n  /** Stroke width in grid units. */\n  strokeWidth?: number | string;\n  /** Accessible title; "" marks the icon decorative. */\n  title?: string;\n}\n\n`
     : "";
   const sig = typescript ? `${props}: ${m.component}Props` : props;
   return (
     `// ${HEADER}\n${types}export function ${m.component}(${sig}) {\n  return (\n` +
-    `    <svg${attrs.replace(" fill=", " width={size} height={size} fill=")} strokeWidth={strokeWidth} color={color}` +
+    `    <svg${attrs.replace(" fill=", `${m.wide ? "" : " width={size}"} height={size} fill=`)} strokeWidth={strokeWidth} color={color}` +
     ` role={title ? "img" : undefined} aria-label={title || undefined} aria-hidden={title ? undefined : true} {...props}>\n` +
     `      {title ? <title>{title}</title> : null}\n      ${jsxMarkup(m.inner)}\n    </svg>\n  );\n}\n\nexport default ${m.component};\n`
   );
@@ -95,7 +104,7 @@ export function toVue(r: Resolved): string {
   return (
     `<!-- ${HEADER} -->\n<script setup lang="ts">\nwithDefaults(\n  defineProps<{\n    size?: number | string;\n    color?: string;\n    strokeWidth?: number | string;\n    title?: string;\n  }>(),\n` +
     `  { size: ${String(m.size)}, color: ${lit(m.color)}, strokeWidth: ${strokeDefault(m)}, title: ${lit(m.title)} },\n);\n</script>\n\n` +
-    `<template>\n  <svg${attrs.replace(" fill=", ' :width="size" :height="size" fill=')} :stroke-width="strokeWidth" :color="color"` +
+    `<template>\n  <svg${attrs.replace(" fill=", `${m.wide ? "" : ' :width="size"'} :height="size" fill=`)} :stroke-width="strokeWidth" :color="color"` +
     ` :role="title ? 'img' : undefined" :aria-label="title || undefined" :aria-hidden="title ? undefined : 'true'">\n` +
     `    <title v-if="title">{{ title }}</title>\n    ${m.inner}\n  </svg>\n</template>\n`
   );
@@ -111,7 +120,7 @@ export function toSvelte(r: Resolved): string {
     `<!-- ${HEADER} -->\n<script lang="ts">\n  import type { SVGAttributes } from "svelte/elements";\n\n` +
     `  interface Props extends SVGAttributes<SVGSVGElement> {\n    size?: number | string;\n    color?: string;\n    strokeWidth?: number | string;\n    title?: string;\n  }\n\n` +
     `  let {\n    size = ${String(m.size)},\n    color = ${lit(m.color)},\n    strokeWidth = ${strokeDefault(m)},\n    title = ${lit(m.title)},\n    ...rest\n  }: Props = $props();\n</script>\n\n` +
-    `<svg${attrs.replace(" fill=", " width={size} height={size} fill=")} stroke-width={strokeWidth} {color}` +
+    `<svg${attrs.replace(" fill=", `${m.wide ? "" : " width={size}"} height={size} fill=`)} stroke-width={strokeWidth} {color}` +
     ` role={title ? "img" : undefined} aria-label={title || undefined} aria-hidden={title ? undefined : "true"} {...rest}>\n` +
     `  {#if title}<title>{title}</title>{/if}\n  ${safe(m.inner)}\n</svg>\n`
   );

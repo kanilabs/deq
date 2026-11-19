@@ -21,6 +21,7 @@ export {
   expandGlyph,
   glyphMarkup,
   glyphShape,
+  prepareScene,
   resolveSceneOptions,
   sceneSvg,
 } from "./scene.js";
