@@ -13,7 +13,8 @@
     "typecheck": "astro check --minimumSeverity warning && svelte-check --threshold warning",
     "test": "vitest run --coverage",
     "e2e": "playwright test",
-    "lighthouse": "node e2e/lighthouse.ts"
+    "lighthouse": "node e2e/lighthouse.ts",
+    "links": "node e2e/links.ts"
   },
   "dependencies": {
     "@0xdolan/deq-core": "workspace:*",

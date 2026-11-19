@@ -1,0 +1,53 @@
+---
+/**
+ * `<Figure id="…" />`: a manifest image with its caption, credit, source and licence.
+ * The link opens the largest variant (the lightbox enhances it when JavaScript runs).
+ * Animations show their still poster to people who prefer reduced motion.
+ */
+import { useTranslations } from "../../i18n/index.ts";
+import { assetOf, captionOf, CC_BY_NC_SA, FIGURE_SIZES, isFirstFigure, localeFromPath, pictureOf } from "../../lib/story.ts";
+
+interface Props {
+  id: string;
+}
+
+const locale = localeFromPath(Astro.url.pathname);
+const t = useTranslations(locale);
+const asset = assetOf(Astro.props.id);
+const { caption, alt } = captionOf(asset.id, locale);
+const pic = pictureOf(asset);
+// The first figure of a page is usually the largest paint: load it at once. Later ones
+// load lazily and let the browser pick a variant for their laid-out size.
+const first = isFirstFigure(Astro.request);
+const loading = first ? "eager" : "lazy";
+const sizes = first ? FIGURE_SIZES : `auto, ${FIGURE_SIZES}`;
+const large = pic.animated ?? pic.large;
+const credit = asset.attribution === "unknown" ? t("story.unknown") : t("story.credit", { credit: asset.credit });
+---
+
+<figure class="deq-figure" id={`img-${asset.id}`}>
+  <a href={large} class="deq-zoom" data-alt={alt} data-caption={caption} aria-label={t("story.enlarge", { caption })}>
+    {pic.animated === undefined ? (
+      <picture>
+        <source type="image/avif" srcset={pic.avif} sizes={sizes} />
+        <source type="image/webp" srcset={pic.webp} sizes={sizes} />
+        <img src={pic.src} alt={alt} width={pic.width} height={pic.height} loading={loading} decoding="async" fetchpriority={first ? "high" : undefined} />
+      </picture>
+    ) : (
+      <picture>
+        <source media="(prefers-reduced-motion: reduce)" type="image/avif" srcset={pic.avif} />
+        <source media="(prefers-reduced-motion: reduce)" type="image/webp" srcset={pic.webp} />
+        <img src={pic.animated} alt={alt} width={pic.width} height={pic.height} loading={loading} decoding="async" />
+      </picture>
+    )}
+  </a>
+  <figcaption>
+    <span>{caption}</span>
+    <small>
+      <span dir="auto">{credit}</span>
+      {asset.attribution === "inferred" && <span> · {t("story.attributed")}</span>}
+      {asset.rights === "cc-by-nc-sa-2.0" && <span> · <a href={CC_BY_NC_SA} rel="license">{t("story.license")}</a></span>}
+      {asset.sourceUrl !== null && <span> · <a href={asset.sourceUrl} rel="noopener noreferrer">{t("story.sourcePage")}</a></span>}
+    </small>
+  </figcaption>
+</figure>
