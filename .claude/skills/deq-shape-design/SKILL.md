@@ -42,6 +42,10 @@ The format reference is `docs/design/shape-spec.md`, and the decision record is 
 - The national emblem has 21 rays. Other ray counts are for design use only, and are never shown as the flag.
 - Follow `deq-brand` for colour and flag usage.
 
+## Leet tables
+
+- `spec/leet/{latin,sorani}.json` map characters to glyphs made of catalog shapes (guide `docs/design/leet.md`, ADR 0015). Basic glyphs must be unique and readable; ink stays inside 0..24. Run `deq-spec fmt` and `lint`, then `pnpm --filter @0xdolan/deq-generator generate` and `fixtures`, and check `docs/design/leet-chart.svg`.
+
 ## Generated files
 
 - `metrics` in each shape, and `docs/design/*.svg`, are generated. Regenerate them; never edit them by hand.
