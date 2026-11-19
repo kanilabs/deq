@@ -5,7 +5,15 @@
  *   node scripts/generate-leet.ts           write the file
  *   node scripts/generate-leet.ts --check   fail if the file is out of date
  */
-import { lstatSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  closeSync,
+  constants,
+  fstatSync,
+  mkdirSync,
+  openSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -15,12 +23,23 @@ export const OUT_FILE = join(here, "..", "src", "generated", "leet.ts");
 const SCRIPTS = ["latin", "sorani"] as const;
 const MAX_BYTES = 256 * 1024;
 
-/** Read a regular, non-symlinked file of at most `maxBytes`. */
+/** `O_NOFOLLOW` where the platform has it (not on Windows). */
+const NOFOLLOW: number = (constants as Partial<typeof constants>).O_NOFOLLOW ?? 0;
+
+/**
+ * Read a regular file of at most `maxBytes` as UTF-8, refusing symlinks. The file is opened
+ * once and checked through its descriptor, so it cannot be swapped between check and read.
+ */
 export function readText(path: string, maxBytes: number = MAX_BYTES): string {
-  const st = lstatSync(path);
-  if (!st.isFile()) throw new Error(`${path}: not a regular file`);
-  if (st.size > maxBytes) throw new Error(`${path}: larger than ${String(maxBytes)} bytes`);
-  return readFileSync(path, "utf8");
+  const fd = openSync(path, constants.O_RDONLY | NOFOLLOW);
+  try {
+    const st = fstatSync(fd);
+    if (!st.isFile()) throw new Error(`${path}: not a regular file`);
+    if (st.size > maxBytes) throw new Error(`${path}: larger than ${String(maxBytes)} bytes`);
+    return readFileSync(fd, "utf8");
+  } finally {
+    closeSync(fd);
+  }
 }
 
 /** The generated module's source text. */
