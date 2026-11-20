@@ -52,7 +52,7 @@ getShape("kurdsh-sun"); // DeqError UNKNOWN_SHAPE: … Did you mean kurdish-sun?
 ```sh
 pnpm --filter @0xdolan/deq-core generate   # rebuild src/generated/shapes.ts from spec/
 pnpm --filter @0xdolan/deq-core fixtures   # rewrite spec/fixtures/
-pnpm --filter @0xdolan/deq-core docs       # rewrite docs/api/core.md
+just api-docs                              # rewrite docs/api/ (all packages)
 pnpm --filter @0xdolan/deq-core test       # unit, property and freshness tests with coverage
 ```
 

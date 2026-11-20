@@ -40,7 +40,7 @@ Phase 3 builds `@0xdolan/deq-core`, the reference renderer. Later phases add ren
   Each SVG is the exact render output with no header or trailing newline, because other renderers compare it byte for byte. The manifest and `spec/fixtures/README.md` carry the "generated" note instead. `pnpm --filter @0xdolan/deq-core fixtures` rewrites them, and a Vitest test fails when they are stale.
 
 - **Property tests** (fast-check) check that random valid shapes, parameters and options always give well-formed, safe and deterministic SVG, and that invalid input always throws `DeqError`.
-- **API docs come from the TypeScript compiler API.** `scripts/api-docs.ts` writes `docs/api/core.md` from the TSDoc comments, and a test keeps the file fresh. TypeDoc was rejected: 0.28 needs minimatch 10. The fix for GHSA-g3hv-75wg-m249 exists only in minimatch 11, which the workspace override enforces, and TypeDoc crashes on 11.
+- **API docs come from the TypeScript compiler API.** `scripts/api-docs.ts` writes `docs/api/core.md` from the TSDoc comments, and a test keeps the file fresh ([ADR 0021](0021-api-references.md) extends it to every package). TypeDoc was rejected: 0.28 needs minimatch 10. The fix for GHSA-g3hv-75wg-m249 exists only in minimatch 11, which the workspace override enforces, and TypeDoc crashes on 11.
 
 ## Consequences
 

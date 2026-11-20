@@ -11,7 +11,16 @@ export interface DocLink {
   readonly description?: string | undefined;
 }
 
-/** The English docs (ids `docs` and `docs/...`) in sidebar order: overview, guides, then the rest. */
+/** The sidebar groups of the docs, in order. */
+const GROUPS = ["docs/guide/", "docs/dev/", "docs/api/"];
+
+function rank(id: string): number {
+  if (id === "docs") return 0;
+  const group = GROUPS.findIndex((g) => id.startsWith(g));
+  return group === -1 ? GROUPS.length + 1 : group + 1;
+}
+
+/** The English docs (ids `docs` and `docs/...`) in sidebar order: overview, guides, developer pages, API references. */
 export function englishDocs(
   entries: readonly {
     id: string;
@@ -22,7 +31,6 @@ export function englishDocs(
     };
   }[],
 ): DocLink[] {
-  const rank = (id: string) => (id === "docs" ? 0 : id.startsWith("docs/guide/") ? 1 : 2);
   return entries
     .filter((e) => e.id === "docs" || e.id.startsWith("docs/"))
     .sort(

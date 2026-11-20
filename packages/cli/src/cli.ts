@@ -1,5 +1,5 @@
 /**
- * The `deq` commands (PRD 8.9, ADR 0011). `main` never exits the process: it returns the exit
+ * The `deq` commands (ADR 0011). `main` never exits the process: it returns the exit
  * code, so tests can run it in-process against a temporary directory.
  */
 import { lstatSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";

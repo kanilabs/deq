@@ -610,6 +610,7 @@ export const ckb = {
   "nav.docs.overview": "پوختە",
   "nav.docs.guides": "ڕێنماییەکان",
   "nav.docs.dev": "بۆ گەشەپێدەران",
+  "nav.docs.api": "ڕێنمایی API",
   "home.card.showcase":
     "ئەو پرۆژانەی نەخشەکانی دەق بەکاردەهێنن، لەگەڵ وێنەی شاشە و پێشبینینی ڕاستەوخۆ.",
   "showcase.title": "پێشانگا",

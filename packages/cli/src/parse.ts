@@ -9,6 +9,7 @@ import type { CliData, Command, Flag } from "./types.js";
 export type FlagValue =
   boolean | number | string | readonly string[] | readonly number[] | readonly [string, string][];
 
+/** The result of `parseArgs`: help or version text to print, or a command to run. */
 export type Parsed =
   | { readonly kind: "help"; readonly text: string }
   | { readonly kind: "version"; readonly text: string }

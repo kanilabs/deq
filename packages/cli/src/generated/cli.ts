@@ -2,6 +2,7 @@
 // Do not edit: run `pnpm --filter @0xdolan/deq-cli generate`.
 import type { CliData } from "../types.js";
 
+/** The CLI interface from `spec/cli.json`: commands, flags, messages and exit codes. */
 export const CLI: CliData = {
   "name": "deq",
   "version": "0.0.0",

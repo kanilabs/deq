@@ -6,5 +6,5 @@
     "customConditions": ["@0xdolan/source"],
     "types": ["node"]
   },
-  "include": ["src", "scripts", "vitest.config.ts"]
+  "include": ["src", "scripts", "test", "vitest.config.ts"]
 }

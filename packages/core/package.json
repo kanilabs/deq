@@ -31,8 +31,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --coverage",
     "generate": "node scripts/generate-shapes.ts",
-    "fixtures": "tsc -p tsconfig.build.json && node scripts/fixtures.ts",
-    "docs": "node scripts/api-docs.ts"
+    "fixtures": "tsc -p tsconfig.build.json && node scripts/fixtures.ts"
   },
   "publishConfig": {
     "access": "public",

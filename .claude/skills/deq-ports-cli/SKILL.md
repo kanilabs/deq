@@ -30,5 +30,5 @@ Phase 6, ADR 0011. Usage: `python/deq-shapes/README.md`, `rust/deq-shapes/README
 ## Rust rules
 
 - MSRV 1.85: no let-chains; use `is_some_and`, `is_none_or` or nested `if`.
-- No `unwrap`, `expect` or `panic` (tests return `Result<(), String>`), no `unsafe`; clippy pedantic with `-D warnings`.
+- No `unwrap`, `expect` or `panic` (tests return `Result<(), String>`), no `unsafe`; clippy pedantic with `-D warnings`. `missing_docs` is denied: every public item needs a `///` doc, and `cargo doc` runs with `-D warnings` in lint (ADR 0021).
 - New crates need exact versions, at least 7 days old, and a passing `cargo deny check`.

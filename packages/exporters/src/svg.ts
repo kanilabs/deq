@@ -7,6 +7,7 @@ import { canvasPixels, resolveItem } from "./input.js";
 import type { ExportItem, Resolved } from "./input.js";
 
 /** The root attributes and inner markup of an SVG produced by core. */
+/** A Deq SVG document split by `splitSvg`. */
 export interface SvgParts {
   readonly attrs: readonly (readonly [string, string])[];
   readonly inner: string;
@@ -30,6 +31,11 @@ function splitAttrs(source: string): (readonly [string, string])[] {
   }
 }
 
+/**
+ * Splits a Deq SVG document into its root attributes and inner markup.
+ *
+ * @throws Error when the text is not a single `<svg>` element.
+ */
 export function splitSvg(svg: string): SvgParts {
   const m = /^<svg ([^>]*)>([\s\S]*)<\/svg>$/.exec(svg);
   if (!m) throw new Error("not a Deq SVG document");

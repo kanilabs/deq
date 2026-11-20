@@ -20,6 +20,8 @@ COPY = [
     "content/sources.json",
     "docs/design/shapes-contact-sheet.svg",
     "docs/design/logo-concepts.svg",
+    "docs/api/python.md",
+    "python/deq-shapes/src/deq_shapes",
 ]
 
 

@@ -4,7 +4,6 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { API_DOC, generateApiDocs } from "../scripts/api-docs.ts";
 import { fixtureCases, manifest, renderCase } from "../scripts/fixture-cases.ts";
 import { SPEC_DIR, generatedFiles, readText } from "../scripts/generate-shapes.ts";
 import { compose, listFlagVariants, listShapes, render, renderFlag } from "../src/index.js";
@@ -53,10 +52,4 @@ describe("golden fixtures (run `pnpm --filter @0xdolan/deq-core fixtures` after 
       readFileSync(join(FIXTURES, c.file), "utf8"),
     );
   });
-});
-
-describe("API reference", () => {
-  it("docs/api/core.md matches the TSDoc comments (run `pnpm --filter @0xdolan/deq-core docs`)", () => {
-    expect(readFileSync(API_DOC, "utf8")).toBe(generateApiDocs());
-  }, 30_000);
 });

@@ -29,6 +29,7 @@ lint:
     uv run ruff format --check
     cargo fmt --all --check
     cargo clippy --workspace --all-targets --locked -- -D warnings
+    RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps --locked
     actionlint
     uv run zizmor --offline .github
 
@@ -70,6 +71,12 @@ site-lighthouse:
     trap 'pnpm exec astro preview stop' EXIT
     for _ in $(seq 30); do curl -sf -o /dev/null http://localhost:4321/deq/ && break; sleep 1; done
     pnpm lighthouse
+
+# TypeScript and Python API references into docs/api (ADR 0021)
+api-docs:
+    pnpm build
+    node scripts/api-docs.ts
+    uv run deq-spec api-docs
 
 # Documentation screenshots into apps/site/public/screens (ADR 0020); pass names to redo some
 screenshots *names: fonts media

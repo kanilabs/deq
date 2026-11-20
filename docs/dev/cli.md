@@ -5,7 +5,7 @@ sidebar:
   order: 2
 ---
 
-The three `deq` commands share one interface, the same messages and the same exit codes.
+The three `deq` commands share one interface, the same messages and the same exit codes. The [commands reference](../api/commands.md) lists every option and exit code.
 
 ```sh
 npm install --global @0xdolan/deq-cli   # or: pip install deq-shapes, cargo install deq-cli
