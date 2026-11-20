@@ -15,6 +15,7 @@
     "e2e": "playwright test",
     "lighthouse": "node e2e/lighthouse.ts",
     "links": "node e2e/links.ts",
+    "screenshots": "node e2e/screenshots.ts",
     "shots": "node e2e/shots.ts"
   },
   "dependencies": {

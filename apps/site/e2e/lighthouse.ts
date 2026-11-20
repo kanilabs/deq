@@ -20,6 +20,8 @@ const PAGES = [
   "ckb/",
   "ckb/icons/",
   "kmr/docs/",
+  "docs/guide/studio/",
+  "ckb/docs/guide/exporting/",
   "leet/",
   "ckb/generate/",
   "story/revival/",

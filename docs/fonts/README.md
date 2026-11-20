@@ -11,6 +11,8 @@ Three fonts carry every Deq shape, and a fourth writes text as Deq Leet:
 
 The built files, `deq-icons.css`, `deq-leet.css`, `codepoints.json` and `leet-codepoints.json` are attached to each GitHub release as `deq-fonts-<version>.zip`. They are not committed; until the first release, build them with `just fonts`. The fonts are licensed under GPL-3.0-or-later with the Font Exception, so you can embed them in websites, apps and documents under any license (see [`fonts/LICENSE.md`](../../fonts/LICENSE.md)).
 
+This page is the technical reference. For a short how-to, see the [Fonts guide](../guide/fonts.md).
+
 ## Typing icons
 
 Each icon has two ways in:

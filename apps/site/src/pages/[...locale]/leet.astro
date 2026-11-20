@@ -20,7 +20,7 @@ const messages = studioMessages(CATALOGS[locale]);
     head: [{ tag: "link", attrs: { rel: "stylesheet", href: `${BASE}fonts/deq-leet.css` } }],
   }}
 >
-  <p>{t("leet.intro")} <a href={localizedPath(locale, "docs/leet/")}>{t("leet.guide")}</a></p>
+  <p>{t("leet.intro")} <a href={localizedPath(locale, "docs/guide/leet/")}>{t("leet.guide")}</a></p>
   <div class="panel-host not-content">
     <Panel client:only="svelte" {messages} mode="page">
       <p slot="fallback" class="panel-fallback">{t("leet.loading")}</p>

@@ -4,7 +4,37 @@ import { CATEGORIES, codepoint, SHAPES } from "./data.ts";
 
 const t = CATALOGS.en;
 
-export function llmsTxt(origin: string, full: boolean): string {
+/** One English doc page for the Docs section: its route (no base, trailing slash) and frontmatter. */
+export interface DocLink {
+  readonly path: string;
+  readonly title: string;
+  readonly description?: string | undefined;
+}
+
+/** The English docs (ids `docs` and `docs/...`) in sidebar order: overview, guides, then the rest. */
+export function englishDocs(
+  entries: readonly {
+    id: string;
+    data: {
+      title: string;
+      description?: string | undefined;
+      sidebar: { order?: number | undefined };
+    };
+  }[],
+): DocLink[] {
+  const rank = (id: string) => (id === "docs" ? 0 : id.startsWith("docs/guide/") ? 1 : 2);
+  return entries
+    .filter((e) => e.id === "docs" || e.id.startsWith("docs/"))
+    .sort(
+      (a, b) =>
+        rank(a.id) - rank(b.id) ||
+        (a.data.sidebar.order ?? Infinity) - (b.data.sidebar.order ?? Infinity) ||
+        a.id.localeCompare(b.id),
+    )
+    .map((e) => ({ path: `${e.id}/`, title: e.data.title, description: e.data.description }));
+}
+
+export function llmsTxt(origin: string, full: boolean, docs: readonly DocLink[] = []): string {
   const page = (path: string) => `${origin}${path}`;
   const lines = [
     "# Deq",
@@ -26,9 +56,10 @@ export function llmsTxt(origin: string, full: boolean): string {
     "",
     "## Docs",
     "",
-    `- [Getting started](${page("docs/")})`,
-    `- [Packages](${page("docs/packages/")})`,
-    `- [Command line](${page("docs/cli/")})`,
+    ...docs.map(
+      (d) =>
+        `- [${d.title}](${page(d.path)})${d.description === undefined ? "" : `: ${d.description}`}`,
+    ),
     "",
     "## Optional",
     "",

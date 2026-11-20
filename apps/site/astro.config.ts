@@ -3,6 +3,7 @@ import svelte from "@astrojs/svelte";
 import { defineConfig } from "astro/config";
 
 import { csp } from "./integrations/csp.ts";
+import { docsLinks } from "./integrations/docs-sidebar.ts";
 import { fonts } from "./integrations/fonts.ts";
 import { media } from "./integrations/media.ts";
 import { pwa } from "./integrations/pwa.ts";
@@ -82,12 +83,21 @@ export default defineConfig({
         { ...label("nav.sources"), link: "/sources/" },
         { ...label("nav.showcase"), link: "/showcase/" },
         { ...label("nav.about"), link: "/about/" },
-        { ...label("nav.docs"), items: [{ autogenerate: { directory: "docs" } }] },
+        {
+          ...label("nav.docs"),
+          items: [
+            { ...label("nav.docs.overview"), link: "/docs/" },
+            { ...label("nav.docs.guides"), items: docsLinks("guide") },
+            { ...label("nav.docs.dev"), items: docsLinks("dev") },
+          ],
+        },
       ],
       // Our own 404 page is localised and shares the site layout.
       disable404Route: true,
       lastUpdated: false,
+      // Only docs pages get previous and next links, from `src/routeData.ts` (ADR 0020).
       pagination: false,
+      routeMiddleware: "./src/routeData.ts",
     }),
     svelte(),
     fonts(),

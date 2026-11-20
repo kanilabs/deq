@@ -12,7 +12,7 @@ import {
   SHAPES,
 } from "../src/lib/data.ts";
 import { appIcon, ogImage } from "../src/lib/images.ts";
-import { llmsTxt } from "../src/lib/llms.ts";
+import { englishDocs, llmsTxt } from "../src/lib/llms.ts";
 import { ogSlug } from "../src/lib/og.ts";
 import { pageContext } from "../src/lib/page.ts";
 import { CATALOGS } from "../src/i18n/index.ts";
@@ -108,6 +108,19 @@ describe("pages", () => {
     expect(short).not.toContain("## Shapes");
     for (const s of SHAPES) expect(full).toContain(`https://example.test/deq/icons/${s.id}/`);
     expect(full.endsWith("\n")).toBe(true);
+    const docs = englishDocs([
+      { id: "ckb/docs/guide/studio", data: { title: "ستودیۆ", sidebar: {} } },
+      { id: "docs/dev/cli", data: { title: "CLI", sidebar: { order: 2 } } },
+      {
+        id: "docs/guide/studio",
+        data: { title: "Studio", description: "Design.", sidebar: { order: 2 } },
+      },
+      { id: "docs", data: { title: "Docs", sidebar: {} } },
+    ]);
+    expect(docs.map((d) => d.path)).toEqual(["docs/", "docs/guide/studio/", "docs/dev/cli/"]);
+    expect(llmsTxt("https://example.test/deq/", false, docs)).toContain(
+      "- [Studio](https://example.test/deq/docs/guide/studio/): Design.",
+    );
   });
 });
 

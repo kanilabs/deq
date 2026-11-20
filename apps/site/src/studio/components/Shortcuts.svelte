@@ -84,6 +84,8 @@
 
 <style>
   .shortcuts {
+    /* Starlight's reset sets `margin: 0`, which would pin a modal dialog to the corner. */
+    margin: auto;
     max-width: min(40rem, calc(100vw - 2rem));
     max-height: calc(100dvh - 2rem);
     padding: 1rem 1.25rem;

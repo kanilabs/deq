@@ -39,7 +39,7 @@ export const kmr = {
   "home.card.flag": "Ala Kurdistanê, li gorî taybetmendiya wê ya weşandî hatiye avakirin.",
   "home.card.fonts": "Fontên îkonan ên sabît, guherbar û rengîn.",
   "home.card.brand": "Nîşana Deqê, reng û rêzikên bikaranînê.",
-  "home.card.docs": "Pakêt, amûra rêzika fermanê, port û formata şikilan.",
+  "home.card.docs": "Rêberên Studio, derxistin, font û amûran, û belgeyên pêşdebiran.",
   "home.card.about": "Proje, nivîskar, lîsans û çawa beşdar bibî.",
 
   "icons.title": "Îkon",
@@ -604,6 +604,9 @@ export const kmr = {
   "sources.attribution.unknown": "Çavkanî nayê zanîn",
   "sources.animation": "Anîmasyon",
   "nav.showcase": "Pêşangeh",
+  "nav.docs.overview": "Nêrîna giştî",
+  "nav.docs.guides": "Rêber",
+  "nav.docs.dev": "Ji bo pêşdebiran",
   "home.card.showcase":
     "Projeyên ku motîfên Deq bi kar tînin, bi dîmenên ekranê û pêşdîtinên zindî.",
   "showcase.title": "Pêşangeh",
