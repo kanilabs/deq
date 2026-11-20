@@ -119,6 +119,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   - a `/sources` page with the bibliography by group, status and archive links, a by-chapter index, image and video credits, and a contact note for rights holders;
   - responsive AVIF and WebP images copied by a `media` integration, a lightbox, and click-to-load YouTube videos from `youtube-nocookie.com`;
   - an internal link checker (`pnpm --filter @0xdolan/deq-site links`), `just media`, and content, e2e and Lighthouse checks for the new pages.
+- Phase 10b showcase (ADR 0019):
+  - a `/showcase` page in en, ckb and kmr with zimankit, Zimanyar, Roj, Tajdîn and tsroj: a screenshot, a click-to-load live preview in a sandboxed iframe (never with `allow-same-origin`), a description, the Deq shapes each one uses, and links;
+  - screenshots in `apps/site/public/showcase/`, written by `pnpm --filter @0xdolan/deq-site shots` with Playwright's Chromium;
+  - a fuller showcase issue template asking for shape ids and the owner's consent.
 
 ### Changed
 
@@ -127,6 +131,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - cargo-deny allows the IJG licence for the `jpeg-encoder` crate only (permissive and GPL-compatible).
 - The repository moved to the `kanilabs` organisation: repository, issue, badge and security links now point to `github.com/kanilabs/deq`, and the site, schema `$id`s and CSP allowlist to `kanilabs.github.io`. The npm scope stays `@0xdolan`.
 - CI scans for secrets with the pinned, checksum-verified gitleaks CLI instead of `gitleaks-action`, which needs a paid licence for organisation repositories.
+- Icon tiles and drawings on the site use dark glyphs in the light theme; they were drawn nearly white.
 - The site build declares `DEQ_REQUIRE_FONTS` and `DEQ_REQUIRE_MEDIA` to Turborepo, so the flags reach the build in strict env mode.
 - Shape redesign after owner review: every shape is rebuilt from shared modules (circle, ring and bead radii, small and large dots, rays, small and large Vs drawn as two strokes, 45-degree pitch, teeth), with one layer and id per part, auto-centred. The modules are listed in `spec/grid.json`, and lint rejects circle or dot radii outside them.
 - Redrawn: `roj-half-sun` (open arc, 7 rays by default, dot on the base), `roj-sun-circle`, `tree-branch`, `spike`, `wheat-arrow`, `crossed-chevrons`, `triangle-dotted`, `dimlich`, `dot-quincunx`, `ring-stem`, `band-border`, `gazelle`, `doll` (the head now joins the body), `fish`, `darek` (the bar only), `drower-union`, `chevron`, `fork`, `comb`, `chevron-stack`, `dot-rosette`, `sandgrouse-foot`, `spindle`, and the compositions, which now place shapes at full size.

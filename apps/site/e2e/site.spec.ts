@@ -21,6 +21,7 @@ const PAGES = [
   "story/revival/",
   "story/screen/",
   "sources/",
+  "showcase/",
 ];
 /** PRD §10: JavaScript on non-Studio pages, gzipped. */
 const JS_BUDGET = 50 * 1024;
@@ -148,6 +149,41 @@ test("videos load from youtube-nocookie only after pressing play", async ({ page
   await expect.poll(() => youtube.length).toBeGreaterThan(0);
   expect(youtube.every((url) => url.startsWith("https://www.youtube-nocookie.com/"))).toBe(true);
   expect(violations).toEqual([]);
+});
+
+test("showcase previews load the project only after a click, sandboxed", async ({ page }) => {
+  const violations = await watchCsp(page);
+  const projects: string[] = [];
+  await page.route(/^https:\/\/kanilabs\.github\.io\/(?!deq\/)/u, (route) => {
+    projects.push(route.request().url());
+    return route.fulfill({ contentType: "text/html", body: "<!doctype html><title>stub</title>" });
+  });
+  await page.goto("kmr/showcase/");
+  await page.waitForLoadState("networkidle");
+  expect(projects).toEqual([]);
+  const card = page.locator(".deq-preview").first();
+  await card.getByRole("button").click();
+  const frame = card.locator("iframe");
+  await expect(frame).toHaveAttribute("src", /^https:\/\/kanilabs\.github\.io\//u);
+  const sandbox = (await frame.getAttribute("sandbox")) ?? "";
+  expect(sandbox).toContain("allow-scripts");
+  expect(sandbox).not.toContain("allow-same-origin");
+  await expect(card).toHaveAttribute("data-state", "live");
+  expect(projects.length).toBeGreaterThan(0);
+  expect(violations).toEqual([]);
+});
+
+test("showcase keeps the screenshot when a preview does not load", async ({ page }) => {
+  await page.clock.install();
+  // Never answer, so the frame never fires `load`.
+  await page.route(/^https:\/\/kanilabs\.github\.io\/(?!deq\/)/u, () => undefined);
+  await page.goto("showcase/");
+  const card = page.locator(".deq-preview").nth(1);
+  await card.getByRole("button").click();
+  await page.clock.fastForward(16_000);
+  await expect(card.locator(".deq-preview-fallback")).toBeVisible();
+  await expect(card.locator("iframe")).toHaveCount(0);
+  await expect(card.locator("img")).toBeVisible();
 });
 
 test("citations link to their entries on the sources page", async ({ page }) => {

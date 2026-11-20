@@ -24,6 +24,7 @@ const PAGES = [
   "ckb/generate/",
   "story/revival/",
   "ckb/sources/",
+  "showcase/",
 ];
 const CATEGORIES = ["performance", "accessibility", "best-practices", "seo"];
 const MIN = 0.95;

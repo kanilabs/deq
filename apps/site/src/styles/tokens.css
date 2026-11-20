@@ -41,7 +41,8 @@
   --sl-color-text-invert: #ffffff;
   --deq-surface: var(--sl-color-gray-7);
   --deq-surface-raised: var(--sl-color-white);
-  --deq-icon: var(--sl-color-black);
+  /* Starlight's light theme swaps the scale: --sl-color-white is its darkest text. */
+  --deq-icon: var(--sl-color-white);
 }
 
 /* Arabic script reads better a little larger and with Vazirmatn first. */

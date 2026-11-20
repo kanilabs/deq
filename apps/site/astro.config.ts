@@ -80,6 +80,7 @@ export default defineConfig({
         { ...label("nav.fonts"), link: "/fonts/" },
         { ...label("nav.brand"), link: "/brand/" },
         { ...label("nav.sources"), link: "/sources/" },
+        { ...label("nav.showcase"), link: "/showcase/" },
         { ...label("nav.about"), link: "/about/" },
         { ...label("nav.docs"), items: [{ autogenerate: { directory: "docs" } }] },
       ],

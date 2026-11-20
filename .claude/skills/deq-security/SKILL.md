@@ -20,7 +20,7 @@ Apply to every change. Security is a requirement, not a phase.
 
 - Strict CSP via `<meta>` (GitHub Pages cannot set headers), configured in `apps/site/astro.config.ts` (ADR 0012). `frame-src` only for `youtube-nocookie.com` and `kanilabs.github.io`. Scripts are allowed by hash only: Astro hashes bundled scripts and `integrations/csp.ts` hashes inline ones; never add `'unsafe-inline'` or `'unsafe-eval'` for scripts. `'wasm-unsafe-eval'` is added only to the Studio pages (`WASM_PAGES` in `integrations/csp.ts`) for the raster exporters. `'unsafe-inline'` is allowed in `style-src-attr` only (Starlight's CSS variables). Never put visitor input into inline scripts or markup. The e2e suite fails on any CSP violation. Studio (ADR 0014) never uses `innerHTML` or `{@html}`: renderer SVG goes through `src/studio/svg.ts` (DOMParser `image/svg+xml` + importNode), and every design from storage, files or links goes through `parseDoc` (valibot + core `prepare`). Custom shapes (8c) from IndexedDB, files (≤ 256 KB) or designs go through `parseCustomDef` (valibot, limits, one core render) before use; booleans use paper.js `paper-core` pinned to 0.12.18 and loaded lazily (do not bump it without reviewing the late-2026 releases). Imported SVG will be sanitised with DOMPurify; `'wasm-unsafe-eval'` is only for the Studio page once raster export lands (8d).
 - No analytics or third-party requests on the site.
-- SRI for any CDN asset; self-host fonts. Iframes are `sandbox`ed with minimum permissions.
+- SRI for any CDN asset; self-host fonts. Iframes are `sandbox`ed with minimum permissions; never `allow-same-origin` for pages on `kanilabs.github.io` (they share the site's origin, ADR 0019).
 
 ## Supply chain
 
