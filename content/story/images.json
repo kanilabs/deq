@@ -1,0 +1,593 @@
+{
+  "$comment": "Captions and alt text for every image in assets/source-manifest.json, in en, ckb and kmr (Phase 10). ckb and kmr need native review. Credits, sources and rights come from the manifest.",
+  "images": {
+    "elu-dot-trio-temple-01": {
+      "caption": {
+        "en": "Three dots at the temple, by Elu (deq-ttt).",
+        "ckb": "سێ خاڵ لە لاجانگ، کاری ئێلو (deq-ttt).",
+        "kmr": "Sê xal li cênîkê, karê Elu (deq-ttt)."
+      },
+      "alt": {
+        "en": "Close-up of a woman's eye with three small tattooed dots beside it at the temple.",
+        "ckb": "وێنەیەکی نزیکی چاوی ژنێک کە سێ خاڵی بچووکی دەق لە تەنیشتی لە لاجانگ هەیە.",
+        "kmr": "Wêneyekî nêzîk ê çavê jinekê ku li kêleka wê, li cênîkê, sê xalên deqê yên piçûk hene."
+      }
+    },
+    "roj-sun-portrait-01": {
+      "caption": {
+        "en": "A portrait captioned with the word for sun, roj, in three scripts. Source unknown.",
+        "ckb": "پۆرترێتێک کە وشەی «ڕۆژ» بە سێ ئەلفوبێ لەسەرە. سەرچاوە نەزانراوە.",
+        "kmr": "Portreyek ku peyva «roj» bi sê alfabeyan li ser e. Çavkanî nayê zanîn."
+      },
+      "alt": {
+        "en": "A woman with deq on her forehead above a large half-sun, with the words ROJ, شمس and SUN.",
+        "ckb": "ژنێک کە دەقی لە ناوچەوانە، لە سەرووی نیوە خۆرێکی گەورە، لەگەڵ وشەکانی ROJ و شمس و SUN.",
+        "kmr": "Jinek bi deq li eniyê, li ser nîv-rojeke mezin, bi peyvên ROJ, شمس û SUN."
+      }
+    },
+    "de-morgan-fig-27-tchomaklou": {
+      "caption": {
+        "en": "Faces and hands of tattooed Kurdish women from Tchômaklou, engraving attributed to Jacques de Morgan's Mission scientifique en Perse.",
+        "ckb": "دەموچاو و دەستی ژنانی کوردی خاڵکوتراو لە تچۆماکلوو، هەڵکەندنێک کە دەدرێتە پاڵ «Mission scientifique en Perse»ی ژاک دۆ مۆرگان.",
+        "kmr": "Rû û destên jinên kurd ên bi deq ji Tchômaklou, gravûrek ku tê dayîn pala «Mission scientifique en Perse» ya Jacques de Morgan."
+      },
+      "alt": {
+        "en": "Black-and-white engraving of four women's faces with dotted tattoos on the forehead, cheeks and chin, and two tattooed hands.",
+        "ckb": "هەڵکەندنێکی ڕەش و سپی: چوار دەموچاوی ژن بە خاڵکوتانی خاڵخاڵی لە ناوچەوان و ڕوومەت و چەناگە، و دوو دەستی خاڵکوتراو.",
+        "kmr": "Gravûreke reş û spî: çar rûyên jinan bi deqên xalxalî li eniya, alikan û çengê, û du destên bi deq."
+      }
+    },
+    "de-morgan-fig-28-kilakan": {
+      "caption": {
+        "en": "Forehead and chin tattoos from Kilakân, with single motifs drawn apart, attributed to de Morgan.",
+        "ckb": "خاڵکوتانی ناوچەوان و چەناگە لە کیلاکان، لەگەڵ نەخشی جیاکراوە، دەدرێتە پاڵ دۆ مۆرگان.",
+        "kmr": "Deqên enî û çengê ji Kilakân, bi motîfên ku ji hev cuda hatine xêzkirin, tê dayîn pala de Morgan."
+      },
+      "alt": {
+        "en": "Engraving of women's faces with tattoos on the forehead and chin, and rows of separate motifs: crosses, dots and lines.",
+        "ckb": "هەڵکەندنی دەموچاوی ژنان بە خاڵکوتان لە ناوچەوان و چەناگە، و ڕیزی نەخشی جیا: خاچ، خاڵ و هێڵ.",
+        "kmr": "Gravûra rûyên jinan bi deqan li eniyê û çengê, û rêzên motîfên cuda: xaç, xal û xêz."
+      }
+    },
+    "de-morgan-fig-29-kilakan-kialhours": {
+      "caption": {
+        "en": "Tattooed hands and wrists from Kilakân and Kialhours, attributed to de Morgan.",
+        "ckb": "دەست و مەچەکی خاڵکوتراو لە کیلاکان و کیالهوورس، دەدرێتە پاڵ دۆ مۆرگان.",
+        "kmr": "Dest û zendên bi deq ji Kilakân û Kialhours, tê dayîn pala de Morgan."
+      },
+      "alt": {
+        "en": "Engraving of two hands and wrists marked with crosses, dot clusters and bands.",
+        "ckb": "هەڵکەندنی دوو دەست و مەچەک بە خاچ، کۆمەڵە خاڵ و پشتێن نەخشێنراون.",
+        "kmr": "Gravûra du dest û zendan ku bi xaç, komên xalan û bendan hatine nexşandin."
+      }
+    },
+    "field-tattoo-drawings-01": {
+      "caption": {
+        "en": "Tattooed feet and ankles, line drawings attributed to Henry Field.",
+        "ckb": "پێ و قولەپێی خاڵکوتراو، هێڵکاری کە دەدرێتە پاڵ هێنری فیلد.",
+        "kmr": "Ling û gozekên bi deq, xêzkariyên ku tê dayîn pala Henry Field."
+      },
+      "alt": {
+        "en": "Line drawings of two feet seen from the front and side, with tattoos across the ankles and the tops of the feet.",
+        "ckb": "هێڵکاری دوو پێ لە پێشەوە و لە تەنیشتەوە، بە خاڵکوتان بەسەر قولەپێ و سەری پێیەکاندا.",
+        "kmr": "Xêzkariyên du lingan ji pêş û ji kêlekê, bi deqan li ser gozek û pişta lingan."
+      }
+    },
+    "field-tattoo-drawings-02": {
+      "caption": {
+        "en": "Three tattooed hands with suns, combs and dots, attributed to Henry Field.",
+        "ckb": "سێ دەستی خاڵکوتراو بە خۆر، شانە و خاڵ، دەدرێتە پاڵ هێنری فیلد.",
+        "kmr": "Sê destên bi deq bi roj, şe û xalan, tê dayîn pala Henry Field."
+      },
+      "alt": {
+        "en": "Line drawings of three hands, the backs and fingers tattooed with sun discs, comb shapes and dots.",
+        "ckb": "هێڵکاری سێ دەست کە پشت و پەنجەکانیان بە بازنەی خۆر، شێوەی شانە و خاڵ خاڵکوتراون.",
+        "kmr": "Xêzkariyên sê destan ku pişt û tiliyên wan bi dîskên rojê, şiklên şeyê û xalan hatine deqkirin."
+      }
+    },
+    "field-tattoo-drawings-03": {
+      "caption": {
+        "en": "Two tattooed hands with moons, stars, ring-stems and chevron rows, attributed to Henry Field.",
+        "ckb": "دوو دەستی خاڵکوتراو بە مانگ، ئەستێرە، ئەڵقە-قەد و ڕیزی شەڤرۆن، دەدرێتە پاڵ هێنری فیلد.",
+        "kmr": "Du destên bi deq bi heyv, stêrk, gustîl-qirm û rêzên şevronan, tê dayîn pala Henry Field."
+      },
+      "alt": {
+        "en": "Line drawings of two hands with crescent moons, stars, small rings on stems and rows of V shapes.",
+        "ckb": "هێڵکاری دوو دەست بە مانگی نوێ، ئەستێرە، ئەڵقەی بچووک لەسەر قەد و ڕیزی شێوەی V.",
+        "kmr": "Xêzkariyên du destan bi heyvên nû, stêrk, gustîlên piçûk li ser qirman û rêzên şiklê V."
+      }
+    },
+    "field-tattoo-drawings-04": {
+      "caption": {
+        "en": "Tattooed forearms with a sun, ring-stems, a branching tree, crosses and a comb band, attributed to Henry Field.",
+        "ckb": "باسکی خاڵکوتراو بە خۆر، ئەڵقە-قەد، درەختێکی لقدار، خاچ و پشتێنێکی شانە، دەدرێتە پاڵ هێنری فیلد.",
+        "kmr": "Zendên bi deq bi roj, gustîl-qirm, dareke çiqdar, xaç û bendeke şeyê, tê dayîn pala Henry Field."
+      },
+      "alt": {
+        "en": "Line drawings of two forearms: one with a sun, ring-stems and a branching tree, the other with crosses, x marks and a comb band.",
+        "ckb": "هێڵکاری دوو باسک: یەکێکیان خۆر، ئەڵقە-قەد و درەختێکی لقداری لەسەرە، ئەوی دیکە خاچ، نیشانەی x و پشتێنی شانە.",
+        "kmr": "Xêzkariyên du zendan: yek bi roj, gustîl-qirm û dareke çiqdar, ya din bi xaç, nîşanên x û bendeke şeyê."
+      }
+    },
+    "deq-ink-and-hands-01": {
+      "caption": {
+        "en": "Hands over a bowl of deq ink. Source unknown.",
+        "ckb": "دەستەکان لەسەر قاپێک مەرەکەبی دەق. سەرچاوە نەزانراوە.",
+        "kmr": "Dest li ser tasek hibra deqê. Çavkanî nayê zanîn."
+      },
+      "alt": {
+        "en": "Hands working over a small bowl of dark ink while a tattooed hand is held out.",
+        "ckb": "دەستەکان لەسەر قاپێکی بچووکی مەرەکەبی تاریک کار دەکەن و دەستێکی خاڵکوتراو درێژ کراوە.",
+        "kmr": "Dest li ser tasek piçûk a hibra tarî dixebitin û destekî bi deq hatiye dirêjkirin."
+      }
+    },
+    "elder-man-tattooed-hands-01": {
+      "caption": {
+        "en": "An elderly man in Suruç with deq on his hands. Photo: Alan Turgutoglu, CC BY-NC-SA 2.0.",
+        "ckb": "پیاوێکی بەساڵاچوو لە سرووج بە دەق لەسەر دەستەکانی. وێنە: ئالان تورگوتئۆغلوو، CC BY-NC-SA 2.0.",
+        "kmr": "Kalekî li Pirsûsê bi deqan li ser destên xwe. Wêne: Alan Turgutoglu, CC BY-NC-SA 2.0."
+      },
+      "alt": {
+        "en": "An elderly man sits on a rug, his hands resting in his lap and covered in dark tattooed motifs.",
+        "ckb": "پیاوێکی بەساڵاچوو لەسەر بەڕەیەک دانیشتووە، دەستەکانی لەسەر ڕانی و پڕن لە نەخشی خاڵکوتراوی تاریک.",
+        "kmr": "Kalek li ser xaliyekê rûniştiye, destên wî li ser hembêza wî ne û bi motîfên deqê yên tarî tije ne."
+      }
+    },
+    "elder-man-tattooed-hands-02": {
+      "caption": {
+        "en": "An elderly man with deq on the backs of his hands. Source unknown.",
+        "ckb": "پیاوێکی بەساڵاچوو بە دەق لەسەر پشتی دەستەکانی. سەرچاوە نەزانراوە.",
+        "kmr": "Kalek bi deqan li ser pişta destên xwe. Çavkanî nayê zanîn."
+      },
+      "alt": {
+        "en": "An elderly man in a white headscarf holds up his hands, showing tattoos on their backs.",
+        "ckb": "پیاوێکی بەساڵاچوو بە جامانەیەکی سپی دەستەکانی بەرز کردۆتەوە و خاڵکوتانی پشتیان پیشان دەدات.",
+        "kmr": "Kalekî bi şaşikeke spî destên xwe bilind dike û deqên li ser pişta wan nîşan dide."
+      }
+    },
+    "elder-tattooed-hands-01": {
+      "caption": {
+        "en": "An elderly woman shows her deq-covered hands. Photo: Jaclynn Ashly / Al Jazeera.",
+        "ckb": "ژنێکی بەساڵاچوو دەستە پڕ لە دەقەکانی پیشان دەدات. وێنە: جاکلین ئاشلی / ئەلجەزیرە.",
+        "kmr": "Jineke pîr destên xwe yên bi deqan tije nîşan dide. Wêne: Jaclynn Ashly / Al Jazeera."
+      },
+      "alt": {
+        "en": "An elderly woman holds up both hands; the backs and fingers are covered in tattooed dots and lines.",
+        "ckb": "ژنێکی بەساڵاچوو هەردوو دەستی بەرز کردۆتەوە؛ پشت و پەنجەکانیان پڕن لە خاڵ و هێڵی خاڵکوتراو.",
+        "kmr": "Jineke pîr herdu destên xwe bilind dike; pişt û tiliyên wan bi xal û xêzên deqê tije ne."
+      }
+    },
+    "elder-forehead-chin-deq-01": {
+      "caption": {
+        "en": "Deq on the forehead and chin. Photo: Jaclynn Ashly / Al Jazeera.",
+        "ckb": "دەق لەسەر ناوچەوان و چەناگە. وێنە: جاکلین ئاشلی / ئەلجەزیرە.",
+        "kmr": "Deq li eniyê û çengê. Wêne: Jaclynn Ashly / Al Jazeera."
+      },
+      "alt": {
+        "en": "Portrait of an elderly woman in a headscarf with tattooed motifs on her forehead and chin.",
+        "ckb": "پۆرترێتی ژنێکی بەساڵاچوو بە لەچکەوە، نەخشی خاڵکوتراو لەسەر ناوچەوان و چەناگەی.",
+        "kmr": "Portreya jineke pîr bi xêlî, bi motîfên deqê li eniya û çengê wê."
+      }
+    },
+    "elder-forehead-chin-deq-02": {
+      "caption": {
+        "en": "Another elder with deq on the forehead and chin. Photo: Jaclynn Ashly / Al Jazeera.",
+        "ckb": "بەساڵاچوویەکی دیکە بە دەق لەسەر ناوچەوان و چەناگە. وێنە: جاکلین ئاشلی / ئەلجەزیرە.",
+        "kmr": "Pîreke din bi deq li eniyê û çengê. Wêne: Jaclynn Ashly / Al Jazeera."
+      },
+      "alt": {
+        "en": "Portrait of an elderly woman with small tattooed marks between the brows and a motif on her chin.",
+        "ckb": "پۆرترێتی ژنێکی بەساڵاچوو بە نیشانەی بچووکی خاڵکوتراو لە نێوان برۆکانی و نەخشێک لەسەر چەناگەی.",
+        "kmr": "Portreya jineke pîr bi nîşanên deqê yên piçûk di navbera birûyan de û motîfek li ser çengê wê."
+      }
+    },
+    "elder-forehead-chin-deq-03": {
+      "caption": {
+        "en": "Deq on the forehead, chin and hands. Source unknown.",
+        "ckb": "دەق لەسەر ناوچەوان، چەناگە و دەستەکان. سەرچاوە نەزانراوە.",
+        "kmr": "Deq li eniyê, çengê û destan. Çavkanî nayê zanîn."
+      },
+      "alt": {
+        "en": "An elderly woman in a red headscarf with tattoos on her forehead, chin and hands.",
+        "ckb": "ژنێکی بەساڵاچوو بە لەچکێکی سوور، خاڵکوتان لەسەر ناوچەوان، چەناگە و دەستەکانی.",
+        "kmr": "Jineke pîr bi xêliyeke sor, bi deqan li eniya, çeng û destên wê."
+      }
+    },
+    "saliha-ozsavli-portrait-01": {
+      "caption": {
+        "en": "Saliha Özşavlı, with a chin motif and dots on her fingers. Photo: Jaclynn Ashly / Al Jazeera.",
+        "ckb": "ساڵیحا ئۆزشاڤلی، بە نەخشێک لەسەر چەناگە و خاڵ لەسەر پەنجەکانی. وێنە: جاکلین ئاشلی / ئەلجەزیرە.",
+        "kmr": "Saliha Özşavlı, bi motîfekê li çengê û xalan li ser tiliyên xwe. Wêne: Jaclynn Ashly / Al Jazeera."
+      },
+      "alt": {
+        "en": "Saliha Özşavlı, an elderly woman in a headscarf, with a tattooed chin motif and dots on her fingers.",
+        "ckb": "ساڵیحا ئۆزشاڤلی، ژنێکی بەساڵاچوو بە لەچکەوە، نەخشێکی خاڵکوتراو لەسەر چەناگەی و خاڵ لەسەر پەنجەکانی.",
+        "kmr": "Saliha Özşavlı, jineke pîr bi xêlî, bi motîfeke deqê li çengê û xalan li ser tiliyan."
+      }
+    },
+    "natakallam-symbols-of-nature-01": {
+      "caption": {
+        "en": "Symbols inspired by nature: the moon (heyv), the stars (stêrin) and the sun (roj), by Elu (deq-ttt).",
+        "ckb": "هێماکانی سروشت: مانگ (heyv)، ئەستێرەکان (stêrin) و خۆر (roj)، کاری ئێلو (deq-ttt).",
+        "kmr": "Sembolên ji xwezayê: heyv, stêrin û roj, karê Elu (deq-ttt)."
+      },
+      "alt": {
+        "en": "Three tattoos on skin side by side: a crescent moon, a group of stars and a sun.",
+        "ckb": "سێ خاڵکوتان لە تەنیشت یەک لەسەر پێست: مانگی نوێ، کۆمەڵێک ئەستێرە و خۆرێک.",
+        "kmr": "Sê deq li ser çerm li kêleka hev: heyveke nû, komek stêrk û rojek."
+      }
+    },
+    "studio-wall-symbol-photos-01": {
+      "caption": {
+        "en": "Photographs of deq symbols on a studio wall. Photo: Jaclynn Ashly / Al Jazeera.",
+        "ckb": "وێنەی هێماکانی دەق لەسەر دیواری ستۆدیۆیەک. وێنە: جاکلین ئاشلی / ئەلجەزیرە.",
+        "kmr": "Wêneyên sembolên deqê li ser dîwarê stûdyoyekê. Wêne: Jaclynn Ashly / Al Jazeera."
+      },
+      "alt": {
+        "en": "A wall covered with small photographs, each showing a deq motif on skin.",
+        "ckb": "دیوارێک پڕ لە وێنەی بچووک، هەر یەکەیان نەخشێکی دەق لەسەر پێست پیشان دەدات.",
+        "kmr": "Dîwarek bi wêneyên piçûk tije, her yek motîfeke deqê li ser çerm nîşan dide."
+      }
+    },
+    "fatma-arik-ladder-hands-01": {
+      "caption": {
+        "en": "Fatma Arik shows a ladder motif on her hands. Photo: Jaclynn Ashly / Al Jazeera.",
+        "ckb": "فاتما ئاریک نەخشی پەیژە لەسەر دەستەکانی پیشان دەدات. وێنە: جاکلین ئاشلی / ئەلجەزیرە.",
+        "kmr": "Fatma Arik motîfa nêrdewanê li ser destên xwe nîşan dide. Wêne: Jaclynn Ashly / Al Jazeera."
+      },
+      "alt": {
+        "en": "A woman covers her face with her hands; a ladder-shaped tattoo runs along her fingers.",
+        "ckb": "ژنێک دەموچاوی بە دەستەکانی داپۆشیوە؛ خاڵکوتانێکی شێوە پەیژە بە درێژایی پەنجەکانی هەیە.",
+        "kmr": "Jinek rûyê xwe bi destan digire; deqeke bi şiklê nêrdewanê li ser tiliyên wê ye."
+      }
+    },
+    "tablo-sun-pendant-01": {
+      "caption": {
+        "en": "“The sun symbolizes the source of life”: a sun deq and pendant, Instagram post attributed to @tablo.chn.",
+        "ckb": "«خۆر هێمای سەرچاوەی ژیانە»: دەقی خۆر و ملوانکەیەک، پۆستی ئینستاگرام کە دەدرێتە پاڵ ‎@tablo.chn.",
+        "kmr": "«Roj sembola çavkaniya jiyanê ye»: deqa rojê û gerdeniyek, şandiya Instagramê ku tê dayîn pala @tablo.chn."
+      },
+      "alt": {
+        "en": "A sun tattoo on an arm beside a gold sun-shaped pendant, with text in English and Kurdish.",
+        "ckb": "خاڵکوتانی خۆر لەسەر باسکێک لە تەنیشت ملوانکەیەکی زێڕینی شێوە خۆر، بە دەقی ئینگلیزی و کوردی.",
+        "kmr": "Deqa rojê li ser milekî li kêleka gerdeniyeke zêrîn a bi şiklê rojê, bi nivîsa îngilîzî û kurdî."
+      }
+    },
+    "tablo-spike-pendant-01": {
+      "caption": {
+        "en": "The “spike” (لوتکە) on a hand and as a pendant, attributed to @tablo.chn.",
+        "ckb": "«لوتکە» لەسەر دەستێک و وەک ملوانکە، دەدرێتە پاڵ ‎@tablo.chn.",
+        "kmr": "«Lûtke» (لوتکە) li ser destekî û wek gerdenî, tê dayîn pala @tablo.chn."
+      },
+      "alt": {
+        "en": "A spike-shaped tattoo on a hand and a matching pendant, with arrow and wheat forms.",
+        "ckb": "خاڵکوتانێکی شێوە لوتکە لەسەر دەستێک و ملوانکەیەکی هاوشێوە، بە شێوەی تیر و گەنم.",
+        "kmr": "Deqeke bi şiklê lûtkeyê li ser destekî û gerdeniyeke wekhev, bi şiklên tîr û genim."
+      }
+    },
+    "tablo-crown-pendant-01": {
+      "caption": {
+        "en": "The crown (تاج) on a finger and as a pendant, attributed to @tablo.chn.",
+        "ckb": "تاج لەسەر پەنجەیەک و وەک ملوانکە، دەدرێتە پاڵ ‎@tablo.chn.",
+        "kmr": "Tac (تاج) li ser tiliyekê û wek gerdenî, tê dayîn pala @tablo.chn."
+      },
+      "alt": {
+        "en": "A small crown-shaped tattoo on a finger beside a crown pendant.",
+        "ckb": "خاڵکوتانێکی بچووکی شێوە تاج لەسەر پەنجەیەک لە تەنیشت ملوانکەیەکی تاج.",
+        "kmr": "Deqeke piçûk a bi şiklê tacê li ser tiliyekê li kêleka gerdeniyeke tacê."
+      }
+    },
+    "tablo-fish-pendant-01": {
+      "caption": {
+        "en": "“Fish represents luck” (ماسی): fish forms and pendants, attributed to @tablo.chn.",
+        "ckb": "«ماسی نیشانەی بەختە»: شێوەی ماسی و ملوانکە، دەدرێتە پاڵ ‎@tablo.chn.",
+        "kmr": "«Masî nîşana bextê ye» (ماسی): şiklên masiyan û gerdenî, tê dayîn pala @tablo.chn."
+      },
+      "alt": {
+        "en": "Two fish-shaped pendants with drawn fish forms and text in English and Kurdish.",
+        "ckb": "دوو ملوانکەی شێوە ماسی لەگەڵ شێوەی ماسیی کێشراو و دەقی ئینگلیزی و کوردی.",
+        "kmr": "Du gerdeniyên bi şiklê masiyan bi şiklên masiyan ên xêzkirî û nivîsa îngilîzî û kurdî."
+      }
+    },
+    "zozane-vertical-motif-print-01": {
+      "caption": {
+        "en": "A vertical stack of deq motifs, print signed “Zozane”. Source not found.",
+        "ckb": "ستوونێکی نەخشی دەق، چاپێک بە واژۆی «Zozane». سەرچاوە نەدۆزرایەوە.",
+        "kmr": "Stûnek ji motîfên deqê, çapeke bi îmzeya «Zozane». Çavkanî nehat dîtin."
+      },
+      "alt": {
+        "en": "A print of motifs stacked from top to bottom: a star, a half-sun, dots, a ring on a stem, crossed chevrons, a branch, dots and a sun.",
+        "ckb": "چاپی نەخشەکان لە سەرەوە بۆ خوارەوە: ئەستێرە، نیوە خۆر، خاڵ، ئەڵقە لەسەر قەد، شەڤرۆنی تێکهەڵکێش، لق، خاڵ و خۆر.",
+        "kmr": "Çapa motîfan ji jor ber bi jêr: stêrk, nîvroj, xal, gustîlek li ser qirmê, şevronên li hev, çiq, xal û roj."
+      }
+    },
+    "vertical-motif-stack-01": {
+      "caption": {
+        "en": "A fine-line vertical deq stack. Source unknown.",
+        "ckb": "ستوونێکی دەق بە هێڵی باریک. سەرچاوە نەزانراوە.",
+        "kmr": "Stûneke deqê bi xêzên zirav. Çavkanî nayê zanîn."
+      },
+      "alt": {
+        "en": "Fine-line tattoo of stacked motifs: a star, a half-sun, a ring on a stem, crossed chevrons, a branch and dots.",
+        "ckb": "خاڵکوتانی هێڵ باریکی نەخشی سەریەک: ئەستێرە، نیوە خۆر، ئەڵقە لەسەر قەد، شەڤرۆنی تێکهەڵکێش، لق و خاڵ.",
+        "kmr": "Deqa bi xêzên zirav a motîfên li ser hev: stêrk, nîvroj, gustîlek li ser qirmê, şevronên li hev, çiq û xal."
+      }
+    },
+    "drower-ezidi-tattoo-designs-01": {
+      "caption": {
+        "en": "Ezidi tattoo designs, a plate attributed to E. S. Drower (not yet verified).",
+        "ckb": "دیزاینی خاڵکوتانی ئێزیدی، لاپەڕەیەک کە دەدرێتە پاڵ ئی. ئێس. دراوەر (هێشتا پشتڕاست نەکراوەتەوە).",
+        "kmr": "Sêwiranên deqên êzidî, rûpelek ku tê dayîn pala E. S. Drower (hê nehatiye piştrastkirin)."
+      },
+      "alt": {
+        "en": "A printed plate of tattoo designs with captions such as daqqayeh, gazelle, sand-grouse foot, Darwish, rês daqqa and the Moon.",
+        "ckb": "لاپەڕەیەکی چاپکراوی دیزاینی خاڵکوتان بە ناونیشانی وەک daqqayeh، ئاسک، پێی سوێسکە، دەرویش، rês daqqa و مانگ.",
+        "kmr": "Rûpeleke çapkirî ya sêwiranên deqê bi navên wek daqqayeh, xezal, lingê qeqeba, Derwêş, rês daqqa û Heyv."
+      }
+    },
+    "viransehir-elders-group-01": {
+      "caption": {
+        "en": "Adile Şavli, Zehra Arik, Saliha Özşavlı and Fatma Arik, elders from Viranşehir who wear deq. Photo: Jaclynn Ashly / Al Jazeera.",
+        "ckb": "عادیلە شاڤلی، زەهرا ئاریک، ساڵیحا ئۆزشاڤلی و فاتما ئاریک، بەساڵاچووانی ویرانشەهر کە دەقیان هەیە. وێنە: جاکلین ئاشلی / ئەلجەزیرە.",
+        "kmr": "Adile Şavli, Zehra Arik, Saliha Özşavlı û Fatma Arik, pîrên ji Wêranşarê yên bi deq. Wêne: Jaclynn Ashly / Al Jazeera."
+      },
+      "alt": {
+        "en": "Four elderly women in headscarves sit together, with deq on their faces and hands.",
+        "ckb": "چوار ژنی بەساڵاچوو بە لەچکەوە پێکەوە دانیشتوون، دەق لەسەر دەموچاو و دەستیان هەیە.",
+        "kmr": "Çar jinên pîr bi xêlî bi hev re rûniştine, deq li ser rû û destên wan hene."
+      }
+    },
+    "aljazeera-framed-elder-portrait-01": {
+      "caption": {
+        "en": "A framed portrait of an elder with a sun on her forehead, in Fatê Temel's studio. Photo: Jaclynn Ashly / Al Jazeera.",
+        "ckb": "پۆرترێتێکی چوارچێوەدار لە بەساڵاچوویەک بە خۆرێک لەسەر ناوچەوانی، لە ستۆدیۆی فاتێ تەمەل. وێنە: جاکلین ئاشلی / ئەلجەزیرە.",
+        "kmr": "Portreyeke çarçovekirî ya pîrekê bi rojekê li eniya wê, li stûdyoya Fatê Temel. Wêne: Jaclynn Ashly / Al Jazeera."
+      },
+      "alt": {
+        "en": "A framed black-and-white photograph of an elderly woman with a sun tattoo on her forehead, hanging on a stone wall.",
+        "ckb": "وێنەیەکی ڕەش و سپیی چوارچێوەدار لە ژنێکی بەساڵاچوو بە خاڵکوتانی خۆر لەسەر ناوچەوانی، بە دیوارێکی بەردینەوە.",
+        "kmr": "Wêneyekî reş û spî yê çarçovekirî yê jineke pîr bi deqa rojê li eniya wê, bi dîwarekî kevirîn ve daliqandî."
+      }
+    },
+    "elder-deq-painting-01": {
+      "caption": {
+        "en": "A painting of an elder with deq on her forehead, cheeks and chin. Source unknown.",
+        "ckb": "تابلۆیەکی بەساڵاچوویەک بە دەق لەسەر ناوچەوان، ڕوومەت و چەناگەی. سەرچاوە نەزانراوە.",
+        "kmr": "Tabloyeke pîrekê bi deq li eniya, alik û çengê wê. Çavkanî nayê zanîn."
+      },
+      "alt": {
+        "en": "A painted portrait of an elderly woman whose forehead, cheeks and chin carry tattooed motifs.",
+        "ckb": "پۆرترێتێکی ڕەنگکراوی ژنێکی بەساڵاچوو کە ناوچەوان، ڕوومەت و چەناگەی نەخشی خاڵکوتراویان لەسەرە.",
+        "kmr": "Portreyeke boyaxkirî ya jineke pîr ku li eniya, alik û çengê wê motîfên deqê hene."
+      }
+    },
+    "fate-temel-studio-door-01": {
+      "caption": {
+        "en": "Fatê Temel at the door of her deq studio in Sur, Diyarbakır. Photo: Jaclynn Ashly / Al Jazeera.",
+        "ckb": "فاتێ تەمەل لە بەردەم دەرگای ستۆدیۆی دەقەکەی لە سوور، ئامەد. وێنە: جاکلین ئاشلی / ئەلجەزیرە.",
+        "kmr": "Fatê Temel li ber deriyê stûdyoya xwe ya deqê li Sûra Amedê. Wêne: Jaclynn Ashly / Al Jazeera."
+      },
+      "alt": {
+        "en": "Fatê Temel stands in the doorway of her studio in an old stone street.",
+        "ckb": "فاتێ تەمەل لە بەردەم دەرگای ستۆدیۆکەی لە کۆڵانێکی بەردینی کۆن وەستاوە.",
+        "kmr": "Fatê Temel li ber deriyê stûdyoya xwe li kuçeyeke kevirîn a kevn sekiniye."
+      }
+    },
+    "fate-temel-portrait-01": {
+      "caption": {
+        "en": "Fatê Temel, with a sun on her chin. Photo: Jaclynn Ashly / Al Jazeera.",
+        "ckb": "فاتێ تەمەل، بە خۆرێک لەسەر چەناگەی. وێنە: جاکلین ئاشلی / ئەلجەزیرە.",
+        "kmr": "Fatê Temel, bi rojekê li çengê xwe. Wêne: Jaclynn Ashly / Al Jazeera."
+      },
+      "alt": {
+        "en": "Portrait of Fatê Temel with a small sun tattoo on her chin.",
+        "ckb": "پۆرترێتی فاتێ تەمەل بە خاڵکوتانێکی بچووکی خۆر لەسەر چەناگەی.",
+        "kmr": "Portreya Fatê Temel bi deqeke piçûk a rojê li çengê wê."
+      }
+    },
+    "fate-temel-tattooing-wrist-01": {
+      "caption": {
+        "en": "Fatê Temel tattoos a deq on a man's wrist. Photo: Jaclynn Ashly / Al Jazeera.",
+        "ckb": "فاتێ تەمەل دەقێک لەسەر مەچەکی پیاوێک دەکوتێت. وێنە: جاکلین ئاشلی / ئەلجەزیرە.",
+        "kmr": "Fatê Temel deqekê li ser zenda zilamekî dikute. Wêne: Jaclynn Ashly / Al Jazeera."
+      },
+      "alt": {
+        "en": "Fatê Temel, wearing gloves, tattoos a man's wrist in her studio.",
+        "ckb": "فاتێ تەمەل، بە دەستکێشەوە، مەچەکی پیاوێک لە ستۆدیۆکەیدا خاڵ دەکوتێت.",
+        "kmr": "Fatê Temel, bi destikan, li stûdyoya xwe zenda zilamekî deq dike."
+      }
+    },
+    "fate-temel-tattooing-hand-01": {
+      "caption": {
+        "en": "Fatê Temel tattoos a customer's hand. Photo: Jaclynn Ashly / Al Jazeera.",
+        "ckb": "فاتێ تەمەل دەستی کڕیارێک خاڵ دەکوتێت. وێنە: جاکلین ئاشلی / ئەلجەزیرە.",
+        "kmr": "Fatê Temel destê muşteriyekî deq dike. Wêne: Jaclynn Ashly / Al Jazeera."
+      },
+      "alt": {
+        "en": "Close-up of Fatê Temel's gloved hands tattooing the back of a customer's hand.",
+        "ckb": "وێنەی نزیکی دەستی بە دەستکێشی فاتێ تەمەل کە پشتی دەستی کڕیارێک خاڵ دەکوتێت.",
+        "kmr": "Wêneyê nêzîk ê destên Fatê Temel ên bi destik ku pişta destê muşteriyekî deq dikin."
+      }
+    },
+    "rozerin-soysal-first-deq-01": {
+      "caption": {
+        "en": "Rozerin Soysal, 21, shows her first deq. Photo: Jaclynn Ashly / Al Jazeera.",
+        "ckb": "ڕۆزەرین سۆیساڵ، ٢١ ساڵ، یەکەم دەقی خۆی پیشان دەدات. وێنە: جاکلین ئاشلی / ئەلجەزیرە.",
+        "kmr": "Rozerîn Soysal, 21 salî, deqa xwe ya yekem nîşan dide. Wêne: Jaclynn Ashly / Al Jazeera."
+      },
+      "alt": {
+        "en": "A young woman holds out her wrist to show a newly made deq.",
+        "ckb": "ژنێکی گەنج مەچەکی درێژ کردووە بۆ پیشاندانی دەقێکی تازە.",
+        "kmr": "Jineke ciwan zenda xwe dirêj dike da ku deqeke nû nîşan bide."
+      }
+    },
+    "customer-reading-yavuklu-book-01": {
+      "caption": {
+        "en": "A customer reads a book of Ahmet Yavuklu's deq photographs. Photo: Jaclynn Ashly / Al Jazeera.",
+        "ckb": "کڕیارێک کتێبێکی وێنەی دەقی ئەحمەد یاڤوکلو دەخوێنێتەوە. وێنە: جاکلین ئاشلی / ئەلجەزیرە.",
+        "kmr": "Muşteriyek pirtûkeke wêneyên deqê yên Ahmet Yavuklu dixwîne. Wêne: Jaclynn Ashly / Al Jazeera."
+      },
+      "alt": {
+        "en": "A person in the studio looks through a photo book of elders wearing deq.",
+        "ckb": "کەسێک لە ستۆدیۆکە کتێبێکی وێنەی بەساڵاچووانی خاوەن دەق هەڵدەداتەوە.",
+        "kmr": "Kesek li stûdyoyê pirtûkeke wêneyan a pîrên bi deq dinêre."
+      }
+    },
+    "studio-customers-01": {
+      "caption": {
+        "en": "Customers waiting in Fatê Temel's studio. Photo: Jaclynn Ashly / Al Jazeera.",
+        "ckb": "کڕیاران لە ستۆدیۆی فاتێ تەمەل چاوەڕێ دەکەن. وێنە: جاکلین ئاشلی / ئەلجەزیرە.",
+        "kmr": "Muşterî li stûdyoya Fatê Temel li bendê ne. Wêne: Jaclynn Ashly / Al Jazeera."
+      },
+      "alt": {
+        "en": "Several young people sit and wait inside a small studio with stone walls.",
+        "ckb": "چەند گەنجێک لە ناو ستۆدیۆیەکی بچووکی دیوار بەردین دانیشتوون و چاوەڕێ دەکەن.",
+        "kmr": "Çend ciwan di stûdyoyeke piçûk a bi dîwarên kevirîn de rûniştine û li bendê ne."
+      }
+    },
+    "deq-ttt-temporary-sheet-01": {
+      "caption": {
+        "en": "A sheet of temporary deq motifs, attributed to Elu (deq-ttt).",
+        "ckb": "لاپەڕەیەک نەخشی دەقی کاتی، دەدرێتە پاڵ ئێلو (deq-ttt).",
+        "kmr": "Rûpelek motîfên deqê yên demkî, tê dayîn pala Elu (deq-ttt)."
+      },
+      "alt": {
+        "en": "A printed sheet of small temporary tattoos: half-suns, stars, arrows, chevrons, combs and dot trios.",
+        "ckb": "لاپەڕەیەکی چاپکراوی خاڵکوتانی کاتیی بچووک: نیوە خۆر، ئەستێرە، تیر، شەڤرۆن، شانە و سێ خاڵ.",
+        "kmr": "Rûpeleke çapkirî ya deqên demkî yên piçûk: nîvroj, stêrk, tîr, şevron, şe û sê xal."
+      }
+    },
+    "deq-ttt-gift-voucher-01": {
+      "caption": {
+        "en": "A gift voucher for hand-poked deq, attributed to Elu (deq-ttt).",
+        "ckb": "پسوولەی دیاری بۆ دەقی بە دەست، دەدرێتە پاڵ ئێلو (deq-ttt).",
+        "kmr": "Kartek diyariyê ji bo deqa bi destan, tê dayîn pala Elu (deq-ttt)."
+      },
+      "alt": {
+        "en": "A gift card with a half-sun above and a comb motif below.",
+        "ckb": "کارتێکی دیاری بە نیوە خۆرێک لە سەرەوە و نەخشی شانەیەک لە خوارەوە.",
+        "kmr": "Karteke diyariyê bi nîvrojekê li jor û motîfeke şeyê li jêr."
+      }
+    },
+    "elu-dot-work-abdomen-01": {
+      "caption": {
+        "en": "Hand-poked deq across the abdomen, by Elu (deq-ttt).",
+        "ckb": "دەقی بە دەست لەسەر سک، کاری ئێلو (deq-ttt).",
+        "kmr": "Deqa bi destan li ser zik, karê Elu (deq-ttt)."
+      },
+      "alt": {
+        "en": "A woman's abdomen with rows of dots, dot diamonds, a sun and star forms.",
+        "ckb": "سکی ژنێک بە ڕیزی خاڵ، چوارگۆشەی خاڵخاڵ، خۆر و شێوەی ئەستێرە.",
+        "kmr": "Zikê jinekê bi rêzên xalan, çargoşeyên xalxalî, roj û şiklên stêrkan."
+      }
+    },
+    "elu-dot-work-ear-neck-01": {
+      "caption": {
+        "en": "Dot work in the ear and a dotted rosette on the neck, by Elu (deq-ttt).",
+        "ckb": "کاری خاڵ لە گوێ و گوڵێکی خاڵخاڵ لەسەر مل، کاری ئێلو (deq-ttt).",
+        "kmr": "Karê xalan di guh de û gulekeke xalxalî li ser stû, karê Elu (deq-ttt)."
+      },
+      "alt": {
+        "en": "Close-up of an ear with small tattooed dots and a rosette of dots on the neck below it.",
+        "ckb": "وێنەی نزیکی گوێیەک بە خاڵی بچووکی خاڵکوتراو و گوڵێکی خاڵخاڵ لەسەر مل لە خوارییەوە.",
+        "kmr": "Wêneyê nêzîk ê guhekî bi xalên deqê yên piçûk û gulekeke xalan li ser stû di bin wî de."
+      }
+    },
+    "elu-thigh-pattern-01": {
+      "caption": {
+        "en": "Rows of deq across a thigh, by Elu (deq-ttt).",
+        "ckb": "ڕیزی دەق لەسەر ڕان، کاری ئێلو (deq-ttt).",
+        "kmr": "Rêzên deqê li ser ranê, karê Elu (deq-ttt)."
+      },
+      "alt": {
+        "en": "A thigh covered in rows of motifs: a half-sun, branches, arrows, dots, chevrons and a nested lozenge.",
+        "ckb": "ڕانێک پڕ لە ڕیزی نەخش: نیوە خۆر، لق، تیر، خاڵ، شەڤرۆن و لۆزێنجی ناو یەک.",
+        "kmr": "Ranek bi rêzên motîfan tije: nîvroj, çiq, tîr, xal, şevron û lozenceke di nav hev de."
+      }
+    },
+    "elu-chin-sun-fingers-01": {
+      "caption": {
+        "en": "A half-sun on the chin and small motifs on the fingers, by Elu (deq-ttt).",
+        "ckb": "نیوە خۆرێک لەسەر چەناگە و نەخشی بچووک لەسەر پەنجەکان، کاری ئێلو (deq-ttt).",
+        "kmr": "Nîvrojek li çengê û motîfên piçûk li ser tiliyan, karê Elu (deq-ttt)."
+      },
+      "alt": {
+        "en": "A woman with a half-sun tattoo on her chin rests her hand near her face, showing small finger tattoos.",
+        "ckb": "ژنێک بە خاڵکوتانی نیوە خۆر لەسەر چەناگەی دەستی لە نزیک دەموچاوی داناوە و خاڵکوتانی بچووکی پەنجەکانی دیارە.",
+        "kmr": "Jinek bi deqa nîvrojê li çengê destê xwe nêzîkî rûyê xwe dike, deqên piçûk ên tiliyan xuya dibin."
+      }
+    },
+    "kobani-woman-portrait-01": {
+      "caption": {
+        "en": "An elderly tattooed woman from Kobanî, attributed to Jodi Hilton.",
+        "ckb": "ژنێکی بەساڵاچووی خاڵکوتراو لە کۆبانێ، دەدرێتە پاڵ جۆدی هیڵتن.",
+        "kmr": "Jineke pîr a bi deq ji Kobanê, tê dayîn pala Jodi Hilton."
+      },
+      "alt": {
+        "en": "Black-and-white portrait of an elderly woman reclining, her tattooed hand resting on a cushion.",
+        "ckb": "پۆرترێتی ڕەش و سپیی ژنێکی بەساڵاچوو کە پاڵی داوەتەوە، دەستە خاڵکوتراوەکەی لەسەر سەرینێکە.",
+        "kmr": "Portreya reş û spî ya jineke pîr ku paldayî ye, destê wê yê bi deq li ser balîfekê ye."
+      }
+    },
+    "roj-sun-collage-01": {
+      "caption": {
+        "en": "“Representing the source of life”: four women wearing deq around a half-sun. Source unknown.",
+        "ckb": "«نوێنەری سەرچاوەی ژیان»: چوار ژنی خاوەن دەق لە دەوری نیوە خۆرێک. سەرچاوە نەزانراوە.",
+        "kmr": "«Nûnertiya çavkaniya jiyanê»: çar jinên bi deq li dora nîvrojekê. Çavkanî nayê zanîn."
+      },
+      "alt": {
+        "en": "A collage of four portraits of women with face tattoos, arranged around a large half-sun.",
+        "ckb": "کۆلاژێکی چوار پۆرترێتی ژنان بە خاڵکوتانی دەموچاو، لە دەوری نیوە خۆرێکی گەورە ڕێکخراون.",
+        "kmr": "Kolajek ji çar portreyên jinan bi deqên rû, li dora nîvrojeke mezin rêzkirî."
+      }
+    },
+    "deq-portraits-slideshow-01": {
+      "caption": {
+        "en": "Contemporary portraits and hands wearing deq, an animated slideshow. Source unknown.",
+        "ckb": "پۆرترێت و دەستی هاوچەرخی خاوەن دەق، نمایشێکی جووڵاو. سەرچاوە نەزانراوە.",
+        "kmr": "Portre û destên hemdem ên bi deq, pêşandaneke livok. Çavkanî nayê zanîn."
+      },
+      "alt": {
+        "en": "Animated slideshow of faces and hands with deq on the chin, forehead and fingers.",
+        "ckb": "نمایشێکی جووڵاوی دەموچاو و دەست بە دەق لەسەر چەناگە، ناوچەوان و پەنجەکان.",
+        "kmr": "Pêşandaneke livok a rû û destan bi deq li çeng, enî û tiliyan."
+      }
+    },
+    "thesis-motif-table-01": {
+      "caption": {
+        "en": "A table of the main deq motifs from a Turkish thesis appendix, shown by Kurdistan Chronicle. The thesis is not yet identified.",
+        "ckb": "خشتەیەکی نەخشە سەرەکییەکانی دەق لە پاشکۆی تێزێکی تورکی، کە کوردستان کرۆنیکڵ پیشانی داوە. تێزەکە هێشتا نەناسراوە.",
+        "kmr": "Tabloyeke motîfên sereke yên deqê ji pêveka tezeke tirkî, ku Kurdistan Chronicle nîşan daye. Tez hê nehatiye naskirin."
+      },
+      "alt": {
+        "en": "A printed page with a grid of numbered deq motifs and their names.",
+        "ckb": "لاپەڕەیەکی چاپکراو بە تۆڕێک لە نەخشی ژمارەدار و ناوەکانیان.",
+        "kmr": "Rûpeleke çapkirî bi tevnek ji motîfên deqê yên bi hejmar û navên wan."
+      }
+    },
+    "hand-drawn-motif-sheets-01": {
+      "caption": {
+        "en": "Hand-drawn sheets of labelled deq motifs. Photo: Kurdistan Chronicle.",
+        "ckb": "لاپەڕەی بە دەست کێشراوی نەخشی دەق بە ناونیشانەوە. وێنە: کوردستان کرۆنیکڵ.",
+        "kmr": "Rûpelên bi destan xêzkirî yên motîfên deqê bi navan. Wêne: Kurdistan Chronicle."
+      },
+      "alt": {
+        "en": "Sheets of paper covered in hand-drawn motifs with handwritten labels, beside a cup.",
+        "ckb": "لاپەڕەی کاغەز پڕ لە نەخشی بە دەست کێشراو بە ناونیشانی دەستنووس، لە تەنیشت کوپێک.",
+        "kmr": "Rûpelên kaxezê bi motîfên bi destan xêzkirî û navên destnivîs tije, li kêleka kasekê."
+      }
+    },
+    "deq-motifs-animation-01": {
+      "caption": {
+        "en": "Single deq motifs, an animation. Source unknown.",
+        "ckb": "نەخشی تاکی دەق، ئەنیمەیشنێک. سەرچاوە نەزانراوە.",
+        "kmr": "Motîfên deqê yên yekane, anîmasyonek. Çavkanî nayê zanîn."
+      },
+      "alt": {
+        "en": "Animation of single motifs embossed on black: a half-sun, a branch over a triangle, a seven-dot rosette and dotted shapes.",
+        "ckb": "ئەنیمەیشنی نەخشی تاک کە لەسەر ڕەش دەرخراون: نیوە خۆر، لقێک لەسەر سێگۆشەیەک، گوڵی حەوت خاڵ و شێوەی خاڵخاڵ.",
+        "kmr": "Anîmasyona motîfên yekane yên li ser reş: nîvroj, çiqek li ser sêgoşeyekê, guleke heft xalan û şiklên xalxalî."
+      }
+    }
+  }
+}

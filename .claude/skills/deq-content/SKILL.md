@@ -5,7 +5,7 @@ description: Rules for writing Deq story, history, shape meanings and sources, a
 
 # Deq content
 
-> Updated in Phase 1 (research and assets). Phase 10 extends it for the story.
+> Updated in Phase 10a (story and sources).
 
 - Every factual sentence cites a source in `content/sources.json` (CSL-JSON). Where sources disagree, say so. Never invent facts.
 - Every image has a caption, credit, source URL, and alt text in en, ckb and kmr; record it in `assets/source-manifest.json`. Strip EXIF/GPS metadata.
@@ -30,4 +30,13 @@ description: Rules for writing Deq story, history, shape meanings and sources, a
 - `rights`: `owner-permission` (the owner's statement) or a licence id such as `cc-by-nc-sa-2.0` when the source page states one. Add new licence ids to `RIGHTS` in `scripts/deq-assets/src/deq_assets/manifest.py`, and honour their terms (credit, non-commercial, share-alike) on the site.
 - Tag `motifs` with ids from `docs/research/motif-catalog.md`.
 - Responsive variants are built with `uv run deq-assets variants` into the gitignored `assets/.generated/`. Never commit them.
-- Captions and alt text (en, ckb, kmr) are added with the story (Phase 10).
+- Captions and alt text (en, ckb, kmr) live in `content/story/images.json`. Set `usedIn` in the manifest to the chapter slug that shows the image.
+
+## Story (`content/story/`, ADR 0018)
+
+- Chapters are `content/story/<locale>/NN-<slug>.mdx`, with frontmatter `title` and `description`. Slugs are `CHAPTERS` in `apps/site/src/lib/story.ts`. Every locale has the same chapters.
+- Components: `<Cite ids="a b" />` after each cited sentence, `<Figure id="<asset>" />`, `<Gallery>` around several figures, `<YouTube id="<source id>" />` (a `video` source with `custom.youtubeId`) and `<SiteLink to="icons/" />`. Do not add raw HTML or other embeds.
+- Every paragraph and list item has a `<Cite>` (or a `<SiteLink>` for a site-only sentence). Translations keep the same figures, galleries, videos, links and citation ids in the same order. `test/story.test.ts` checks all of this.
+- Every manifest image appears once per locale, in the chapter named by its `usedIn`.
+- Citation numbers come from the order in `sources.json`. Add new sources at the end.
+- Run `just media` (variants) before building the site. Check links with `pnpm --filter @0xdolan/deq-site links`, adding `--external` to list external URLs for a manual check.

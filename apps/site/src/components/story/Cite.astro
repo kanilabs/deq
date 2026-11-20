@@ -1,0 +1,18 @@
+---
+/** `<Cite ids="a b" />`: numbered links to entries on the sources page (ADR 0018). */
+import { localizedPath, useTranslations } from "../../i18n/index.ts";
+import { citeLabel, localeFromPath, sourceOf } from "../../lib/story.ts";
+
+interface Props {
+  ids: string;
+}
+
+const locale = localeFromPath(Astro.url.pathname);
+const t = useTranslations(locale);
+const page = localizedPath(locale, "sources/");
+const ids = Astro.props.ids.split(/\s+/u).filter((id) => id !== "");
+---
+
+<sup class="deq-cite">{ids.map((id) => (
+  <a href={`${page}#src-${id}`} aria-label={t("story.cite", { n: citeLabel(locale, id), title: sourceOf(id).title })}>{citeLabel(locale, id)}</a>
+))}</sup>

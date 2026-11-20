@@ -22,6 +22,8 @@ const PAGES = [
   "kmr/docs/",
   "leet/",
   "ckb/generate/",
+  "story/revival/",
+  "ckb/sources/",
 ];
 const CATEGORIES = ["performance", "accessibility", "best-practices", "seo"];
 const MIN = 0.95;

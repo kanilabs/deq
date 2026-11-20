@@ -4,6 +4,7 @@ import { defineConfig } from "astro/config";
 
 import { csp } from "./integrations/csp.ts";
 import { fonts } from "./integrations/fonts.ts";
+import { media } from "./integrations/media.ts";
 import { pwa } from "./integrations/pwa.ts";
 import { CATALOGS, LOCALE_INFO, type MessageKey } from "./src/i18n/index.ts";
 
@@ -70,6 +71,7 @@ export default defineConfig({
       },
       sidebar: [
         { ...label("nav.home"), link: "/" },
+        { ...label("nav.story"), link: "/story/" },
         { ...label("nav.icons"), link: "/icons/" },
         { ...label("nav.studio"), link: "/studio/" },
         { ...label("nav.leet"), link: "/leet/" },
@@ -77,6 +79,7 @@ export default defineConfig({
         { ...label("nav.flag"), link: "/flag/" },
         { ...label("nav.fonts"), link: "/fonts/" },
         { ...label("nav.brand"), link: "/brand/" },
+        { ...label("nav.sources"), link: "/sources/" },
         { ...label("nav.about"), link: "/about/" },
         { ...label("nav.docs"), items: [{ autogenerate: { directory: "docs" } }] },
       ],
@@ -87,6 +90,7 @@ export default defineConfig({
     }),
     svelte(),
     fonts(),
+    media(),
     // After every page is written, before the service worker precaches them.
     csp(),
     pwa(),

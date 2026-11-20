@@ -49,11 +49,17 @@ test:
 test-tools:
     DEQ_REQUIRE_TOOLS=1 pnpm exec turbo run test --filter=@0xdolan/deq-exporters
 
-# Website end-to-end checks: build with the fonts, then Playwright + axe + offline, then Lighthouse
-site: fonts
-    DEQ_REQUIRE_FONTS=1 pnpm exec turbo run build --filter=@0xdolan/deq-site
+# Website end-to-end checks: build with the fonts and story images, check internal links,
+# then Playwright + axe + offline, then Lighthouse
+site: fonts media
+    DEQ_REQUIRE_FONTS=1 DEQ_REQUIRE_MEDIA=1 pnpm exec turbo run build --filter=@0xdolan/deq-site
+    pnpm --filter @0xdolan/deq-site links
     pnpm --filter @0xdolan/deq-site e2e
     just site-lighthouse
+
+# Story image variants (AVIF/WebP/JPEG) into the gitignored assets/.generated (ADR 0018)
+media:
+    uv run --frozen deq-assets variants
 
 # Lighthouse (every category at least 95) against a background preview of the built site
 site-lighthouse:

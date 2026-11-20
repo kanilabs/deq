@@ -1,0 +1,12 @@
+---
+/**
+ * `<Gallery>`: a responsive grid of `<Figure>`s. The figures are rendered first and their
+ * `sizes` rewritten for a grid cell, so phones fetch small variants. The HTML is this
+ * site's own render output, not outside data.
+ */
+import { tileSizes } from "../../lib/story.ts";
+
+const html = tileSizes(await Astro.slots.render("default"));
+---
+
+<div class="deq-gallery" set:html={html} />

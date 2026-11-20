@@ -1,0 +1,13 @@
+---
+/** `<SiteLink to="icons/">text</SiteLink>`: a link to a site page in the current locale. */
+import { localizedPath } from "../../i18n/index.ts";
+import { localeFromPath } from "../../lib/story.ts";
+
+interface Props {
+  to: string;
+}
+
+const href = localizedPath(localeFromPath(Astro.url.pathname), Astro.props.to);
+---
+
+<a href={href}><slot /></a>

@@ -180,6 +180,8 @@ jobs:
       contents: read
     env:
       DEQ_REQUIRE_FONTS: "1"
+      # The story pages need the image variants; fail instead of warning (ADR 0018).
+      DEQ_REQUIRE_MEDIA: "1"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -191,7 +193,9 @@ jobs:
       - run: pnpm --filter @0xdolan/deq-icons font-data fonts/build/geometry.json
       - run: pnpm --filter @0xdolan/deq-generator font-data fonts/build/leet.json
       - run: uv run --frozen deq-fonts build
+      - run: uv run --frozen deq-assets variants
       - run: pnpm exec turbo run build --filter=@0xdolan/deq-site
+      - run: pnpm --filter @0xdolan/deq-site links
       - run: pnpm --filter @0xdolan/deq-site exec playwright install --with-deps chromium
       - run: pnpm --filter @0xdolan/deq-site e2e
       - name: Lighthouse (every category at least 95)

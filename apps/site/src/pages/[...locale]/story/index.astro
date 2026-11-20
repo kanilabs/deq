@@ -1,0 +1,45 @@
+---
+import { getCollection } from "astro:content";
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+
+import { formatNumber, localePaths, localizedPath } from "../../../i18n/index.ts";
+import { pageContext } from "../../../lib/page.ts";
+import { chapterOf, CHAPTERS } from "../../../lib/story.ts";
+
+export const getStaticPaths = localePaths;
+
+const { locale, t } = pageContext(Astro.params.locale);
+const entries = (await getCollection("story"))
+  .map((entry) => ({ entry, ...chapterOf(entry.id) }))
+  .filter((e) => e.locale === locale)
+  .sort((a, b) => CHAPTERS.indexOf(a.chapter) - CHAPTERS.indexOf(b.chapter));
+---
+
+<StarlightPage frontmatter={{ title: t("story.title"), description: t("story.description") }}>
+  <p>{t("story.intro")}</p>
+  <h2>{t("story.chapters")}</h2>
+  <ol class="deq-toc">
+    {entries.map(({ entry, chapter }, i) => (
+      <li>
+        <a href={localizedPath(locale, `story/${chapter}/`)}>
+          <span class="sr-only">{t("story.chapter", { n: formatNumber(locale, i + 1) })}: </span>{entry.data.title}
+        </a>
+        <p>{entry.data.description}</p>
+      </li>
+    ))}
+  </ol>
+  <p><a href={localizedPath(locale, "sources/")}>{t("story.sources")}</a></p>
+</StarlightPage>
+
+<style>
+  .deq-toc li {
+    margin-block: 1rem;
+  }
+  .deq-toc a {
+    font-weight: 600;
+  }
+  .deq-toc p {
+    margin: 0.25rem 0 0;
+    color: var(--sl-color-gray-2);
+  }
+</style>

@@ -8,7 +8,20 @@ const LOCALES = [
   { prefix: "ckb/", lang: "ckb", dir: "rtl" },
   { prefix: "kmr/", lang: "kmr", dir: "ltr" },
 ] as const;
-const PAGES = ["", "icons/", "icons/kurdish-sun/", "flag/", "fonts/", "brand/", "about/", "docs/"];
+const PAGES = [
+  "",
+  "icons/",
+  "icons/kurdish-sun/",
+  "flag/",
+  "fonts/",
+  "brand/",
+  "about/",
+  "docs/",
+  "story/",
+  "story/revival/",
+  "story/screen/",
+  "sources/",
+];
 /** PRD §10: JavaScript on non-Studio pages, gzipped. */
 const JS_BUDGET = 50 * 1024;
 
@@ -92,6 +105,58 @@ test("icon filter narrows the grid and announces the count", async ({ page }) =>
   await expect(page.locator(".count")).toContainText(String(await visible.count()));
   await page.getByRole("searchbox").fill("zzzz-no-match");
   await expect(page.locator("[data-icon-empty]")).toBeVisible();
+});
+
+test("story figures open in the lightbox and close again", async ({ page }) => {
+  const violations = await watchCsp(page);
+  await page.goto("story/making/");
+  const link = page.locator("a.deq-zoom").first();
+  const alt = await link.getAttribute("data-alt");
+  await link.click();
+  const dialog = page.locator("dialog.deq-lightbox");
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator("img")).toHaveAttribute("alt", alt ?? "");
+  await expect
+    .poll(() => dialog.locator("img").evaluate((img: HTMLImageElement) => img.naturalWidth))
+    .toBeGreaterThan(0);
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  expect(violations).toEqual([]);
+});
+
+test("videos load from youtube-nocookie only after pressing play", async ({ page }) => {
+  const violations = await watchCsp(page);
+  const youtube: string[] = [];
+  await page.route(/youtube/u, (route) => {
+    youtube.push(route.request().url());
+    return route.fulfill({ contentType: "text/html", body: "<!doctype html><title>stub</title>" });
+  });
+  await page.goto("ckb/story/revival/");
+  await page.waitForLoadState("networkidle");
+  expect(youtube).toEqual([]);
+  const video = page.locator(".deq-video").first();
+  await video.getByRole("button").click();
+  const frame = video.locator("iframe");
+  await expect(frame).toHaveAttribute(
+    "src",
+    /^https:\/\/www\.youtube-nocookie\.com\/embed\/[\w-]{11}\?/u,
+  );
+  await expect(frame).toHaveAttribute(
+    "sandbox",
+    "allow-scripts allow-same-origin allow-presentation",
+  );
+  await expect.poll(() => youtube.length).toBeGreaterThan(0);
+  expect(youtube.every((url) => url.startsWith("https://www.youtube-nocookie.com/"))).toBe(true);
+  expect(violations).toEqual([]);
+});
+
+test("citations link to their entries on the sources page", async ({ page }) => {
+  await page.goto("kmr/story/name/");
+  const cite = page.locator(".deq-cite a").first();
+  const href = (await cite.getAttribute("href")) ?? "";
+  expect(href).toMatch(/\/kmr\/sources\/#src-/u);
+  await cite.click();
+  await expect(page.locator(`[id="${href.split("#")[1] ?? ""}"]`)).toBeInViewport();
 });
 
 test("unknown pages get the 404 page", async ({ page }) => {
