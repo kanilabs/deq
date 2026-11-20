@@ -598,6 +598,24 @@ export const en = {
   "sources.attribution.inferred": "Attributed, to be confirmed",
   "sources.attribution.unknown": "Source unknown",
   "sources.animation": "Animation",
+  "nav.showcase": "Showcase",
+  "home.card.showcase": "Projects that use Deq motifs, with screenshots and live previews.",
+  "showcase.title": "Showcase",
+  "showcase.description":
+    "Projects that use Deq motifs, with screenshots, live previews and the shapes each one uses.",
+  "showcase.intro": "These projects use Deq motifs in their logos and interfaces.",
+  "showcase.privacy":
+    "Each screenshot is stored on this site. The live site loads only after you press its button, in a sandbox without access to this site's data.",
+  "showcase.screenshot": "Screenshot of the {name} website",
+  "showcase.load": "Load live preview of {name}",
+  "showcase.fallback": "The live preview did not load. Open the site in a new tab instead.",
+  "showcase.shapes": "Deq shapes used",
+  "showcase.open": "Open site",
+  "showcase.source": "Source code",
+  "showcase.submit.title": "Add your project",
+  "showcase.submit.text":
+    "Made something with Deq? Suggest it for the showcase through a GitHub issue.",
+  "showcase.submit.link": "Suggest a project",
 } as const;
 
 /** The shape every locale's catalog must have. */

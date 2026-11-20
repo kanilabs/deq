@@ -603,4 +603,23 @@ export const kmr = {
   "sources.attribution.inferred": "Hatiye dayîn pal, divê were piştrastkirin",
   "sources.attribution.unknown": "Çavkanî nayê zanîn",
   "sources.animation": "Anîmasyon",
+  "nav.showcase": "Pêşangeh",
+  "home.card.showcase":
+    "Projeyên ku motîfên Deq bi kar tînin, bi dîmenên ekranê û pêşdîtinên zindî.",
+  "showcase.title": "Pêşangeh",
+  "showcase.description":
+    "Projeyên ku motîfên Deq bi kar tînin, bi dîmenên ekranê, pêşdîtinên zindî û şiklên ku her yek bi kar tîne.",
+  "showcase.intro": "Ev proje motîfên Deq di logo û navrûyên xwe de bi kar tînin.",
+  "showcase.privacy":
+    "Her dîmena ekranê li ser vê malperê hatiye tomarkirin. Malpera zindî tenê piştî ku tu bişkoka wê bitikînî bar dibe, di qutiyeke girtî de û bê gihîştina daneyên vê malperê.",
+  "showcase.screenshot": "Dîmena ekranê ya malpera {name}",
+  "showcase.load": "Pêşdîtina zindî ya {name} bar bike",
+  "showcase.fallback": "Pêşdîtina zindî bar nebû. Li şûna wê malperê di tabeke nû de veke.",
+  "showcase.shapes": "Şiklên Deq ên hatine bikaranîn",
+  "showcase.open": "Malperê veke",
+  "showcase.source": "Koda çavkaniyê",
+  "showcase.submit.title": "Projeya xwe zêde bike",
+  "showcase.submit.text":
+    "Te tiştek bi Deq çêkiriye? Bi rêya pirsgirêkeke GitHubê ji bo pêşangehê pêşniyar bike.",
+  "showcase.submit.link": "Projeyekê pêşniyar bike",
 } as const satisfies Messages;

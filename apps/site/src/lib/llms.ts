@@ -21,6 +21,7 @@ export function llmsTxt(origin: string, full: boolean): string {
     `- [${t["nav.fonts"]}](${page("fonts/")}): ${t["home.card.fonts"]}`,
     `- [${t["nav.brand"]}](${page("brand/")}): ${t["home.card.brand"]}`,
     `- [${t["nav.sources"]}](${page("sources/")})`,
+    `- [${t["nav.showcase"]}](${page("showcase/")}): ${t["home.card.showcase"]}`,
     `- [${t["nav.about"]}](${page("about/")}): ${t["home.card.about"]}`,
     "",
     "## Docs",

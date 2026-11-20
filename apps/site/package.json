@@ -14,7 +14,8 @@
     "test": "vitest run --coverage",
     "e2e": "playwright test",
     "lighthouse": "node e2e/lighthouse.ts",
-    "links": "node e2e/links.ts"
+    "links": "node e2e/links.ts",
+    "shots": "node e2e/shots.ts"
   },
   "dependencies": {
     "@0xdolan/deq-core": "workspace:*",

@@ -5,7 +5,7 @@ description: Rules for writing Deq story, history, shape meanings and sources, a
 
 # Deq content
 
-> Updated in Phase 10a (story and sources).
+> Updated in Phase 10b (showcase).
 
 - Every factual sentence cites a source in `content/sources.json` (CSL-JSON). Where sources disagree, say so. Never invent facts.
 - Every image has a caption, credit, source URL, and alt text in en, ckb and kmr; record it in `assets/source-manifest.json`. Strip EXIF/GPS metadata.
@@ -40,3 +40,10 @@ description: Rules for writing Deq story, history, shape meanings and sources, a
 - Every manifest image appears once per locale, in the chapter named by its `usedIn`.
 - Citation numbers come from the order in `sources.json`. Add new sources at the end.
 - Run `just media` (variants) before building the site. Check links with `pnpm --filter @0xdolan/deq-site links`, adding `--external` to list external URLs for a manual check.
+
+## Showcase (`content/showcase.json`, ADR 0019)
+
+- Only list a project with its owner's consent (the issue template asks for it). Describe it from its own site or repository. Never invent features.
+- `shapes` lists spec ids the project visibly uses. Confirm them with the owner. Do not guess from a logo alone.
+- After adding or changing a project, run `pnpm --filter @0xdolan/deq-site shots <id>` and commit both WebP files.
+- Live previews stay click-to-load and sandboxed without `allow-same-origin`. Never add it, because the projects share this site's origin.
