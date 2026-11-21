@@ -7,6 +7,11 @@ inputs:
   python:
     description: Install uv and sync Python dependencies.
     default: "true"
+  cache:
+    description:
+      Restore and save the pnpm, uv and Rust caches. The release workflow turns it off, so
+      a poisoned cache can never reach a published package.
+    default: "true"
 runs:
   using: composite
   steps:
@@ -14,7 +19,7 @@ runs:
     - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
       with:
         node-version-file: .nvmrc
-        cache: pnpm
+        cache: ${{ inputs.cache == 'true' && 'pnpm' || '' }}
     - name: Install Node dependencies
       shell: bash
       run: pnpm install --frozen-lockfile
@@ -22,6 +27,7 @@ runs:
       uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
       with:
         version: "0.13.5"
+        enable-cache: ${{ inputs.cache }}
     - if: inputs.python == 'true'
       name: Install Python dependencies
       shell: bash
@@ -30,5 +36,5 @@ runs:
       name: Install Rust toolchain (from rust-toolchain.toml)
       shell: bash
       run: rustup show active-toolchain || rustup toolchain install
-    - if: inputs.rust == 'true'
+    - if: inputs.rust == 'true' && inputs.cache == 'true'
       uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3

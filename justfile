@@ -138,6 +138,25 @@ brand:
 brand-video: brand
     pnpm --filter @0xdolan/deq-site brand-video
 
+# Debian packages deq-cli and fonts-deq into target/deb, checked with lintian (ADR 0024)
+deb: fonts
+    packaging/debian/build.sh
+    lintian --fail-on warning target/deb/*.deb
+
+# Install the Debian packages on each Ubuntu LTS in Docker
+deb-test:
+    packaging/debian/test.sh
+
+# Set the shared version everywhere (ADR 0024) and regenerate the files that embed it
+version v:
+    node scripts/version.ts {{v}}
+    cargo update --workspace --offline --quiet
+    uv lock --quiet
+    pnpm --filter @0xdolan/deq-cli generate
+    pnpm --filter @0xdolan/deq-cli fixtures
+    just api-docs
+    node scripts/version.ts --check
+
 # Dependency audits (npm, PyPI, crates)
 audit:
     pnpm audit --audit-level moderate
