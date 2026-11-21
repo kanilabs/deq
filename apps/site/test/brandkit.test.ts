@@ -43,7 +43,8 @@ function zipNames(bytes: Uint8Array): string[] {
   return names;
 }
 
-describe("brand kit", () => {
+// The kits render every brand PNG with resvg, which takes longer than 5 s on CI runners.
+describe("brand kit", { timeout: 60_000 }, () => {
   it("collects the brand SVGs by path, without the old concepts", () => {
     expect(BRAND_SVGS["logo.svg"]).toContain("<svg");
     expect(BRAND_SVGS["lockups/horizontal-color.svg"]).toContain("<svg");
