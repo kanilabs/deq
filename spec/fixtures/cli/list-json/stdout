@@ -1,0 +1,467 @@
+[
+  {
+    "id": "roj-half-sun",
+    "category": "celestial",
+    "name": "Half sun"
+  },
+  {
+    "id": "roj-sun-circle",
+    "category": "celestial",
+    "name": "Sun disc"
+  },
+  {
+    "id": "heyv-crescent",
+    "category": "celestial",
+    "name": "Crescent moon"
+  },
+  {
+    "id": "sterk-star",
+    "category": "celestial",
+    "name": "Star"
+  },
+  {
+    "id": "cup-rays",
+    "category": "celestial",
+    "name": "Cup with rays"
+  },
+  {
+    "id": "moon-dome",
+    "category": "celestial",
+    "name": "Moon (dome)"
+  },
+  {
+    "id": "star-dense",
+    "category": "celestial",
+    "name": "Double asterisk"
+  },
+  {
+    "id": "star-flower",
+    "category": "celestial",
+    "name": "Flower star"
+  },
+  {
+    "id": "sun-arch-dotted",
+    "category": "celestial",
+    "name": "Arch with rays and dot"
+  },
+  {
+    "id": "sun-bar",
+    "category": "celestial",
+    "name": "Sun with bar"
+  },
+  {
+    "id": "sun-dome-comb",
+    "category": "celestial",
+    "name": "Rayed dome"
+  },
+  {
+    "id": "sun-double-ring",
+    "category": "celestial",
+    "name": "Sun with inner ring"
+  },
+  {
+    "id": "sun-forked-rays",
+    "category": "celestial",
+    "name": "Sun with forked rays"
+  },
+  {
+    "id": "sun-rays",
+    "category": "celestial",
+    "name": "Sun with long rays"
+  },
+  {
+    "id": "sun-spiral",
+    "category": "celestial",
+    "name": "Spiral sun"
+  },
+  {
+    "id": "tree-branch",
+    "category": "nature",
+    "name": "Tree of life"
+  },
+  {
+    "id": "wheat-arrow",
+    "category": "nature",
+    "name": "Wheat ear"
+  },
+  {
+    "id": "fork",
+    "category": "nature",
+    "name": "Fork"
+  },
+  {
+    "id": "spike",
+    "category": "nature",
+    "name": "Spike"
+  },
+  {
+    "id": "ring-stem",
+    "category": "nature",
+    "name": "Ring on a stem"
+  },
+  {
+    "id": "arrow-down",
+    "category": "nature",
+    "name": "Arrow down"
+  },
+  {
+    "id": "arrow-herringbone",
+    "category": "nature",
+    "name": "Herringbone arrow"
+  },
+  {
+    "id": "arrow-line",
+    "category": "nature",
+    "name": "Arrow"
+  },
+  {
+    "id": "crow-foot",
+    "category": "nature",
+    "name": "Three-toed foot"
+  },
+  {
+    "id": "cup",
+    "category": "nature",
+    "name": "Cup"
+  },
+  {
+    "id": "dome-stem",
+    "category": "nature",
+    "name": "Arch with stem"
+  },
+  {
+    "id": "fork-cross",
+    "category": "nature",
+    "name": "Double fork"
+  },
+  {
+    "id": "fork-down-dotted",
+    "category": "nature",
+    "name": "Inverted fork with dots"
+  },
+  {
+    "id": "fork-down",
+    "category": "nature",
+    "name": "Inverted fork"
+  },
+  {
+    "id": "root",
+    "category": "nature",
+    "name": "Root"
+  },
+  {
+    "id": "tree-comb",
+    "category": "nature",
+    "name": "Comb tree"
+  },
+  {
+    "id": "tree-cup",
+    "category": "nature",
+    "name": "Tree in a cup"
+  },
+  {
+    "id": "trefoil",
+    "category": "nature",
+    "name": "Trefoil"
+  },
+  {
+    "id": "cross",
+    "category": "geometric",
+    "name": "Cross"
+  },
+  {
+    "id": "cross-dotted",
+    "category": "geometric",
+    "name": "Dotted cross"
+  },
+  {
+    "id": "x-mark",
+    "category": "geometric",
+    "name": "Diagonal cross"
+  },
+  {
+    "id": "lozenge",
+    "category": "geometric",
+    "name": "Lozenge"
+  },
+  {
+    "id": "lozenge-nested",
+    "category": "geometric",
+    "name": "Nested lozenges"
+  },
+  {
+    "id": "triangle-dotted",
+    "category": "geometric",
+    "name": "Triangle"
+  },
+  {
+    "id": "chevron",
+    "category": "geometric",
+    "name": "Chevron"
+  },
+  {
+    "id": "chevron-stack",
+    "category": "geometric",
+    "name": "Stacked chevrons"
+  },
+  {
+    "id": "crossed-chevrons",
+    "category": "geometric",
+    "name": "Crossed chevrons"
+  },
+  {
+    "id": "comb",
+    "category": "geometric",
+    "name": "Comb"
+  },
+  {
+    "id": "ladder",
+    "category": "geometric",
+    "name": "Ladder"
+  },
+  {
+    "id": "spindle",
+    "category": "geometric",
+    "name": "Spindle"
+  },
+  {
+    "id": "dimlich",
+    "category": "geometric",
+    "name": "Dimlich"
+  },
+  {
+    "id": "arch-dot",
+    "category": "geometric",
+    "name": "Shrine"
+  },
+  {
+    "id": "cross-forked-dotted",
+    "category": "geometric",
+    "name": "Forked cross with dots"
+  },
+  {
+    "id": "cross-forked",
+    "category": "geometric",
+    "name": "Cross with forked ends"
+  },
+  {
+    "id": "crossed-chevrons-wide",
+    "category": "geometric",
+    "name": "Wide crossed chevrons"
+  },
+  {
+    "id": "dome-comb",
+    "category": "geometric",
+    "name": "Dome with comb"
+  },
+  {
+    "id": "star-chain",
+    "category": "geometric",
+    "name": "Star chain"
+  },
+  {
+    "id": "t-mark",
+    "category": "geometric",
+    "name": "T"
+  },
+  {
+    "id": "tent-cross",
+    "category": "geometric",
+    "name": "X on feet"
+  },
+  {
+    "id": "tent-double",
+    "category": "geometric",
+    "name": "Double tent"
+  },
+  {
+    "id": "tent",
+    "category": "geometric",
+    "name": "Tent"
+  },
+  {
+    "id": "tree-row",
+    "category": "geometric",
+    "name": "Branch row"
+  },
+  {
+    "id": "x-chain",
+    "category": "geometric",
+    "name": "X chain"
+  },
+  {
+    "id": "x-comb",
+    "category": "geometric",
+    "name": "Toothed X"
+  },
+  {
+    "id": "dot",
+    "category": "dots",
+    "name": "Dot"
+  },
+  {
+    "id": "dot-trio",
+    "category": "dots",
+    "name": "Three dots"
+  },
+  {
+    "id": "dot-row",
+    "category": "dots",
+    "name": "Row of dots"
+  },
+  {
+    "id": "dot-quincunx",
+    "category": "dots",
+    "name": "Five dots"
+  },
+  {
+    "id": "dot-rosette",
+    "category": "dots",
+    "name": "Dot rosette"
+  },
+  {
+    "id": "dot-cluster",
+    "category": "dots",
+    "name": "Dot cluster"
+  },
+  {
+    "id": "chain",
+    "category": "dots",
+    "name": "Chain"
+  },
+  {
+    "id": "dot-diamond",
+    "category": "dots",
+    "name": "Four dots"
+  },
+  {
+    "id": "dot-flower",
+    "category": "dots",
+    "name": "Dot flower"
+  },
+  {
+    "id": "ring-chain-shaft",
+    "category": "dots",
+    "name": "Rings on a shaft"
+  },
+  {
+    "id": "ring-stem-double",
+    "category": "dots",
+    "name": "Double ring stem"
+  },
+  {
+    "id": "ring",
+    "category": "dots",
+    "name": "Ring"
+  },
+  {
+    "id": "zigzag",
+    "category": "lines-and-borders",
+    "name": "Zigzag"
+  },
+  {
+    "id": "arrow-row",
+    "category": "lines-and-borders",
+    "name": "Row of arrowheads"
+  },
+  {
+    "id": "band-border",
+    "category": "lines-and-borders",
+    "name": "Band border"
+  },
+  {
+    "id": "comb-dotted",
+    "category": "lines-and-borders",
+    "name": "Comb with dots"
+  },
+  {
+    "id": "comb-forked",
+    "category": "lines-and-borders",
+    "name": "Forked comb"
+  },
+  {
+    "id": "comb-x",
+    "category": "lines-and-borders",
+    "name": "Comb ending in an X"
+  },
+  {
+    "id": "fork-pair",
+    "category": "lines-and-borders",
+    "name": "Fork pair"
+  },
+  {
+    "id": "tick-bar",
+    "category": "lines-and-borders",
+    "name": "Tick bar"
+  },
+  {
+    "id": "gazelle",
+    "category": "human-and-animal",
+    "name": "Gazelle"
+  },
+  {
+    "id": "fish",
+    "category": "human-and-animal",
+    "name": "Fish"
+  },
+  {
+    "id": "sandgrouse-foot",
+    "category": "human-and-animal",
+    "name": "Sandgrouse foot"
+  },
+  {
+    "id": "doll",
+    "category": "human-and-animal",
+    "name": "Doll"
+  },
+  {
+    "id": "darek",
+    "category": "human-and-animal",
+    "name": "Darek"
+  },
+  {
+    "id": "arch-dot-column",
+    "category": "human-and-animal",
+    "name": "Arch and dot column"
+  },
+  {
+    "id": "bird",
+    "category": "human-and-animal",
+    "name": "Bird"
+  },
+  {
+    "id": "dancer",
+    "category": "human-and-animal",
+    "name": "Dancer"
+  },
+  {
+    "id": "chin-composition",
+    "category": "compositions",
+    "name": "Chin composition"
+  },
+  {
+    "id": "forehead-composition",
+    "category": "compositions",
+    "name": "Forehead composition"
+  },
+  {
+    "id": "circle-over-comb",
+    "category": "compositions",
+    "name": "Circle over comb"
+  },
+  {
+    "id": "drower-union",
+    "category": "compositions",
+    "name": "Union of symbols"
+  },
+  {
+    "id": "kurdish-sun",
+    "category": "kurdish-symbols",
+    "name": "Kurdish Sun"
+  },
+  {
+    "id": "kurdish-flag",
+    "category": "kurdish-symbols",
+    "name": "Flag of Kurdistan"
+  }
+]

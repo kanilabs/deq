@@ -1,0 +1,19 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": ["DEQ_REQUIRE_FONTS", "DEQ_REQUIRE_MEDIA"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/content/**",
+        "$TURBO_ROOT$/docs/**",
+        "$TURBO_ROOT$/assets/source-manifest.json",
+        "$TURBO_ROOT$/assets/video/**",
+        "$TURBO_ROOT$/assets/.generated/**",
+        "$TURBO_ROOT$/fonts/dist/**",
+        "$TURBO_ROOT$/spec/**"
+      ]
+    }
+  }
+}

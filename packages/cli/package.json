@@ -1,0 +1,47 @@
+{
+  "name": "@0xdolan/deq-cli",
+  "version": "1.0.0-rc.1",
+  "description": "The `deq` command-line tool for Node.js: render and export Deq shapes and the Kurdish flag.",
+  "license": "GPL-3.0-or-later",
+  "author": "0xdolan <0xdolan@gmail.com>",
+  "homepage": "https://kanilabs.github.io/deq/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kanilabs/deq.git",
+    "directory": "packages/cli"
+  },
+  "bugs": "https://github.com/kanilabs/deq/issues",
+  "type": "module",
+  "sideEffects": false,
+  "bin": {
+    "deq": "./dist/bin.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --coverage",
+    "generate": "node scripts/generate.ts",
+    "fixtures": "tsc -p tsconfig.build.json && node scripts/fixtures.ts"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "dependencies": {
+    "@0xdolan/deq-core": "workspace:*",
+    "@0xdolan/deq-exporters": "workspace:*",
+    "@0xdolan/deq-generator": "workspace:*"
+  }
+}

@@ -1,0 +1,187 @@
+---
+import { BASE } from "../../lib/base.ts";
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+
+import { localePaths, localizedPath } from "../../i18n/index.ts";
+import { codepoint, SHAPES, shapeName } from "../../lib/data.ts";
+import { pageContext } from "../../lib/page.ts";
+
+export const getStaticPaths = localePaths;
+
+const { locale, t } = pageContext(Astro.params.locale);
+const specimen = SHAPES.slice(0, 24);
+const leetSamples = [
+  { text: "Deq Leet 2026", lang: "en", dir: "ltr" },
+  { text: "Kurdistan, Kurdî!", lang: "kmr", dir: "ltr" },
+  { text: "دەقی کوردی", lang: "ckb", dir: "rtl" },
+] as const;
+const leetSets = ["ss01", "ss02", "ss03"] as const;
+const leetHref = localizedPath(locale, "leet/");
+const kinds = [
+  { key: "static", body: "fonts.static.body", cls: "deq" },
+  { key: "variable", body: "fonts.variable.body", cls: "deq" },
+  { key: "color", body: "fonts.color.body", cls: "deq-color" },
+] as const;
+---
+
+<StarlightPage
+  frontmatter={{
+    title: t("fonts.title"),
+    description: t("fonts.description"),
+    head: [
+      { tag: "link", attrs: { rel: "stylesheet", href: `${BASE}fonts/deq-icons.css` } },
+      { tag: "link", attrs: { rel: "stylesheet", href: `${BASE}fonts/deq-leet.css` } },
+    ],
+  }}
+>
+  <p>{t("fonts.intro")}</p>
+
+  {
+    kinds.map((k) => (
+      <section>
+        <h2>{t(`fonts.${k.key}`)}</h2>
+        <p>{t(k.body)}</p>
+        <p class={`specimen not-content specimen-${k.key}`} aria-hidden="true">
+          {specimen.map((s) => (
+            <i class={`${k.cls} deq-${s.id}`} />
+          ))}
+        </p>
+      </section>
+    ))
+  }
+
+  <section>
+    <h2>{t("fonts.leet")}</h2>
+    <p>{t("fonts.leet.body")}</p>
+    {
+      leetSamples.map((l) => (
+        <figure class="leet-sample not-content">
+          <p class="deq-leet" lang={l.lang} dir={l.dir} aria-hidden="true">
+            {l.text}
+          </p>
+          <figcaption lang={l.lang} dir={l.dir}>
+            {l.text}
+          </figcaption>
+        </figure>
+      ))
+    }
+    <h3>{t("fonts.leet.alternates")}</h3>
+    {
+      leetSets.map((set) => (
+        <figure class="leet-sample not-content">
+          <p class={`deq-leet leet-${set}`} aria-hidden="true">
+            {leetSamples[0].text}
+          </p>
+          <figcaption>
+            <code>{set}</code>
+          </figcaption>
+        </figure>
+      ))
+    }
+    <p>
+      <a href={leetHref}>{t("fonts.leet.try")}</a>
+    </p>
+  </section>
+
+  <section>
+    <h2>{t("fonts.specimen")}</h2>
+    <label class="weight not-content">
+      <span>{t("fonts.weight")}</span>
+      <input type="range" min="100" max="900" step="100" value="400" data-weight />
+      <output data-weight-out>400</output>
+    </label>
+    <table class="codepoints">
+      <tbody>
+        {
+          SHAPES.map((s) => {
+            const name = shapeName(s, locale);
+            return (
+              <tr>
+                <td class="glyph-cell">
+                  <i class={`deq deq-${s.id}`} aria-hidden="true" data-variable />
+                </td>
+                <td lang={name.lang === locale ? undefined : name.lang}>{name.text}</td>
+                <td dir="ltr">
+                  <code>{codepoint(s.id)}</code>
+                </td>
+              </tr>
+            );
+          })
+        }
+      </tbody>
+    </table>
+  </section>
+
+  <h2>{t("fonts.install")}</h2>
+  <p>{t("fonts.install.body")}</p>
+</StarlightPage>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>("[data-weight]");
+  const out = document.querySelector<HTMLOutputElement>("[data-weight-out]");
+  input?.addEventListener("input", () => {
+    // A CSSOM write, so no inline style is needed.
+    document.documentElement.style.setProperty("--deq-font-weight", input.value);
+    if (out) out.value = input.value;
+  });
+</script>
+
+<style>
+  .specimen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--deq-space-3);
+    font-size: 2.5rem;
+    color: var(--deq-icon);
+  }
+  /* A fixed box per glyph, so the page does not shift when the icon font loads. */
+  .specimen i,
+  .codepoints [data-variable] {
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    line-height: 1;
+    overflow: hidden;
+  }
+  .specimen-variable i:nth-child(3n + 1) {
+    font-weight: 200;
+  }
+  .specimen-variable i:nth-child(3n + 3) {
+    font-weight: 800;
+  }
+  .codepoints [data-variable] {
+    font-size: 2rem;
+    font-weight: var(--deq-font-weight, 400);
+    color: var(--deq-icon);
+  }
+  .weight {
+    display: flex;
+    align-items: center;
+    gap: var(--deq-space-3);
+  }
+  .leet-sample {
+    margin-block: var(--deq-space-3);
+  }
+  .leet-sample .deq-leet {
+    margin: 0;
+    font-size: 2rem;
+    color: var(--deq-icon);
+    overflow-wrap: anywhere;
+  }
+  .leet-sample figcaption {
+    color: var(--sl-color-gray-3);
+    font-size: var(--sl-text-sm);
+  }
+  .leet-ss01 {
+    font-feature-settings: "ss01";
+  }
+  .leet-ss02 {
+    font-feature-settings: "ss02";
+  }
+  .leet-ss03 {
+    font-feature-settings: "ss03";
+  }
+  .glyph-cell {
+    width: 3rem;
+  }
+</style>

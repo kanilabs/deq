@@ -1,0 +1,159 @@
+---
+import { getCollection } from "astro:content";
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+
+import { formatNumber, localePaths, localizedPath, type MessageKey } from "../../i18n/index.ts";
+import { pageContext } from "../../lib/page.ts";
+import {
+  ASSETS,
+  authors,
+  CC_BY_NC_SA,
+  chapterOf,
+  CHAPTERS,
+  citedIn,
+  citeIds,
+  GROUPS,
+  issued,
+  sourceNumber,
+  SOURCES,
+  type Chapter,
+} from "../../lib/story.ts";
+import "../../styles/story.css";
+
+export const getStaticPaths = localePaths;
+
+const { locale, t } = pageContext(Astro.params.locale);
+const entries = (await getCollection("story"))
+  .map((entry) => ({ entry, ...chapterOf(entry.id) }))
+  .filter((e) => e.locale === locale);
+const bodies: Partial<Record<Chapter, string>> = {};
+const titles: Partial<Record<Chapter, string>> = {};
+for (const { entry, chapter } of entries) {
+  bodies[chapter] = entry.body ?? "";
+  titles[chapter] = entry.data.title;
+}
+const chapterLink = (chapter: Chapter) => localizedPath(locale, `story/${chapter}/`);
+const num = (id: string) => formatNumber(locale, sourceNumber(id));
+const listSep = locale === "ckb" ? "، " : ", ";
+const videos = SOURCES.filter((s) => s.custom.youtubeId !== undefined);
+const animations = ASSETS.filter((a) => a.kind === "animation");
+---
+
+<StarlightPage frontmatter={{ title: t("sources.title"), description: t("sources.description") }}>
+  <p>{t("sources.intro")}</p>
+  <p><strong>{t("sources.contact")}</strong></p>
+
+  {GROUPS.map((group) => (
+    <section class="deq-sources">
+      <h2>{t(`sources.group.${group}` as MessageKey)}</h2>
+      <ul>
+        {SOURCES.filter((s) => s.custom.group === group).map((s) => {
+          const chapters = citedIn(bodies, s.id);
+          const who = authors(s);
+          const when = issued(s);
+          return (
+            <li id={`src-${s.id}`}>
+              <span class="deq-num">[{num(s.id)}]</span>{" "}
+              <span dir="auto">
+                {who !== "" && <>{who}. </>}
+                {s.URL !== undefined ? (
+                  <a href={s.URL} lang={s.language} rel="noopener noreferrer"><cite>{s.title}</cite></a>
+                ) : <cite lang={s.language}>{s.title}</cite>}
+                {s["container-title"] !== undefined && <>. {s["container-title"]}</>}
+                {s.publisher !== undefined && s["container-title"] === undefined && <>. {s.publisher}</>}
+                {when !== undefined && <> ({when})</>}.
+              </span>
+              <small>
+                {t(`sources.status.${s.custom.status}` as MessageKey)}
+                {s.custom.archiveUrl !== undefined && (
+                  <> · <a href={s.custom.archiveUrl} rel="noopener noreferrer">{t("sources.archive")}</a></>
+                )}
+              </small>
+              <small>
+                {chapters.length === 0 ? t("sources.notCited") : (
+                  <>{t("sources.citedIn", { list: "" })}{chapters.map((c, i) => (
+                    <>{i > 0 && listSep}<a href={chapterLink(c)}>{titles[c]}</a></>
+                  ))}</>
+                )}
+              </small>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  ))}
+
+  <h2>{t("sources.byChapter")}</h2>
+  <dl class="deq-by-chapter">
+    {CHAPTERS.filter((c) => bodies[c] !== undefined).map((c) => (
+      <>
+        <dt><a href={chapterLink(c)}>{titles[c]}</a></dt>
+        <dd>{[...citeIds(bodies[c] ?? "")].sort((a, b) => sourceNumber(a) - sourceNumber(b)).map((id, i) => (
+          <>{i > 0 && " "}<a href={`#src-${id}`}>[{num(id)}]</a></>
+        ))}</dd>
+      </>
+    ))}
+  </dl>
+
+  <h2>{t("sources.images")}</h2>
+  <div class="deq-table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">{t("sources.col.image")}</th>
+          <th scope="col">{t("sources.col.credit")}</th>
+          <th scope="col">{t("sources.col.source")}</th>
+          <th scope="col">{t("sources.col.rights")}</th>
+          <th scope="col">{t("sources.col.chapter")}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {ASSETS.map((a) => (
+          <tr>
+            <td><code>{a.id}</code>{a.kind === "animation" && <> ({t("sources.animation")})</>}</td>
+            <td dir="auto">{a.credit}<br /><small>{t(`sources.attribution.${a.attribution}` as MessageKey)}</small></td>
+            <td>
+              {a.sourceId !== null && <a href={`#src-${a.sourceId}`}>[{num(a.sourceId)}]</a>}{" "}
+              {a.sourceUrl !== null && <a href={a.sourceUrl} rel="noopener noreferrer">{t("story.sourcePage")}</a>}
+            </td>
+            <td>{a.rights === "cc-by-nc-sa-2.0" ? (
+              <a href={CC_BY_NC_SA} rel="license">{t("sources.rights.cc-by-nc-sa-2.0")}</a>
+            ) : t(`sources.rights.${a.rights}` as MessageKey)}</td>
+            <td>{CHAPTERS.filter((c) => a.usedIn.includes(c)).map((c, i) => (
+              <>{i > 0 && listSep}<a href={`${chapterLink(c)}#img-${a.id}`}>{titles[c]}</a></>
+            ))}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2>{t("sources.videos")}</h2>
+  <div class="deq-table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">{t("sources.col.video")}</th>
+          <th scope="col">{t("sources.col.credit")}</th>
+          <th scope="col">{t("sources.col.source")}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {videos.map((s) => (
+          <tr>
+            <td lang={s.language} dir="auto">{s.title}</td>
+            <td dir="auto">{authors(s)}</td>
+            <td><a href={`#src-${s.id}`}>[{num(s.id)}]</a></td>
+          </tr>
+        ))}
+        {animations.map((a) => (
+          <tr>
+            <td><code>{a.id}</code> ({t("sources.animation")})</td>
+            <td dir="auto">{a.credit}<br /><small>{t(`sources.attribution.${a.attribution}` as MessageKey)}</small></td>
+            <td></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</StarlightPage>

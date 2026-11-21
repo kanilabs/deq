@@ -1,0 +1,17 @@
+/* Self-hosted UI fonts (no third-party requests). Fontsource splits each font by
+   unicode-range, so a browser downloads only the scripts a page uses. */
+@import "@fontsource-variable/noto-sans/wght.css";
+@import "@fontsource-variable/vazirmatn/wght.css";
+
+/* Latin Extended-A (ş, ğ, ı, İ ...) from a 15 KB subset of the same font, written by
+   `uv run deq-fonts ui-subset` (checked by `just fonts`). Declared last, so browsers
+   prefer it for this range and skip Fontsource's 168 KB latin-ext file unless a page
+   uses rarer letters. Noto Sans is licensed under the SIL Open Font License 1.1. */
+@font-face {
+  font-family: "Noto Sans Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("./fonts/noto-sans-latin-ext-a-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0100-017F;
+}

@@ -11,6 +11,8 @@ dist/
 coverage/
 .eslintcache
 .astro/
+test-results/
+playwright-report/
 
 # --- Python ---
 __pycache__/
@@ -28,7 +30,9 @@ htmlcov/
 target/
 
 # --- Build artifacts (attached to releases, never committed) ---
+/assets/.generated/
 /fonts/dist/
+/fonts/build/
 *.deb
 
 # --- Secrets and local env ---
@@ -48,3 +52,4 @@ Thumbs.db
 
 # --- Claude Code local state ---
 .claude/settings.local.json
+.svelte-kit/

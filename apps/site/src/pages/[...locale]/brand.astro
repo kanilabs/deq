@@ -1,0 +1,378 @@
+---
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+
+import brand from "../../../../../assets/brand/brand.json";
+import logo from "../../../../../assets/brand/logo.svg?raw";
+import markDark from "../../../../../assets/brand/mark-dark.svg?raw";
+import markLight from "../../../../../assets/brand/mark.svg?raw";
+import { formatNumber, localePaths, localizedPath, type MessageKey } from "../../i18n/index.ts";
+import { BASE } from "../../lib/base.ts";
+import { svgSize } from "../../lib/brandkit.ts";
+import { pageContext } from "../../lib/page.ts";
+
+export const getStaticPaths = localePaths;
+
+const { locale, t } = pageContext(Astro.params.locale);
+const n = (value: number) => formatNumber(locale, value);
+/** A generated brand SVG at 160 px, without its "do not edit" comment. */
+const big = (svg: string) =>
+  svg
+    .replace(/^<!--[\s\S]*?-->\s*/u, "")
+    .replace(/width="\d+" height="\d+"/u, 'width="160" height="160"');
+const svgUrl = (name: string) => `${BASE}brand/svg/${name}`;
+
+const WAYS = [
+  { id: "color", background: "#FFFFFF" },
+  { id: "reversed", background: "#17181C" },
+  { id: "mono", background: "#FFFFFF" },
+  { id: "white", background: "#1D4A2E" },
+  { id: "flag", background: "#FFFFFF" },
+] as const;
+const KINDS = [
+  { id: "horizontal", script: "latin" },
+  { id: "horizontal-ckb", script: "sorani" },
+  { id: "stacked", script: "latin" },
+  { id: "stacked-ckb", script: "sorani" },
+] as const;
+const lockups = WAYS.map((way) => ({
+  way,
+  items: KINDS.map((k) => {
+    const name = `lockups/${k.id}-${way.id}.svg`;
+    const size = svgSize(name);
+    const kind = k.id.startsWith("stacked") ? "stacked" : "horizontal";
+    return {
+      src: svgUrl(name),
+      // Shown at half the drawn size (80 px tall marks).
+      width: Math.round(size.width / 2),
+      height: Math.round(size.height / 2),
+      alt: t("brand.lockup.alt", {
+        kind: t(`brand.lockup.${kind}`),
+        script: t(`brand.lockup.${k.script}`),
+        way: t(`brand.way.${way.id}`),
+      }),
+    };
+  }),
+}));
+const construction = svgSize("guide/construction.svg");
+const clear = svgSize("guide/clear-space.svg");
+const animated = svgSize("logo-animated.svg");
+
+const fmt = (values: readonly number[], unit = "") =>
+  values.map((v) => `${String(v)}${unit}`).join(" ");
+const DO: readonly MessageKey[] = ["brand.do.files", "brand.do.clear", "brand.do.reversed"];
+const DONT: readonly MessageKey[] = [
+  "brand.dont.change",
+  "brand.dont.effects",
+  "brand.dont.font",
+  "brand.dont.busy",
+];
+const VOICE: readonly MessageKey[] = [
+  "brand.voice.plain",
+  "brand.voice.respect",
+  "brand.voice.kurdish",
+  "brand.voice.open",
+];
+/** The "On this page" list: StarlightPage cannot read headings from a page's own markup. */
+const headings = [
+  { depth: 2, slug: "logo", text: t("brand.logo") },
+  { depth: 2, slug: "lockups", text: t("brand.lockups") },
+  { depth: 2, slug: "construction", text: t("brand.construction") },
+  { depth: 3, slug: "minimum-sizes", text: t("brand.min") },
+  { depth: 2, slug: "colours", text: t("brand.colors") },
+  { depth: 3, slug: "flag-rules", text: t("brand.rules") },
+  { depth: 2, slug: "typography", text: t("brand.type") },
+  { depth: 2, slug: "iconography", text: t("brand.icons") },
+  { depth: 2, slug: "voice", text: t("brand.voice") },
+  { depth: 2, slug: "do", text: t("brand.do") },
+  { depth: 2, slug: "dont", text: t("brand.dont") },
+  { depth: 2, slug: "animation", text: t("brand.animation") },
+  { depth: 2, slug: "downloads", text: t("brand.downloads") },
+];
+const ICONS: readonly MessageKey[] = ["brand.icons.grid", "brand.icons.stroke", "brand.icons.color"];
+---
+
+<StarlightPage
+  frontmatter={{ title: t("brand.title"), description: t("brand.description") }}
+  headings={headings}
+>
+  <h2 id="logo">{t("brand.logo")}</h2>
+  <div class="marks not-content">
+    <div class="mark on-face" set:html={big(logo)} />
+    <div class="mark on-light" set:html={big(markLight)} />
+    <div class="mark on-dark" set:html={big(markDark)} />
+  </div>
+  <p>{t("brand.logo.body")}</p>
+
+  <h2 id="lockups">{t("brand.lockups")}</h2>
+  <p>{t("brand.lockups.body")}</p>
+  {
+    lockups.map(({ way, items }) => (
+      <figure class="way not-content">
+        <div class="lockups" style={`--bg:${way.background}`}>
+          {items.map((i) => (
+            <img src={i.src} width={i.width} height={i.height} alt={i.alt} loading="lazy" />
+          ))}
+        </div>
+        <figcaption>{t(`brand.way.${way.id}`)}</figcaption>
+      </figure>
+    ))
+  }
+
+  <h2 id="construction">{t("brand.construction")}</h2>
+  <p>{t("brand.construction.body")}</p>
+  <div class="guide not-content">
+    <img
+      src={svgUrl("guide/construction.svg")}
+      width={construction.width}
+      height={construction.height}
+      alt={t("brand.construction.alt")}
+      loading="lazy"
+    />
+    <img
+      src={svgUrl("guide/clear-space.svg")}
+      width={Math.round(clear.width / 2)}
+      height={Math.round(clear.height / 2)}
+      alt={t("brand.clear.alt")}
+      loading="lazy"
+    />
+  </div>
+
+  <h3 id="minimum-sizes">{t("brand.min")}</h3>
+  <ul>
+    <li>{t("brand.min.mark", { px: n(brand.minSize.mark) })}</li>
+    <li>{t("brand.min.horizontal", { px: n(brand.minSize.horizontal) })}</li>
+    <li>{t("brand.min.stacked", { px: n(brand.minSize.stacked) })}</li>
+    <li>{t("brand.min.small", { px: n(brand.minSize.smallMarkBelow) })}</li>
+  </ul>
+
+  <h2 id="colours">{t("brand.colors")}</h2>
+  <p>{t("brand.colors.body")}</p>
+  <div class="table-wrap not-content">
+    <table class="colors">
+      <thead>
+        <tr>
+          <th scope="col">{t("brand.color.name")}</th>
+          <th scope="col">{t("brand.color.values")}</th>
+          <th scope="col">{t("brand.color.use")}</th>
+          <th scope="col">{t("brand.color.contrast")}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          brand.colors.map((c) => (
+            <tr>
+              <th scope="row">
+                <span class="chip" style={`--c:${c.hex}`} aria-hidden="true" />
+                <span dir="ltr">{c.name}</span>
+              </th>
+              <td dir="ltr" class="values">
+                <code>{c.hex}</code>
+                <code>rgb {fmt(c.rgb)}</code>
+                <code>
+                  hsl {c.hsl[0]} {c.hsl[1]}% {c.hsl[2]}%
+                </code>
+                <code>oklch {fmt(c.oklch)}</code>
+                <code>cmyk {fmt(c.cmyk, "%")}</code>
+              </td>
+              <td dir="ltr">{c.use}</td>
+              <td dir="ltr">
+                {c.onWhite}:1 / {c.onDark}:1
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+  <p>{t("brand.colors.tokens")}</p>
+
+  <h3 id="flag-rules">{t("brand.rules")}</h3>
+  <ul>
+    <li>{t("brand.rule.contrast")}</li>
+    <li><a href={localizedPath(locale, "flag/")}>{t("brand.rule.flag")}</a></li>
+    <li>{t("brand.rule.yellow")}</li>
+  </ul>
+
+  <h2 id="typography">{t("brand.type")}</h2>
+  <p>{t("brand.type.body")}</p>
+  <ul dir="ltr">
+    {
+      brand.typography.map((f) => (
+        <li>
+          <strong>{f.family}</strong>: {f.use} (<code>{f.license}</code>)
+        </li>
+      ))
+    }
+  </ul>
+
+  <h2 id="iconography">{t("brand.icons")}</h2>
+  <ul>{ICONS.map((k) => <li>{t(k)}</li>)}</ul>
+
+  <h2 id="voice">{t("brand.voice")}</h2>
+  <ul>{VOICE.map((k) => <li>{t(k)}</li>)}</ul>
+
+  <div class="rules not-content">
+    <section class="do">
+      <h2 id="do">{t("brand.do")}</h2>
+      <ul>{DO.map((k) => <li>{t(k)}</li>)}</ul>
+    </section>
+    <section class="dont">
+      <h2 id="dont">{t("brand.dont")}</h2>
+      <ul>{DONT.map((k) => <li>{t(k)}</li>)}</ul>
+    </section>
+  </div>
+
+  <h2 id="animation">{t("brand.animation")}</h2>
+  <p>{t("brand.animation.body", { seconds: n(brand.animation.seconds) })}</p>
+  <div class="mark on-face animated not-content">
+    <img
+      src={svgUrl("logo-animated.svg")}
+      width={animated.width}
+      height={animated.height}
+      alt={t("brand.animation.alt")}
+    />
+  </div>
+
+  <h2 id="downloads">{t("brand.downloads")}</h2>
+  <ul class="downloads">
+    <li>
+      <a href={`${BASE}brand/deq-brand-kit.zip`} download>{t("brand.download.kit")}</a>:
+      {t("brand.download.kit.body")}
+    </li>
+    <li>
+      <a href={`${BASE}brand/deq-press-kit.zip`} download>{t("brand.download.press")}</a>:
+      {t("brand.download.press.body")}
+    </li>
+    <li><a href={`${BASE}brand/banner.png`}>{t("brand.download.banner")}</a></li>
+    <li><a href={`${BASE}brand/social-preview.png`}>{t("brand.download.social")}</a></li>
+    <li><a href={`${BASE}brand/logo-animated.mp4`}>{t("brand.download.video")}</a></li>
+  </ul>
+</StarlightPage>
+
+<style>
+  .marks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--deq-space-4);
+  }
+  .mark {
+    display: flex;
+    padding: var(--deq-space-6);
+    border: 1px solid var(--sl-color-hairline-light);
+    border-radius: var(--deq-radius);
+  }
+  .animated {
+    width: fit-content;
+  }
+  .animated img {
+    width: 160px;
+    height: auto;
+  }
+  .on-face {
+    background: #f8f8f8;
+  }
+  .on-light {
+    background: #ffffff;
+  }
+  .on-dark {
+    background: #17181c;
+  }
+  .way {
+    margin: var(--deq-space-4) 0;
+  }
+  .lockups {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--deq-space-6);
+    align-items: center;
+    padding: var(--deq-space-6);
+    background: var(--bg);
+    border: 1px solid var(--sl-color-hairline-light);
+    border-radius: var(--deq-radius);
+    /* The mono lockups take this colour. */
+    color: #1e1e1e;
+  }
+  .lockups img {
+    max-width: 100%;
+    height: auto;
+  }
+  .way figcaption {
+    margin-top: var(--deq-space-2);
+    color: var(--sl-color-gray-2);
+    font-size: var(--sl-text-sm);
+  }
+  .guide {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--deq-space-4);
+    align-items: flex-start;
+  }
+  .guide img {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid var(--sl-color-hairline-light);
+    border-radius: var(--deq-radius);
+  }
+  .table-wrap {
+    overflow-x: auto;
+    margin: var(--deq-space-4) 0;
+  }
+  .colors {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--sl-text-sm);
+  }
+  .colors th,
+  .colors td {
+    padding: var(--deq-space-2);
+    border-bottom: 1px solid var(--sl-color-hairline-light);
+    text-align: start;
+    vertical-align: top;
+  }
+  .colors th[scope="row"] {
+    white-space: nowrap;
+  }
+  .values {
+    display: grid;
+    gap: var(--deq-space-1);
+    white-space: nowrap;
+  }
+  .chip {
+    display: inline-block;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-inline-end: var(--deq-space-2);
+    vertical-align: middle;
+    background: var(--c);
+    border: 1px solid var(--sl-color-gray-4);
+    border-radius: 50%;
+  }
+  .rules {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: var(--deq-space-4);
+    margin-top: var(--deq-space-6);
+  }
+  .rules section {
+    padding: var(--deq-space-4);
+    border: 1px solid var(--sl-color-hairline-light);
+    border-inline-start-width: 4px;
+    border-radius: var(--deq-radius);
+  }
+  .rules h2 {
+    margin-top: 0;
+    font-size: var(--sl-text-xl);
+  }
+  .rules ul {
+    padding-inline-start: 1.25rem;
+  }
+  .rules li + li {
+    margin-top: var(--deq-space-1);
+  }
+  .do {
+    border-inline-start-color: #278e43;
+  }
+  .dont {
+    border-inline-start-color: #ed2024;
+  }
+</style>

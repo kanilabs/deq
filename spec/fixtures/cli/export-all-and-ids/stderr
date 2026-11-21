@@ -1,0 +1,2 @@
+deq: error: give shape ids or --all, not both
+Run "deq export --help" for usage.

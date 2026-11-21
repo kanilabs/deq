@@ -1,0 +1,57 @@
+{
+  "name": "@0xdolan/deq-svelte",
+  "version": "1.0.0-rc.1",
+  "description": "Deq shapes as typed, tree-shakable Svelte 5 components.",
+  "license": "GPL-3.0-or-later",
+  "author": "0xdolan <0xdolan@gmail.com>",
+  "homepage": "https://kanilabs.github.io/deq/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kanilabs/deq.git",
+    "directory": "packages/svelte"
+  },
+  "bugs": "https://github.com/kanilabs/deq/issues",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "svelte": "./dist/index.js",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "!dist/**/*.test.*"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "svelte-package -i src -o dist",
+    "typecheck": "svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
+    "test": "vitest run --coverage",
+    "generate": "node scripts/generate.ts"
+  },
+  "svelte": "./dist/index.js",
+  "dependencies": {
+    "@0xdolan/deq-core": "workspace:*",
+    "@0xdolan/deq-icons": "workspace:*"
+  },
+  "peerDependencies": {
+    "svelte": ">=5"
+  },
+  "devDependencies": {
+    "@sveltejs/package": "3.0.2",
+    "@sveltejs/vite-plugin-svelte": "7.3.1",
+    "svelte": "5.57.3",
+    "svelte-check": "4.7.8"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

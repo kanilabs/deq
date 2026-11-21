@@ -1,0 +1,57 @@
+{
+  "name": "@0xdolan/deq-elements",
+  "version": "1.0.0-rc.1",
+  "description": "The <deq-icon> custom element for Deq shapes.",
+  "license": "GPL-3.0-or-later",
+  "author": "0xdolan <0xdolan@gmail.com>",
+  "homepage": "https://kanilabs.github.io/deq/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kanilabs/deq.git",
+    "directory": "packages/elements"
+  },
+  "bugs": "https://github.com/kanilabs/deq/issues",
+  "type": "module",
+  "sideEffects": [
+    "./dist/define.js",
+    "./dist/cdn/deq-elements.js"
+  ],
+  "exports": {
+    ".": {
+      "@0xdolan/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./define": {
+      "@0xdolan/source": "./src/define.ts",
+      "types": "./dist/define.d.ts",
+      "import": "./dist/define.js"
+    },
+    "./cdn": "./dist/cdn/deq-elements.js",
+    "./integrity.json": "./dist/integrity.json",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && vite build --config vite.cdn.config.ts && node scripts/integrity.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@0xdolan/deq-core": "workspace:*",
+    "@0xdolan/deq-icons": "workspace:*"
+  },
+  "devDependencies": {
+    "happy-dom": "21.0.4",
+    "vite": "8.3.5"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

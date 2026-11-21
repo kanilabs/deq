@@ -1,0 +1,187 @@
+#compdef deq
+# zsh completion for deq. Generated from spec/cli.json; do not edit.
+# Install: deq completion zsh > "${fpath[1]}/_deq"
+_deq() {
+  local -a commands
+  commands=(
+    'list:List the shapes in the catalog'
+    'info:Show a shape'\''s names, layers and parameters'
+    'render:Render shapes to files'
+    'export:Export shapes in several formats and sizes'
+    'flag:Draw the flag of Kurdistan'
+    'leet:Write text with Deq glyphs (Deq Leet), or read it back with --decode'
+    'generate:Generate a seeded pattern of Deq motifs'
+    'validate:Check a shape spec file and render every parameter variant'
+    'completion:Print a shell completion script'
+  )
+  if (( CURRENT == 2 )); then
+    _describe -t commands 'deq command' commands
+    _arguments '(- *)'{-h,--help}'[Show help]' '(- *)'{-V,--version}'[Print the version]'
+    return
+  fi
+  local cmd=${words[2]}
+  shift words
+  (( CURRENT-- ))
+  case $cmd in
+    list)
+      _arguments -S \
+        '--category[Only shapes in this category]:id: ' \
+        '--json[Print JSON]' \
+        '(- *)--help[Show help.]'
+      ;;
+    info)
+      _arguments -S \
+        '--json[Print JSON]' \
+        '(- *)--help[Show help.]' \
+        ':shape:(roj-half-sun roj-sun-circle heyv-crescent sterk-star cup-rays moon-dome star-dense star-flower sun-arch-dotted sun-bar sun-dome-comb sun-double-ring sun-forked-rays sun-rays sun-spiral tree-branch wheat-arrow fork spike ring-stem arrow-down arrow-herringbone arrow-line crow-foot cup dome-stem fork-cross fork-down-dotted fork-down root tree-comb tree-cup trefoil cross cross-dotted x-mark lozenge lozenge-nested triangle-dotted chevron chevron-stack crossed-chevrons comb ladder spindle dimlich arch-dot cross-forked-dotted cross-forked crossed-chevrons-wide dome-comb star-chain t-mark tent-cross tent-double tent tree-row x-chain x-comb dot dot-trio dot-row dot-quincunx dot-rosette dot-cluster chain dot-diamond dot-flower ring-chain-shaft ring-stem-double ring zigzag arrow-row band-border comb-dotted comb-forked comb-x fork-pair tick-bar gazelle fish sandgrouse-foot doll darek arch-dot-column bird dancer chin-composition forehead-composition circle-over-comb drower-union kurdish-sun kurdish-flag)'
+      ;;
+    render)
+      _arguments -S \
+        '--format[Output format]:format:(svg svg-layered svg-sprite html jsx tsx vue svelte data-uri css-background css-mask pdf ai eps png jpg webp avif ico favicon psd figma spec-json)' \
+        '--size[Width and height in px, 1 to 8192]:px: ' \
+        '--layered[SVG with one Inkscape layer per shape layer (same as --format svg-layered)]' \
+        '--out[Output file, or a directory for several files; - writes one file to stdout]:path:_files' \
+        '--color[Stroke and dot colour (any CSS colour)]:color: ' \
+        '--stroke-width[Stroke width in grid units, 0.05 to 12]:n: ' \
+        '--absolute-stroke-width[Keep the stroke the same width in px at any size]' \
+        '--fill[Fill for closed outlines, or none]:color: ' \
+        '--fill-opacity[Opacity of the fill]:0-1: ' \
+        '--stroke-opacity[Opacity of strokes and dots]:0-1: ' \
+        '--linecap[Line ends]:linecap:(round butt square)' \
+        '--linejoin[Line corners]:linejoin:(round miter bevel)' \
+        '--dot-scale[Multiply every dot radius, 0.1 to 4]:n: ' \
+        '--rotation[Rotate clockwise about the centre]:deg: ' \
+        '--flip-x[Mirror left to right]' \
+        '--flip-y[Mirror top to bottom]' \
+        '--padding[Space around the 24 x 24 canvas in grid units, 0 to 24]:n: ' \
+        '--background[Background colour, or none]:color: ' \
+        '*--layer-color[Colour of one layer, for example sun=#FEBD11 (repeatable)]:layer=color: ' \
+        '--title[Accessible title]:text: ' \
+        '*--param[Shape parameter, for example rays=9 (repeatable; see deq info)]:name=value: ' \
+        '--current-color[What currentColor means in PDF and image formats]:color: ' \
+        '--matte[JPG background behind transparent pixels]:color: ' \
+        '--quality[JPG and WebP quality]:0-100: ' \
+        '--force[Overwrite existing files]' \
+        '(- *)--help[Show help.]' \
+        '*:shape:(roj-half-sun roj-sun-circle heyv-crescent sterk-star cup-rays moon-dome star-dense star-flower sun-arch-dotted sun-bar sun-dome-comb sun-double-ring sun-forked-rays sun-rays sun-spiral tree-branch wheat-arrow fork spike ring-stem arrow-down arrow-herringbone arrow-line crow-foot cup dome-stem fork-cross fork-down-dotted fork-down root tree-comb tree-cup trefoil cross cross-dotted x-mark lozenge lozenge-nested triangle-dotted chevron chevron-stack crossed-chevrons comb ladder spindle dimlich arch-dot cross-forked-dotted cross-forked crossed-chevrons-wide dome-comb star-chain t-mark tent-cross tent-double tent tree-row x-chain x-comb dot dot-trio dot-row dot-quincunx dot-rosette dot-cluster chain dot-diamond dot-flower ring-chain-shaft ring-stem-double ring zigzag arrow-row band-border comb-dotted comb-forked comb-x fork-pair tick-bar gazelle fish sandgrouse-foot doll darek arch-dot-column bird dancer chin-composition forehead-composition circle-over-comb drower-union kurdish-sun kurdish-flag)'
+      ;;
+    export)
+      _arguments -S \
+        '--all[Export every shape in the catalog]' \
+        '--format[Comma-separated formats]:list:(svg svg-layered svg-sprite html jsx tsx vue svelte data-uri css-background css-mask pdf ai eps png jpg webp avif ico favicon psd figma spec-json)' \
+        '--sizes[Comma-separated sizes in px]:list: ' \
+        '--out[Output directory; files go to <dir>/<format>/<size>/]:dir:_files -/' \
+        '--color[Stroke and dot colour (any CSS colour)]:color: ' \
+        '--stroke-width[Stroke width in grid units, 0.05 to 12]:n: ' \
+        '--absolute-stroke-width[Keep the stroke the same width in px at any size]' \
+        '--fill[Fill for closed outlines, or none]:color: ' \
+        '--fill-opacity[Opacity of the fill]:0-1: ' \
+        '--stroke-opacity[Opacity of strokes and dots]:0-1: ' \
+        '--linecap[Line ends]:linecap:(round butt square)' \
+        '--linejoin[Line corners]:linejoin:(round miter bevel)' \
+        '--dot-scale[Multiply every dot radius, 0.1 to 4]:n: ' \
+        '--rotation[Rotate clockwise about the centre]:deg: ' \
+        '--flip-x[Mirror left to right]' \
+        '--flip-y[Mirror top to bottom]' \
+        '--padding[Space around the 24 x 24 canvas in grid units, 0 to 24]:n: ' \
+        '--background[Background colour, or none]:color: ' \
+        '*--layer-color[Colour of one layer, for example sun=#FEBD11 (repeatable)]:layer=color: ' \
+        '--title[Accessible title]:text: ' \
+        '*--param[Shape parameter, for example rays=9 (repeatable; see deq info)]:name=value: ' \
+        '--current-color[What currentColor means in PDF and image formats]:color: ' \
+        '--matte[JPG background behind transparent pixels]:color: ' \
+        '--quality[JPG and WebP quality]:0-100: ' \
+        '--force[Overwrite existing files]' \
+        '(- *)--help[Show help.]' \
+        '*:shape:(roj-half-sun roj-sun-circle heyv-crescent sterk-star cup-rays moon-dome star-dense star-flower sun-arch-dotted sun-bar sun-dome-comb sun-double-ring sun-forked-rays sun-rays sun-spiral tree-branch wheat-arrow fork spike ring-stem arrow-down arrow-herringbone arrow-line crow-foot cup dome-stem fork-cross fork-down-dotted fork-down root tree-comb tree-cup trefoil cross cross-dotted x-mark lozenge lozenge-nested triangle-dotted chevron chevron-stack crossed-chevrons comb ladder spindle dimlich arch-dot cross-forked-dotted cross-forked crossed-chevrons-wide dome-comb star-chain t-mark tent-cross tent-double tent tree-row x-chain x-comb dot dot-trio dot-row dot-quincunx dot-rosette dot-cluster chain dot-diamond dot-flower ring-chain-shaft ring-stem-double ring zigzag arrow-row band-border comb-dotted comb-forked comb-x fork-pair tick-bar gazelle fish sandgrouse-foot doll darek arch-dot-column bird dancer chin-composition forehead-composition circle-over-comb drower-union kurdish-sun kurdish-flag)'
+      ;;
+    flag)
+      _arguments -S \
+        '--variant[Flag variant]:variant:(full-color mono-black mono-white outline high-contrast square)' \
+        '--width[Width in px, 1 to 8192; the height follows]:px: ' \
+        '--format[Output format]:format:(svg png jpg webp)' \
+        '--title[Accessible title]:text: ' \
+        '--current-color[What currentColor means in image formats]:color: ' \
+        '--matte[JPG background behind transparent pixels]:color: ' \
+        '--quality[JPG and WebP quality]:0-100: ' \
+        '--out[Output file or directory; - writes to stdout]:path:_files' \
+        '--force[Overwrite existing files]' \
+        '(- *)--help[Show help.]'
+      ;;
+    leet)
+      _arguments -S \
+        '--decode[Print the text of a Deq Leet SVG written at the basic level; pass the render flags used to write it]:file:_files' \
+        '--level[basic is readable and decodable, advanced mixes in seeded alternatives, full uses motifs]:level:(basic advanced full)' \
+        '--script[Glyph table]:script:(latin sorani)' \
+        '--seed[Seed for the advanced level, 0 to 4294967295]:n: ' \
+        '--letter-spacing[Space between glyphs in grid units, 0 to 24]:n: ' \
+        '--line-spacing[Space between lines in grid units, 0 to 48]:n: ' \
+        '--align[Line alignment; start is the right edge for Sorani]:align:(start center end)' \
+        '--format[Output format]:format:(svg png jpg webp)' \
+        '--size[Size in px of one 24 x 24 cell, 1 to 8192]:px: ' \
+        '--colors[Comma-separated colours given to the glyphs in turn (1 to 16)]:list: ' \
+        '--title[Accessible title]:text: ' \
+        '--out[Output file or directory; - writes to stdout]:path:_files' \
+        '--color[Stroke and dot colour (any CSS colour)]:color: ' \
+        '--stroke-width[Stroke width in grid units, 0.05 to 12]:n: ' \
+        '--absolute-stroke-width[Keep the stroke the same width in px at any size]' \
+        '--fill[Fill for closed outlines, or none]:color: ' \
+        '--fill-opacity[Opacity of the fill]:0-1: ' \
+        '--stroke-opacity[Opacity of strokes and dots]:0-1: ' \
+        '--linecap[Line ends]:linecap:(round butt square)' \
+        '--linejoin[Line corners]:linejoin:(round miter bevel)' \
+        '--dot-scale[Multiply every dot radius, 0.1 to 4]:n: ' \
+        '--padding[Space around the 24 x 24 canvas in grid units, 0 to 24]:n: ' \
+        '--background[Background colour, or none]:color: ' \
+        '--current-color[What currentColor means in PDF and image formats]:color: ' \
+        '--matte[JPG background behind transparent pixels]:color: ' \
+        '--quality[JPG and WebP quality]:0-100: ' \
+        '--force[Overwrite existing files]' \
+        '(- *)--help[Show help.]' \
+        '::text: '
+      ;;
+    generate)
+      _arguments -S \
+        '--kind[Pattern kind]:kind:(band grid rosette border)' \
+        '--seed[Seed, 0 to 4294967295; the same seed gives the same pattern]:n: ' \
+        '--motifs[Comma-separated shape ids to choose from (1 to 64)]:list:(roj-half-sun roj-sun-circle heyv-crescent sterk-star cup-rays moon-dome star-dense star-flower sun-arch-dotted sun-bar sun-dome-comb sun-double-ring sun-forked-rays sun-rays sun-spiral tree-branch wheat-arrow fork spike ring-stem arrow-down arrow-herringbone arrow-line crow-foot cup dome-stem fork-cross fork-down-dotted fork-down root tree-comb tree-cup trefoil cross cross-dotted x-mark lozenge lozenge-nested triangle-dotted chevron chevron-stack crossed-chevrons comb ladder spindle dimlich arch-dot cross-forked-dotted cross-forked crossed-chevrons-wide dome-comb star-chain t-mark tent-cross tent-double tent tree-row x-chain x-comb dot dot-trio dot-row dot-quincunx dot-rosette dot-cluster chain dot-diamond dot-flower ring-chain-shaft ring-stem-double ring zigzag arrow-row band-border comb-dotted comb-forked comb-x fork-pair tick-bar gazelle fish sandgrouse-foot doll darek arch-dot-column bird dancer chin-composition forehead-composition circle-over-comb drower-union kurdish-sun kurdish-flag)' \
+        '--count[Band length, odd, 3 to 63]:n: ' \
+        '--cols[Grid or border columns, 1 to 32 (border at least 3)]:n: ' \
+        '--rows[Grid or border rows, 1 to 32 (border at least 3)]:n: ' \
+        '--petals[Rosette petals, 3 to 24]:n: ' \
+        '--spacing[Space between cells in grid units, 0 to 24]:n: ' \
+        '--format[Output format]:format:(svg png jpg webp)' \
+        '--size[Size in px of one 24 x 24 cell, 1 to 8192]:px: ' \
+        '--colors[Comma-separated colours given to the glyphs in turn (1 to 16)]:list: ' \
+        '--title[Accessible title]:text: ' \
+        '--out[Output file or directory; - writes to stdout]:path:_files' \
+        '--color[Stroke and dot colour (any CSS colour)]:color: ' \
+        '--stroke-width[Stroke width in grid units, 0.05 to 12]:n: ' \
+        '--absolute-stroke-width[Keep the stroke the same width in px at any size]' \
+        '--fill[Fill for closed outlines, or none]:color: ' \
+        '--fill-opacity[Opacity of the fill]:0-1: ' \
+        '--stroke-opacity[Opacity of strokes and dots]:0-1: ' \
+        '--linecap[Line ends]:linecap:(round butt square)' \
+        '--linejoin[Line corners]:linejoin:(round miter bevel)' \
+        '--dot-scale[Multiply every dot radius, 0.1 to 4]:n: ' \
+        '--padding[Space around the 24 x 24 canvas in grid units, 0 to 24]:n: ' \
+        '--background[Background colour, or none]:color: ' \
+        '--current-color[What currentColor means in PDF and image formats]:color: ' \
+        '--matte[JPG background behind transparent pixels]:color: ' \
+        '--quality[JPG and WebP quality]:0-100: ' \
+        '--force[Overwrite existing files]' \
+        '(- *)--help[Show help.]'
+      ;;
+    validate)
+      _arguments -S \
+        '(- *)--help[Show help.]' \
+        ':file:_files'
+      ;;
+    completion)
+      _arguments -S \
+        '(- *)--help[Show help.]' \
+        ':shell:(bash zsh fish powershell)'
+      ;;
+  esac
+}
+_deq "$@"

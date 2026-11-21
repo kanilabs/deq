@@ -1,0 +1,62 @@
+---
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+
+import { CATALOGS, localePaths } from "../../i18n/index.ts";
+import { pageContext } from "../../lib/page.ts";
+import StudioApp from "../../studio/components/Studio.svelte";
+import { studioMessages } from "../../studio/i18n.ts";
+
+export const getStaticPaths = localePaths;
+
+const { locale, t } = pageContext(Astro.params.locale);
+const messages = studioMessages(CATALOGS[locale]);
+---
+
+<StarlightPage
+  frontmatter={{
+    title: t("studio.title"),
+    description: t("studio.description"),
+    template: "splash",
+    tableOfContents: false,
+  }}
+>
+  <div class="studio-host not-content">
+    <StudioApp client:only="svelte" {messages} {locale}>
+      <p slot="fallback" class="studio-fallback">{t("studio.loading")}</p>
+    </StudioApp>
+    <noscript><p>{t("studio.noscript")}</p></noscript>
+  </div>
+</StarlightPage>
+
+<style>
+  /* The Studio uses the full width of the splash layout. */
+  :global(.sl-container:has(.studio-host)) {
+    max-width: none;
+  }
+  :global(.content-panel:has(.studio-host)) {
+    padding-block: 0.5rem;
+  }
+  /* The page title stays for screen readers and search, but the Studio gets the space. */
+  :global(main:has(.studio-host) h1#_top) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  :global(main:has(.studio-host) .content-panel:has(h1#_top)) {
+    padding: 0;
+    border: 0;
+  }
+  .studio-fallback {
+    min-height: 60dvh;
+    display: grid;
+    place-items: center;
+  }
+  @media (max-width: 60rem) {
+    .studio-host {
+      margin-inline: calc(-1 * var(--sl-content-pad-x, 1rem));
+    }
+  }
+</style>

@@ -1,0 +1,35 @@
+---
+/**
+ * `<YouTube id="yt-…" />`: a click-to-load video. Nothing loads from YouTube until the
+ * button is pressed; then `story.ts` (client) inserts a sandboxed youtube-nocookie iframe.
+ */
+import { useTranslations } from "../../i18n/index.ts";
+import { authors, localeFromPath, sourceOf } from "../../lib/story.ts";
+
+interface Props {
+  id: string;
+}
+
+const locale = localeFromPath(Astro.url.pathname);
+const t = useTranslations(locale);
+const source = sourceOf(Astro.props.id);
+const videoId = source.custom.youtubeId;
+if (videoId === undefined || !/^[\w-]{11}$/u.test(videoId)) {
+  throw new Error(`Not a YouTube source: ${Astro.props.id}`);
+}
+const channel = authors(source);
+---
+
+<figure class="deq-video" data-video={videoId} data-title={source.title}>
+  <button type="button" class="deq-video-play" aria-label={t("story.video.play", { title: source.title })}>
+    <span class="deq-video-icon" aria-hidden="true"></span>
+    <span class="deq-video-title" lang={source.language} dir="auto">{source.title}</span>
+  </button>
+  <figcaption>
+    <span lang={source.language} dir="auto">{source.title}</span>{channel !== "" && <span dir="auto"> · {channel}</span>}
+    <small>
+      {t("story.video.privacy")}
+      {source.URL !== undefined && <a href={source.URL} rel="noopener noreferrer">{t("story.video.watch")}</a>}
+    </small>
+  </figcaption>
+</figure>

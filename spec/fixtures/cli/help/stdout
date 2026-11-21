@@ -1,0 +1,28 @@
+deq 1.0.0-rc.1: Draw Deq shapes, traditional Kurdish tattoo motifs, as SVG, PDF and images.
+
+Usage: deq <command> [options]
+
+Commands:
+  list        List the shapes in the catalog.
+  info        Show a shape's names, layers and parameters.
+  render      Render shapes to files.
+  export      Export shapes in several formats and sizes.
+  flag        Draw the flag of Kurdistan.
+  leet        Write text with Deq glyphs (Deq Leet), or read it back with
+              --decode.
+  generate    Generate a seeded pattern of Deq motifs.
+  validate    Check a shape spec file and render every parameter variant.
+  completion  Print a shell completion script.
+
+Options:
+  -h, --help     Show help.
+  -V, --version  Print the version.
+
+Exit codes:
+  0  success
+  1  a shape, option or spec file is invalid
+  2  the command line is wrong
+  3  a file could not be read or written (or exists without --force)
+  4  the format is only available in the Node CLI
+
+Run "deq <command> --help" for the options of a command.

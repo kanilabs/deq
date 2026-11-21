@@ -1,0 +1,60 @@
+---
+/**
+ * One `<dialog>` for every figure on a story page, plus the click-to-load video player.
+ * Text goes in through `textContent` and attributes only, never as HTML.
+ */
+import { useTranslations, type Locale } from "../../i18n/index.ts";
+
+interface Props {
+  locale: Locale;
+}
+
+const t = useTranslations(Astro.props.locale);
+---
+
+<dialog class="deq-lightbox" aria-labelledby="deq-lightbox-caption">
+  <form method="dialog">
+    <button type="submit" class="deq-lightbox-close">{t("story.close")}</button>
+  </form>
+  <img alt="" />
+  <p id="deq-lightbox-caption"></p>
+</dialog>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>(".deq-lightbox");
+  const image = dialog?.querySelector("img");
+  const caption = dialog?.querySelector("p");
+
+  for (const link of document.querySelectorAll<HTMLAnchorElement>("a.deq-zoom")) {
+    link.addEventListener("click", (event) => {
+      if (dialog === null || dialog === undefined || image == null || caption == null) return;
+      event.preventDefault();
+      image.src = link.href;
+      image.alt = link.dataset["alt"] ?? "";
+      caption.textContent = link.dataset["caption"] ?? "";
+      dialog.showModal();
+    });
+  }
+  dialog?.addEventListener("click", (event) => {
+    if (event.target === dialog) dialog.close();
+  });
+  dialog?.addEventListener("close", () => image?.removeAttribute("src"));
+
+  const VIDEO_ID = /^[\w-]{11}$/u;
+  for (const figure of document.querySelectorAll<HTMLElement>(".deq-video")) {
+    const button = figure.querySelector("button");
+    const id = figure.dataset["video"] ?? "";
+    if (button === null || !VIDEO_ID.test(id)) continue;
+    button.addEventListener("click", () => {
+      const frame = document.createElement("iframe");
+      frame.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1`;
+      frame.title = figure.dataset["title"] ?? "";
+      frame.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+      frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-presentation");
+      frame.referrerPolicy = "strict-origin-when-cross-origin";
+      frame.allowFullscreen = true;
+      button.replaceWith(frame);
+      frame.focus();
+    });
+  }
+</script>

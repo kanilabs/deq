@@ -1,0 +1,1293 @@
+{
+  "$comment": "CLI cases every deq CLI must pass (ADR 0011). packages/cli/scripts/fixtures.ts runs them against the Node CLI and records the results in spec/fixtures/cli/. setup files are created in an empty working directory first (text, or a copy of a repository file). stderr: false skips the stderr comparison (messages that come from a port's own validation library). nodeOnly: the Python and Rust CLIs must exit with code 4 instead.",
+  "cases": [
+    {
+      "name": "version",
+      "args": [
+        "--version"
+      ]
+    },
+    {
+      "name": "version-in-command",
+      "args": [
+        "list",
+        "-V"
+      ]
+    },
+    {
+      "name": "help",
+      "args": [
+        "--help"
+      ]
+    },
+    {
+      "name": "help-list",
+      "args": [
+        "list",
+        "--help"
+      ]
+    },
+    {
+      "name": "help-info",
+      "args": [
+        "info",
+        "-h"
+      ]
+    },
+    {
+      "name": "help-render",
+      "args": [
+        "render",
+        "--help"
+      ]
+    },
+    {
+      "name": "help-export",
+      "args": [
+        "export",
+        "--help"
+      ]
+    },
+    {
+      "name": "help-flag",
+      "args": [
+        "flag",
+        "--help"
+      ]
+    },
+    {
+      "name": "help-validate",
+      "args": [
+        "validate",
+        "--help"
+      ]
+    },
+    {
+      "name": "help-completion",
+      "args": [
+        "completion",
+        "--help"
+      ]
+    },
+    {
+      "name": "completion-bash",
+      "args": [
+        "completion",
+        "bash"
+      ]
+    },
+    {
+      "name": "completion-zsh",
+      "args": [
+        "completion",
+        "zsh"
+      ]
+    },
+    {
+      "name": "completion-fish",
+      "args": [
+        "completion",
+        "fish"
+      ]
+    },
+    {
+      "name": "completion-powershell",
+      "args": [
+        "completion",
+        "powershell"
+      ]
+    },
+    {
+      "name": "list",
+      "args": [
+        "list"
+      ]
+    },
+    {
+      "name": "list-json",
+      "args": [
+        "list",
+        "--json"
+      ]
+    },
+    {
+      "name": "list-category",
+      "args": [
+        "list",
+        "--category",
+        "celestial"
+      ]
+    },
+    {
+      "name": "list-category-unknown",
+      "args": [
+        "list",
+        "--category=planets"
+      ]
+    },
+    {
+      "name": "info",
+      "args": [
+        "info",
+        "roj-half-sun"
+      ]
+    },
+    {
+      "name": "info-json",
+      "args": [
+        "info",
+        "kurdish-sun",
+        "--json"
+      ]
+    },
+    {
+      "name": "info-unknown",
+      "args": [
+        "info",
+        "roj-haf-sun"
+      ]
+    },
+    {
+      "name": "render-default",
+      "args": [
+        "render",
+        "roj-half-sun"
+      ]
+    },
+    {
+      "name": "render-options",
+      "args": [
+        "render",
+        "roj-half-sun",
+        "--size",
+        "48",
+        "--color",
+        "#ED2024",
+        "--stroke-width",
+        "1.5",
+        "--absolute-stroke-width",
+        "--fill",
+        "#FEBD11",
+        "--fill-opacity",
+        ".5",
+        "--rotation=-45",
+        "--flip-x",
+        "--padding",
+        "2",
+        "--background",
+        "white",
+        "--param",
+        "rays=9",
+        "--param",
+        "centerDot=false",
+        "--layer-color",
+        "rays=red",
+        "--linecap",
+        "square",
+        "--linejoin",
+        "bevel",
+        "--dot-scale",
+        "1.25",
+        "--title",
+        "",
+        "--out",
+        "sun.svg"
+      ]
+    },
+    {
+      "name": "render-layered-stdout",
+      "args": [
+        "render",
+        "kurdish-sun",
+        "--layered",
+        "--layer-color",
+        "sun=#FEBD11",
+        "--out",
+        "-"
+      ]
+    },
+    {
+      "name": "render-several",
+      "args": [
+        "render",
+        "roj-half-sun",
+        "kurdish-sun",
+        "heyv-crescent",
+        "--out",
+        "icons/"
+      ]
+    },
+    {
+      "name": "render-sprite",
+      "args": [
+        "render",
+        "roj-half-sun",
+        "kurdish-sun",
+        "--format",
+        "svg-sprite"
+      ]
+    },
+    {
+      "name": "render-pdf",
+      "args": [
+        "render",
+        "kurdish-sun",
+        "--format",
+        "pdf",
+        "--size",
+        "96"
+      ]
+    },
+    {
+      "name": "render-pdf-colors",
+      "args": [
+        "render",
+        "roj-half-sun",
+        "--format",
+        "pdf",
+        "--layer-color",
+        "rays=#ED2024",
+        "--background",
+        "#FFF8E7",
+        "--stroke-opacity",
+        "0.8",
+        "--current-color",
+        "navy",
+        "--rotation",
+        "30",
+        "--flip-y"
+      ]
+    },
+    {
+      "name": "render-png",
+      "args": [
+        "render",
+        "kurdish-sun",
+        "--format",
+        "png",
+        "--size",
+        "64"
+      ]
+    },
+    {
+      "name": "render-jpg",
+      "args": [
+        "render",
+        "kurdish-sun",
+        "--format",
+        "jpg",
+        "--quality",
+        "80",
+        "--matte",
+        "#eeeeee"
+      ]
+    },
+    {
+      "name": "render-webp",
+      "args": [
+        "render",
+        "kurdish-sun",
+        "--format",
+        "webp",
+        "--size",
+        "32"
+      ]
+    },
+    {
+      "name": "render-ico",
+      "args": [
+        "render",
+        "kurdish-sun",
+        "--format",
+        "ico"
+      ]
+    },
+    {
+      "name": "render-node-only",
+      "args": [
+        "render",
+        "kurdish-sun",
+        "--format",
+        "tsx"
+      ],
+      "nodeOnly": true
+    },
+    {
+      "name": "render-overwrite-refused",
+      "setup": [
+        {
+          "path": "out.svg",
+          "text": "old\n"
+        }
+      ],
+      "args": [
+        "render",
+        "kurdish-sun",
+        "--out",
+        "out.svg"
+      ]
+    },
+    {
+      "name": "render-overwrite-force",
+      "setup": [
+        {
+          "path": "out.svg",
+          "text": "old\n"
+        }
+      ],
+      "args": [
+        "render",
+        "kurdish-sun",
+        "--out",
+        "out.svg",
+        "--force"
+      ]
+    },
+    {
+      "name": "render-stdout-several",
+      "args": [
+        "render",
+        "roj-half-sun",
+        "kurdish-sun",
+        "--out",
+        "-"
+      ]
+    },
+    {
+      "name": "render-unknown-shape",
+      "args": [
+        "render",
+        "kurdish-sun",
+        "roj-haf-sun"
+      ]
+    },
+    {
+      "name": "render-unknown-param",
+      "args": [
+        "render",
+        "roj-half-sun",
+        "--param",
+        "petals=3"
+      ]
+    },
+    {
+      "name": "render-param-range",
+      "args": [
+        "render",
+        "roj-half-sun",
+        "--param",
+        "rays=40"
+      ]
+    },
+    {
+      "name": "render-size-range",
+      "args": [
+        "render",
+        "kurdish-sun",
+        "--size",
+        "0"
+      ],
+      "stderr": false
+    },
+    {
+      "name": "render-bad-color",
+      "args": [
+        "render",
+        "kurdish-sun",
+        "--color",
+        "url(#x)"
+      ],
+      "stderr": false
+    },
+    {
+      "name": "render-layered-format",
+      "args": [
+        "render",
+        "kurdish-sun",
+        "--layered",
+        "--format",
+        "png"
+      ]
+    },
+    {
+      "name": "usage-no-command",
+      "args": []
+    },
+    {
+      "name": "usage-unknown-command",
+      "args": [
+        "draw",
+        "kurdish-sun"
+      ]
+    },
+    {
+      "name": "usage-unknown-global",
+      "args": [
+        "--colour"
+      ]
+    },
+    {
+      "name": "usage-unknown-option",
+      "args": [
+        "render",
+        "kurdish-sun",
+        "--colour",
+        "red"
+      ]
+    },
+    {
+      "name": "usage-short-option",
+      "args": [
+        "render",
+        "kurdish-sun",
+        "-s",
+        "48"
+      ]
+    },
+    {
+      "name": "usage-missing-value",
+      "args": [
+        "render",
+        "kurdish-sun",
+        "--size"
+      ]
+    },
+    {
+      "name": "usage-not-number",
+      "args": [
+        "render",
+        "kurdish-sun",
+        "--size",
+        "1e3"
+      ]
+    },
+    {
+      "name": "usage-twice",
+      "args": [
+        "render",
+        "kurdish-sun",
+        "--size",
+        "1",
+        "--size",
+        "2"
+      ]
+    },
+    {
+      "name": "usage-bool-value",
+      "args": [
+        "render",
+        "kurdish-sun",
+        "--flip-x=yes"
+      ]
+    },
+    {
+      "name": "usage-bad-choice",
+      "args": [
+        "render",
+        "kurdish-sun",
+        "--linecap",
+        "flat"
+      ]
+    },
+    {
+      "name": "usage-bad-pair",
+      "args": [
+        "render",
+        "kurdish-sun",
+        "--param",
+        "rays"
+      ]
+    },
+    {
+      "name": "usage-pair-twice",
+      "args": [
+        "render",
+        "kurdish-sun",
+        "--param",
+        "a=1",
+        "--param",
+        "a=2"
+      ]
+    },
+    {
+      "name": "usage-missing-argument",
+      "args": [
+        "render",
+        "--size",
+        "48"
+      ]
+    },
+    {
+      "name": "usage-extra-argument",
+      "args": [
+        "info",
+        "kurdish-sun",
+        "roj-half-sun"
+      ]
+    },
+    {
+      "name": "usage-bad-shell",
+      "args": [
+        "completion",
+        "tcsh"
+      ]
+    },
+    {
+      "name": "usage-double-dash",
+      "args": [
+        "info",
+        "--",
+        "--json"
+      ]
+    },
+    {
+      "name": "export",
+      "args": [
+        "export",
+        "roj-half-sun",
+        "kurdish-sun",
+        "--format",
+        "svg,pdf,png",
+        "--sizes",
+        "16,48",
+        "--out",
+        "icons",
+        "--color",
+        "#ED2024"
+      ]
+    },
+    {
+      "name": "export-node-only",
+      "args": [
+        "export",
+        "kurdish-sun",
+        "--format",
+        "svg,psd"
+      ],
+      "nodeOnly": true
+    },
+    {
+      "name": "export-all-and-ids",
+      "args": [
+        "export",
+        "--all",
+        "kurdish-sun"
+      ]
+    },
+    {
+      "name": "export-nothing",
+      "args": [
+        "export",
+        "--format",
+        "svg"
+      ]
+    },
+    {
+      "name": "export-list-twice",
+      "args": [
+        "export",
+        "--all",
+        "--format",
+        "svg,svg"
+      ]
+    },
+    {
+      "name": "export-bad-size",
+      "args": [
+        "export",
+        "--all",
+        "--sizes",
+        "16,x"
+      ]
+    },
+    {
+      "name": "export-stdout",
+      "args": [
+        "export",
+        "kurdish-sun",
+        "--out",
+        "-"
+      ]
+    },
+    {
+      "name": "flag-default",
+      "args": [
+        "flag"
+      ]
+    },
+    {
+      "name": "flag-outline",
+      "args": [
+        "flag",
+        "--variant",
+        "outline",
+        "--width",
+        "300",
+        "--title",
+        "Ala"
+      ]
+    },
+    {
+      "name": "flag-stdout",
+      "args": [
+        "flag",
+        "--variant",
+        "square",
+        "--out",
+        "-"
+      ]
+    },
+    {
+      "name": "flag-png",
+      "args": [
+        "flag",
+        "--format",
+        "png",
+        "--width",
+        "240"
+      ]
+    },
+    {
+      "name": "flag-png-current-color",
+      "args": [
+        "flag",
+        "--variant",
+        "mono-black",
+        "--format",
+        "png",
+        "--width",
+        "90",
+        "--current-color",
+        "#333"
+      ]
+    },
+    {
+      "name": "flag-jpg",
+      "args": [
+        "flag",
+        "--format",
+        "jpg",
+        "--width",
+        "120",
+        "--quality",
+        "70",
+        "--out",
+        "f.jpg"
+      ]
+    },
+    {
+      "name": "flag-webp",
+      "args": [
+        "flag",
+        "--format",
+        "webp",
+        "--width",
+        "60"
+      ]
+    },
+    {
+      "name": "flag-bad-variant",
+      "args": [
+        "flag",
+        "--variant",
+        "striped"
+      ]
+    },
+    {
+      "name": "flag-bad-width",
+      "args": [
+        "flag",
+        "--width",
+        "0"
+      ],
+      "stderr": false
+    },
+    {
+      "name": "flag-bad-quality",
+      "args": [
+        "flag",
+        "--format",
+        "jpg",
+        "--quality",
+        "101"
+      ]
+    },
+    {
+      "name": "validate-ok",
+      "setup": [
+        {
+          "path": "roj.json",
+          "copy": "spec/shapes/roj-half-sun.json"
+        }
+      ],
+      "args": [
+        "validate",
+        "roj.json"
+      ]
+    },
+    {
+      "name": "validate-composite",
+      "setup": [
+        {
+          "path": "kurdish-sun.json",
+          "copy": "spec/shapes/kurdish-sun.json"
+        }
+      ],
+      "args": [
+        "validate",
+        "kurdish-sun.json"
+      ]
+    },
+    {
+      "name": "validate-missing-file",
+      "args": [
+        "validate",
+        "nothing.json"
+      ]
+    },
+    {
+      "name": "validate-not-json",
+      "setup": [
+        {
+          "path": "bad.json",
+          "text": "{\"id\": "
+        }
+      ],
+      "args": [
+        "validate",
+        "bad.json"
+      ]
+    },
+    {
+      "name": "validate-missing-field",
+      "setup": [
+        {
+          "path": "s.json",
+          "text": "{\"id\": \"x\", \"version\": 1, \"category\": \"test\", \"names\": {\"en\": \"X\", \"ckb\": {\"text\": null, \"status\": \"none\"}, \"kmr\": {\"text\": null, \"status\": \"none\"}}, \"layers\": [\"main\"], \"parameters\": {}}\n"
+        }
+      ],
+      "args": [
+        "validate",
+        "s.json"
+      ]
+    },
+    {
+      "name": "validate-bad-primitive",
+      "setup": [
+        {
+          "path": "s.json",
+          "text": "{\"id\": \"x\", \"version\": 1, \"category\": \"test\", \"names\": {\"en\": \"X\", \"ckb\": {\"text\": null, \"status\": \"none\"}, \"kmr\": {\"text\": null, \"status\": \"none\"}}, \"layers\": [\"main\"], \"parameters\": {}, \"primitives\": [{\"type\": \"line\", \"x1\": 0, \"y1\": 0, \"x2\": 24, \"y2\": 24}, {\"type\": \"radial\", \"count\": 3, \"center\": [12, 12], \"start\": 0, \"sweep\": 360, \"element\": {\"type\": \"circle\", \"cx\": 12, \"cy\": \"2\", \"r\": 1}}]}\n"
+        }
+      ],
+      "args": [
+        "validate",
+        "s.json"
+      ]
+    },
+    {
+      "name": "validate-unknown-field",
+      "setup": [
+        {
+          "path": "s.json",
+          "text": "{\"id\": \"x\", \"version\": 1, \"category\": \"test\", \"names\": {\"en\": \"X\", \"ckb\": {\"text\": null, \"status\": \"none\"}, \"kmr\": {\"text\": null, \"status\": \"none\"}}, \"layers\": [\"main\"], \"parameters\": {}, \"primitives\": [{\"type\": \"dot\", \"cx\": 12, \"cy\": 12, \"size\": 2}]}\n"
+        }
+      ],
+      "args": [
+        "validate",
+        "s.json"
+      ]
+    },
+    {
+      "name": "validate-render-error",
+      "setup": [
+        {
+          "path": "s.json",
+          "text": "{\"id\": \"x\", \"version\": 1, \"category\": \"test\", \"names\": {\"en\": \"X\", \"ckb\": {\"text\": null, \"status\": \"none\"}, \"kmr\": {\"text\": null, \"status\": \"none\"}}, \"layers\": [\"main\"], \"parameters\": {\"n\": {\"type\": \"integer\", \"min\": 1, \"max\": 3, \"default\": 2, \"description\": \"Count.\"}}, \"primitives\": [{\"type\": \"star\", \"cx\": 12, \"cy\": 12, \"points\": {\"param\": \"n\"}, \"outerRadius\": 10, \"innerRadius\": 4, \"rotation\": 0, \"layer\": \"main\"}]}\n"
+        }
+      ],
+      "args": [
+        "validate",
+        "s.json"
+      ]
+    },
+    {
+      "name": "validate-params",
+      "setup": [
+        {
+          "path": "s.json",
+          "text": "{\"id\": \"x\", \"version\": 1, \"category\": \"test\", \"names\": {\"en\": \"X\", \"ckb\": {\"text\": null, \"status\": \"none\"}, \"kmr\": {\"text\": null, \"status\": \"none\"}}, \"layers\": [\"main\", \"dots\"], \"parameters\": {\"n\": {\"type\": \"integer\", \"min\": 2, \"max\": 500, \"default\": 3, \"description\": \"Count.\"}, \"dots\": {\"type\": \"boolean\", \"default\": true, \"description\": \"Dots.\"}, \"end\": {\"type\": \"enum\", \"values\": [\"none\", \"dot\", \"bar\"], \"default\": \"dot\", \"description\": \"End.\"}}, \"primitives\": [{\"type\": \"repeat\", \"layer\": \"main\", \"count\": {\"param\": \"n\"}, \"step\": [0.01, 0], \"element\": {\"type\": \"line\", \"x1\": 0, \"y1\": 4, \"x2\": 0, \"y2\": 20}}, {\"type\": \"dot\", \"cx\": 12, \"cy\": 2, \"layer\": \"dots\", \"when\": {\"dots\": true, \"end\": [\"dot\", \"bar\"]}}]}\n"
+        }
+      ],
+      "args": [
+        "validate",
+        "s.json"
+      ]
+    },
+    {
+      "name": "help-leet",
+      "args": [
+        "leet",
+        "--help"
+      ]
+    },
+    {
+      "name": "help-generate",
+      "args": [
+        "generate",
+        "--help"
+      ]
+    },
+    {
+      "name": "leet-basic",
+      "args": [
+        "leet",
+        "Hello Kurdistan"
+      ]
+    },
+    {
+      "name": "leet-sorani",
+      "args": [
+        "leet",
+        "سڵاو کوردستان",
+        "--align",
+        "center"
+      ]
+    },
+    {
+      "name": "leet-advanced-stdout",
+      "args": [
+        "leet",
+        "Deq\nLeet",
+        "--level",
+        "advanced",
+        "--seed",
+        "7",
+        "--out",
+        "-"
+      ]
+    },
+    {
+      "name": "leet-full-script",
+      "args": [
+        "leet",
+        "roj",
+        "--level",
+        "full",
+        "--script",
+        "latin",
+        "--letter-spacing",
+        "0",
+        "--line-spacing",
+        "0"
+      ]
+    },
+    {
+      "name": "leet-unknown",
+      "args": [
+        "leet",
+        "a☃b☂"
+      ]
+    },
+    {
+      "name": "leet-colors",
+      "args": [
+        "leet",
+        "ABBA",
+        "--colors",
+        "red,#1b7f3b,red",
+        "--background",
+        "#fff",
+        "--out",
+        "out/"
+      ]
+    },
+    {
+      "name": "leet-render-flags",
+      "args": [
+        "leet",
+        "Roj",
+        "--stroke-width",
+        "1.5",
+        "--dot-scale",
+        "1.5",
+        "--padding",
+        "2",
+        "--title",
+        "",
+        "--out",
+        "roj.svg"
+      ]
+    },
+    {
+      "name": "leet-png",
+      "args": [
+        "leet",
+        "Deq",
+        "--format",
+        "png",
+        "--size",
+        "48"
+      ]
+    },
+    {
+      "name": "leet-jpg",
+      "args": [
+        "leet",
+        "Deq",
+        "--format",
+        "jpg",
+        "--current-color",
+        "#123456",
+        "--quality",
+        "80"
+      ]
+    },
+    {
+      "name": "leet-too-large",
+      "args": [
+        "leet",
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "--format",
+        "png",
+        "--size",
+        "8192"
+      ]
+    },
+    {
+      "name": "leet-bad-quality",
+      "args": [
+        "leet",
+        "Deq",
+        "--format",
+        "webp",
+        "--quality",
+        "101"
+      ]
+    },
+    {
+      "name": "leet-decode",
+      "setup": [
+        {
+          "path": "latin-basic.svg",
+          "copy": "spec/fixtures/leet/latin-basic.svg"
+        }
+      ],
+      "args": [
+        "leet",
+        "--decode",
+        "latin-basic.svg"
+      ]
+    },
+    {
+      "name": "leet-decode-sorani",
+      "setup": [
+        {
+          "path": "s.svg",
+          "copy": "spec/fixtures/leet/sorani-sentence.svg"
+        }
+      ],
+      "args": [
+        "leet",
+        "--decode",
+        "s.svg"
+      ]
+    },
+    {
+      "name": "leet-decode-render-flags",
+      "setup": [
+        {
+          "path": "r.svg",
+          "copy": "spec/fixtures/leet/render-options.svg"
+        }
+      ],
+      "args": [
+        "leet",
+        "--decode",
+        "r.svg",
+        "--stroke-width",
+        "1.5",
+        "--dot-scale",
+        "1.5",
+        "--padding",
+        "2"
+      ]
+    },
+    {
+      "name": "leet-decode-unmatched",
+      "setup": [
+        {
+          "path": "latin-basic.svg",
+          "copy": "spec/fixtures/leet/latin-basic.svg"
+        }
+      ],
+      "args": [
+        "leet",
+        "--decode",
+        "latin-basic.svg",
+        "--dot-scale",
+        "2"
+      ]
+    },
+    {
+      "name": "leet-decode-not-leet",
+      "setup": [
+        {
+          "path": "x.svg",
+          "text": "<svg xmlns=\"http://www.w3.org/2000/svg\"/>"
+        }
+      ],
+      "args": [
+        "leet",
+        "--decode",
+        "x.svg"
+      ]
+    },
+    {
+      "name": "leet-decode-missing",
+      "args": [
+        "leet",
+        "--decode",
+        "nope.svg"
+      ]
+    },
+    {
+      "name": "leet-decode-and-text",
+      "args": [
+        "leet",
+        "Deq",
+        "--decode",
+        "x.svg"
+      ]
+    },
+    {
+      "name": "leet-decode-with-format",
+      "args": [
+        "leet",
+        "--decode",
+        "x.svg",
+        "--format",
+        "png"
+      ]
+    },
+    {
+      "name": "leet-decode-with-seed",
+      "args": [
+        "leet",
+        "--decode",
+        "x.svg",
+        "--seed",
+        "3"
+      ]
+    },
+    {
+      "name": "leet-nothing",
+      "args": [
+        "leet"
+      ]
+    },
+    {
+      "name": "leet-no-glyphs",
+      "args": [
+        "leet",
+        "☃"
+      ]
+    },
+    {
+      "name": "leet-too-long",
+      "args": [
+        "leet",
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      ]
+    },
+    {
+      "name": "leet-bad-seed",
+      "stderr": false,
+      "args": [
+        "leet",
+        "A",
+        "--seed",
+        "4294967296"
+      ]
+    },
+    {
+      "name": "leet-bad-spacing",
+      "stderr": false,
+      "args": [
+        "leet",
+        "A",
+        "--letter-spacing",
+        "25"
+      ]
+    },
+    {
+      "name": "leet-bad-color",
+      "args": [
+        "leet",
+        "A",
+        "--colors",
+        "#zz"
+      ]
+    },
+    {
+      "name": "leet-bad-level",
+      "args": [
+        "leet",
+        "A",
+        "--level",
+        "loud"
+      ]
+    },
+    {
+      "name": "leet-no-rotation",
+      "args": [
+        "leet",
+        "A",
+        "--rotation",
+        "90"
+      ]
+    },
+    {
+      "name": "leet-exists",
+      "setup": [
+        {
+          "path": "leet.svg",
+          "text": "old"
+        }
+      ],
+      "args": [
+        "leet",
+        "A"
+      ]
+    },
+    {
+      "name": "generate-default",
+      "args": [
+        "generate"
+      ]
+    },
+    {
+      "name": "generate-band-mirror",
+      "args": [
+        "generate",
+        "--seed",
+        "2",
+        "--count",
+        "7"
+      ]
+    },
+    {
+      "name": "generate-rosette",
+      "args": [
+        "generate",
+        "--kind",
+        "rosette",
+        "--seed",
+        "3",
+        "--petals",
+        "12",
+        "--colors",
+        "#c0392b,#1b7f3b"
+      ]
+    },
+    {
+      "name": "generate-grid-motifs",
+      "args": [
+        "generate",
+        "--kind",
+        "grid",
+        "--motifs",
+        "dot,roj-sun-circle,dot",
+        "--cols",
+        "3",
+        "--rows",
+        "2",
+        "--spacing",
+        "0"
+      ]
+    },
+    {
+      "name": "generate-border-webp",
+      "args": [
+        "generate",
+        "--kind",
+        "border",
+        "--seed",
+        "9",
+        "--format",
+        "webp"
+      ]
+    },
+    {
+      "name": "generate-png",
+      "args": [
+        "generate",
+        "--kind",
+        "rosette",
+        "--format",
+        "png",
+        "--size",
+        "48"
+      ]
+    },
+    {
+      "name": "generate-max-seed",
+      "args": [
+        "generate",
+        "--seed",
+        "4294967295",
+        "--out",
+        "-"
+      ]
+    },
+    {
+      "name": "generate-bad-count",
+      "args": [
+        "generate",
+        "--count",
+        "4"
+      ]
+    },
+    {
+      "name": "generate-bad-kind",
+      "args": [
+        "generate",
+        "--kind",
+        "spiral"
+      ]
+    },
+    {
+      "name": "generate-bad-seed",
+      "args": [
+        "generate",
+        "--seed",
+        "12345678901"
+      ]
+    },
+    {
+      "name": "generate-unknown-motif",
+      "args": [
+        "generate",
+        "--motifs",
+        "no-such-shape"
+      ]
+    },
+    {
+      "name": "generate-border-small",
+      "args": [
+        "generate",
+        "--kind",
+        "border",
+        "--rows",
+        "2"
+      ]
+    },
+    {
+      "name": "generate-no-param",
+      "args": [
+        "generate",
+        "--param",
+        "rays=9"
+      ]
+    }
+  ]
+}

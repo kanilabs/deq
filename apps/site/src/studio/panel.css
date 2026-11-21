@@ -1,0 +1,145 @@
+/* Shared styles of the Leet and pattern panels (Phase 9d), on their pages and in the Studio. */
+.deq-panel {
+  display: grid;
+  gap: 1rem;
+  font-size: var(--sl-text-sm);
+}
+.deq-panel[data-mode="page"] {
+  grid-template-columns: minmax(16rem, 22rem) minmax(0, 1fr);
+  align-items: start;
+}
+@media (max-width: 50rem) {
+  .deq-panel[data-mode="page"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.deq-panel .controls,
+.deq-panel .output {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+}
+.deq-panel .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: 0.5rem 0.75rem;
+  align-items: end;
+}
+.deq-panel .field {
+  display: grid;
+  gap: 0.25rem;
+}
+.deq-panel .field small {
+  color: var(--sl-color-gray-3);
+}
+.deq-panel .check,
+.deq-panel .file {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  min-height: 2.75rem;
+}
+.deq-panel input,
+.deq-panel select,
+.deq-panel textarea,
+.deq-panel button {
+  font: inherit;
+  min-height: 2.75rem;
+  min-width: 0;
+}
+.deq-panel textarea {
+  resize: vertical;
+}
+.deq-panel input[type="color"] {
+  inline-size: 3rem;
+  padding: 0.125rem;
+}
+.deq-panel fieldset {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: 0.5rem 0.75rem;
+  margin: 0;
+  padding: 0.5rem 0.75rem 0.75rem;
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 0.5rem;
+}
+.deq-panel legend {
+  padding: 0 0.25rem;
+}
+.deq-panel h2 {
+  margin: 0;
+  font-size: var(--sl-text-h5);
+}
+.deq-panel .row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  align-items: end;
+}
+.deq-panel .preview {
+  position: relative;
+  justify-self: start;
+  max-inline-size: 100%;
+  margin: 0;
+  padding: 0.75rem;
+  overflow: auto;
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 0.5rem;
+  color: var(--deq-icon, currentColor);
+}
+.deq-panel .art {
+  position: relative;
+  line-height: 0;
+}
+.deq-panel .art svg {
+  max-inline-size: 100%;
+  block-size: auto;
+}
+.deq-panel .guides {
+  position: absolute;
+  inset: 0.75rem;
+  inline-size: calc(100% - 1.5rem);
+  block-size: calc(100% - 1.5rem);
+  pointer-events: none;
+  overflow: visible;
+}
+.deq-panel .guides line {
+  stroke: var(--sl-color-accent);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 4 3;
+}
+.deq-panel .guides .base {
+  stroke-dasharray: none;
+}
+.deq-panel .pua-text {
+  margin: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.deq-panel .note,
+.deq-panel .status,
+.deq-panel .error {
+  margin: 0;
+}
+.deq-panel .status:empty {
+  display: none;
+}
+.deq-panel .error {
+  color: var(--sl-color-red-high, #b91c1c);
+}
+.deq-panel .primary {
+  background: var(--sl-color-accent-low);
+  border: 1px solid var(--sl-color-accent);
+}
+.deq-panel .decode,
+.deq-panel .pua,
+.deq-panel .scene-export {
+  display: grid;
+  gap: 0.5rem;
+  padding-block-start: 0.75rem;
+  border-block-start: 1px solid var(--sl-color-gray-5);
+}
+.deq-panel .decode p {
+  margin: 0;
+}

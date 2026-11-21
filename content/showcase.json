@@ -1,0 +1,65 @@
+{
+  "$comment": "Projects on the showcase page (Phase 10b, ADR 0019). Descriptions follow each project's own site and repository; ckb and kmr need native review. Shapes are spec ids, approved by the owner from each logo. Screenshots: apps/site/public/showcase/<id>-{640,1280}.webp, written by `pnpm --filter @0xdolan/deq-site shots`.",
+  "projects": [
+    {
+      "id": "zimankit",
+      "name": "zimankit",
+      "url": "https://kanilabs.github.io/zimankit/",
+      "repo": "https://github.com/kanilabs/zimankit",
+      "shapes": ["ring-stem"],
+      "description": {
+        "en": "A Kurdish language toolkit for Sorani and Kurmanji: normalisation, IPA, transliteration, morphology, verb paradigms, language identification and wordlists, to try in the browser.",
+        "ckb": "کەرەستەیەکی زمانی کوردی بۆ سۆرانی و کرمانجی: ئاسایی‌کردنەوە، IPA، گۆڕینی ئەلفوبێ، مۆرفۆلۆژی، ڕێزمانی کردار، ناسینەوەی زمان و لیستی وشە، کە لە وێبگەڕدا تاقی دەکرێتەوە.",
+        "kmr": "Amûrgeheke zimanê kurdî ji bo soranî û kurmancî: normalkirin, IPA, guhertina alfabeyê, morfolojî, tewandina lêkeran, naskirina ziman û lîsteyên peyvan, ku di gerokê de tê ceribandin."
+      }
+    },
+    {
+      "id": "zimanyar",
+      "name": "Zimanyar",
+      "url": "https://kanilabs.github.io/Zimanyar/",
+      "repo": "https://github.com/kanilabs/Zimanyar",
+      "shapes": ["crossed-chevrons"],
+      "description": {
+        "en": "An offline grammar checker and teacher for Sorani and Kurmanji that explains why each fix is right, as a browser extension, a Linux app, a command-line tool and on the web.",
+        "ckb": "پشکنەر و فێرکەرێکی ڕێزمانی بێ ئینتەرنێت بۆ سۆرانی و کرمانجی کە ڕوون دەکاتەوە بۆچی هەر ڕاستکردنەوەیەک دروستە، وەک پێوەکراوی وێبگەڕ، بەرنامەی لینوکس، ئامرازی هێڵی فەرمان و لە وێبدا.",
+        "kmr": "Kontrolker û mamosteyekî rêzimanê yê bê înternet ji bo soranî û kurmancî, ku rave dike çima her rastkirin rast e; wek pêveka gerokê, sepana Linuxê, amûra rêzika fermanê û li ser malperê."
+      }
+    },
+    {
+      "id": "roj",
+      "name": "Roj",
+      "url": "https://kanilabs.github.io/roj/",
+      "repo": "https://github.com/kanilabs/roj",
+      "shapes": ["roj-half-sun", "kurdish-sun"],
+      "description": {
+        "en": "The Kurdish solar calendar for GNOME Shell, the web and the command line, with Kurdish, Gregorian, Persian and Islamic dates in Sorani, Kurmanji, English, Persian and Arabic.",
+        "ckb": "ساڵنامەی هەتاوی کوردی بۆ GNOME Shell، وێب و هێڵی فەرمان، بە ڕێکەوتی کوردی، زایینی، فارسی و کۆچی بە سۆرانی، کرمانجی، ئینگلیزی، فارسی و عەرەبی.",
+        "kmr": "Salnameya rojî ya kurdî ji bo GNOME Shell, malper û rêzika fermanê, bi dîrokên kurdî, zayînî, farisî û hicrî bi soranî, kurmancî, îngilîzî, farisî û erebî."
+      }
+    },
+    {
+      "id": "tajdin",
+      "name": "Tajdîn",
+      "url": "https://kanilabs.github.io/tajdin/",
+      "repo": "https://github.com/kanilabs/tajdin",
+      "shapes": ["roj-half-sun"],
+      "description": {
+        "en": "Internet radio always by your side: Kurdish stations and 50,000 more, for Chrome, Firefox and the web.",
+        "ckb": "ڕادیۆی ئینتەرنێت کە هەمیشە لەگەڵتە: وێستگە کوردییەکان و ٥٠٬٠٠٠ی تر، بۆ Chrome، Firefox و وێب.",
+        "kmr": "Radyoya înternetê ku her dem li cem te ye: stasyonên kurdî û 50.000 yên din, ji bo Chrome, Firefox û malperê."
+      }
+    },
+    {
+      "id": "tsroj",
+      "name": "tsroj",
+      "url": "https://kanilabs.github.io/tsroj/",
+      "repo": "https://github.com/kanilabs/tsroj",
+      "shapes": ["roj-half-sun"],
+      "description": {
+        "en": "A TypeScript library for the Kurdish solar calendar, with an interactive demo.",
+        "ckb": "کتێبخانەیەکی TypeScript بۆ ساڵنامەی هەتاوی کوردی، لەگەڵ نموونەیەکی کارلێک.",
+        "kmr": "Pirtûkxaneyeke TypeScript ji bo salnameya rojî ya kurdî, bi demoyeke înteraktîf."
+      }
+    }
+  ]
+}

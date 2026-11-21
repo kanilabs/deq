@@ -1,0 +1,27 @@
+{
+  "name": "@0xdolan/deq-example-react",
+  "version": "1.0.0-rc.1",
+  "private": true,
+  "description": "Example: Deq icons in a React app.",
+  "license": "GPL-3.0-or-later",
+  "author": "0xdolan <0xdolan@gmail.com>",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@0xdolan/deq-react": "workspace:*",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@types/node": "24.19.2",
+    "vite": "8.3.5",
+    "vitest": "5.0.5"
+  }
+}

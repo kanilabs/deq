@@ -1,0 +1,189 @@
+# Changelog
+
+All notable changes to this project are documented here.
+The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html) with one unified version for all packages.
+
+## [Unreleased]
+
+## [1.0.0-rc.1] - 2026-11-21
+
+The first release candidate of Deq.
+
+### Added
+
+- Phase 0 foundation: pnpm + Turborepo, Cargo and uv workspaces with placeholder packages (`@0xdolan/deq-*`, `deq-shapes`, `deq-cli`).
+- Strict TypeScript, ESLint, Prettier, Ruff, mypy, rustfmt and clippy configuration.
+- Local CI (`just ci`), git hooks (lefthook, commitlint, gitleaks) and a Docker CI image.
+- GitHub Actions: CI on Linux, macOS and Windows; CodeQL; OpenSSF Scorecard; scheduled audits; Dependabot.
+- pnpm override pinning `minimatch` to 11.0.3 (GHSA-g3hv-75wg-m249) until ESLint ships a patched dependency.
+- Project documents: README, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, architecture decision records, AI rules and skills.
+- Phase 1 research: bibliography of 34 sources (`content/sources.json`), cited research notes, URL status for every link, and an image attribution review in `docs/research/`.
+- 47 images and 2 animations processed into metadata-free WebP masters, recorded with provenance and rights in `assets/source-manifest.json`.
+- `scripts/deq-assets`: a private tool to inventory, process, verify and build responsive variants and contact sheets; `deq-assets verify` runs in `just test` and CI.
+- Motif catalog with contact sheets (`docs/research/motif-catalog.md`): 45 approved motifs for Phase 2, plus 14 deferred until reference images exist.
+- ADR 0006: image assets and provenance.
+- Phase 2 shape spec (`spec/`): JSON Schemas for the grid, shapes, catalog and flag; the 24 × 24 grid with keylines; all 45 approved motifs as parametric shapes with layers, construction maths, names (needing native review) and cited metadata.
+- The parametric 21-ray Kurdish Sun (`kurdish-sun`), with proportions taken from the flag.
+- Flag of Kurdistan spec (`spec/flag.json`): geometry, colours in HEX, RGB, HSL, OKLCH and CMYK (Pantone pending verification), contrast pairs, variants and sizes, checked against the hash-pinned Wikimedia Commons SVG.
+- Four symbol-only logo concepts in `assets/brand/concepts/`, shown mono and in flag colours in `docs/design/logo-concepts.svg`; the owner chose concept A, the chin mark.
+- `scripts/deq-spec`: a private tool to lint, format, render and draw contact sheets; `deq-spec lint` runs in `just test` and CI.
+- Shape spec guide (`docs/design/shape-spec.md`), shapes contact sheet and ADR 0007: shape spec format.
+- Three sources: Wikipedia's articles on the flag and the Kurdish Sun, and the Commons flag SVG.
+- Phase 3 `@0xdolan/deq-core`, the reference renderer:
+  - `render`, `compose`, `getShape`, `listShapes`, `listCategories`, `hasShape`, `expand` and `resolveOptions`;
+  - every render option with a documented default in `DEFAULT_OPTIONS`;
+  - layer colours, and accessible `role="img"`, `<title>` and `aria-label` (or decorative `aria-hidden`);
+  - runtime validation with valibot 1.5.0, and typed `DeqError` codes with "did you mean" suggestions for unknown shapes.
+- Deterministic SVG output contract (rounding half to even to 3 decimals, fixed attribute order, exact right angles) and 278 golden fixtures in `spec/fixtures/` for the Python and Rust renderers to match (ADR 0008).
+- Property tests with fast-check 4.10.2; core coverage is 100% of lines.
+- Generated API reference `docs/api/core.md`, built with the TypeScript compiler API. TypeDoc was not added, because it needs a minimatch version affected by GHSA-g3hv-75wg-m249.
+- Phase 4 `@0xdolan/deq-exporters` (ADR 0009):
+  - `exportShapes(format, items, options)` for 23 formats: SVG, layered SVG (Inkscape layers), sprite, HTML, JSX, TSX, Vue, Svelte, data URI, CSS background and mask, PDF and AI (one Optional Content Group per layer, RGB or CMYK), EPS, PNG, JPG, WebP, AVIF, ICO, a favicon pack, PSD (one pixel layer per shape layer), Figma copy-as-SVG and re-importable spec JSON;
+  - our own PDF and EPS writer instead of pdf-lib and svg2pdf.js; raster through `@resvg/resvg-wasm` 2.6.2 and the jSquash codecs; PSD through ag-psd 34.1.0;
+  - a CSS Color 4 parser for colours in non-SVG formats, and `copyToClipboard` for pasting into Figma;
+  - round-trip tests for every format: Ghostscript renders of PDF and EPS compared with resvg, Inkscape imports that check layer names, decoded raster images, PSD layers read back, and spec JSON checked against the schema.
+- Core exports `prepare`, `svgDocument`, `composeShape` and `cosSin` for exporters, and an `@0xdolan/source` export condition for workspace type checking.
+- CI job `exporter-tools` runs the exporter tests with Inkscape 1.4.3 and Ghostscript in Ubuntu 26.04, and `just test-tools` does the same locally.
+- Phase 5 icon packages (ADR 0010):
+  - `@0xdolan/deq-icons`: icon data for all 93 shapes, SVG strings, one SVG file per icon, `sprite.svg`, `icons.json` and `toSvg` with `size`, `color`, `strokeWidth`, `absoluteStrokeWidth` and `title`; default output equals core's `render` byte for byte;
+  - `@0xdolan/deq-react`, `@0xdolan/deq-vue` and `@0xdolan/deq-svelte`: a tree-shakeable component per icon and a dynamic `DeqIcon` by name;
+  - `@0xdolan/deq-elements`: the `<deq-icon>` custom element (light DOM, SSR-safe), a `/define` entry and a minified CDN bundle (about 9 kB gzipped);
+  - `integrity.json` with SHA-384 hashes in the icons and elements packages, and CDN docs with SRI (`docs/cdn.md`);
+  - example apps for React, Vue, Svelte and plain HTML in `examples/`, built and tested in CI.
+- Phase 5 icon fonts, built with fontTools by the private `scripts/deq-fonts` tool:
+  - Deq Icons (OTF, TTF, WOFF2), with a Private Use Area code point per icon from U+E000 and ligatures for ids, aliases and Kurmanji names (typing `roj` shows the half sun);
+  - Deq Icons variable font with a `wght` axis (stroke 0.5 to 3) and a `DOTS` axis (dot size 50% to 200%), nine named instances;
+  - Deq Icons Color: COLRv1 with Light, Dark and Monochrome CPAL palettes in the flag colours, plus an OT-SVG fallback;
+  - `deq-icons.css`, `fonts/codepoints.json` and the code point table `docs/fonts/codepoints.md`; usage and install guide in `docs/fonts/README.md`;
+  - licensed GPL-3.0-or-later with the GPL Font Exception (`fonts/LICENSE.md`);
+  - `just fonts` and `just fonts-check`, and a `fonts` CI job that runs fontbakery (with ots, no FAILs) and a fontconfig install check.
+- Phase 6 ports and CLIs (ADR 0011):
+  - `renderFlag`, `flagSize`, `listFlagVariants` and `FLAG` in `@0xdolan/deq-core`, with flag cases in the golden fixtures;
+  - Python `deq-shapes` (import `deq_shapes`) and the Rust crate `deq-shapes`: the full renderer (`render`, `compose`, `render_flag`, registry, options and errors), matching all 287 golden fixtures byte for byte, plus exporters for `svg`, `svg-layered`, `svg-sprite`, `pdf`, `png`, `jpg`, `webp` and `ico`;
+  - the `deq` CLI in Node (`@0xdolan/deq-cli`, every format), Python (script `deq`) and Rust (crate `deq-cli`), with `list`, `info`, `render`, `export`, `flag`, `validate` and `completion`; formats outside the core subset exit with code 4 in Python and Rust and point to the Node CLI;
+  - `spec/cli.json`, the shared CLI interface, generating help texts and bash, zsh, fish and PowerShell completions for all three CLIs;
+  - 84 shared CLI cases (`spec/fixtures/cli-cases.json`) recorded from the Node CLI in `spec/fixtures/cli/` and run by the Python and Rust tests on Linux, macOS and Windows.
+- Phase 7 website foundation in `apps/site` (ADR 0012):
+  - Astro 7 + Starlight with light, dark and system themes, flag-green accents checked for contrast, and self-hosted Noto Sans and Vazirmatn;
+  - English, Sorani (`ckb`, right-to-left) and Kurmanji (`kmr`) with typed message catalogs that fail the type check on a missing key; the Kurdish text is AI-drafted and every ckb and kmr page says it needs native review;
+  - Home, Icons (filterable gallery) and a page per icon with preview, sizes, names, parameters, code point, usage and SVG download; Flag, Fonts (specimens and a weight slider), Brand, About, Docs (getting started, packages, CLI) and a 404 page;
+  - SEO: Open Graph and Twitter images per page and per icon rendered at build time, JSON-LD, sitemap with hreflang, `robots.txt`, `llms.txt` and `llms-full.txt`;
+  - a strict `<meta>` CSP with hashes for every script, including Starlight's inline ones;
+  - an installable PWA: manifest with app icons from the chin mark, a Workbox service worker that precaches every page for offline use, and an update prompt;
+  - Vitest unit tests, a Playwright suite (axe, CSP, RTL, JavaScript budget, theme, search, offline) and a Lighthouse gate (every category ≥ 95), run by the new `site` CI job and `just site`;
+  - the `Pages` workflow: `develop` deploys a preview until `PAGES_PRODUCTION` is set, releases deploy production.
+- The Deq logo: the Dot rosette in the Kanî Labs badge, with mark, dark, mono, small-size and favicon SVGs and a social preview card, all generated from `spec/shapes/dot-rosette.json` by `uv run deq-spec brand` and checked fresh by `deq-spec lint`; `just brand` renders PNGs for GitHub and social media (ADR 0013).
+- Phase 8a Studio at `/studio/` in every locale (ADR 0014), built with Svelte 5:
+  - an infinite canvas with pan, pinch and wheel zoom, fit, rulers, an 8 px snap grid with guides to other shapes, and overlays for the 24-unit design grid, keylines and a pixel preview;
+  - a library searchable by English, Sorani and Kurmanji names, aliases and tags, filtered by category, adding by click, Enter or drag;
+  - an inspector for every render option, shape parameter and layer colour, with previews at 16 to 96 px, per-option reset, reset shape and reset all;
+  - undo and redo with merged edits, autosave to local storage, and 25 documented, remappable keyboard shortcuts;
+  - a tab bar on narrow screens, unit tests and Playwright tests on desktop and a Pixel 7 viewport.
+- Phase 8b Studio multi-select, batch editing and layers (ADR 0014):
+  - select several shapes with Shift-click, a marquee drag on the background, the layers panel or select all; Space-drag, the middle button and touch pan;
+  - batch editing in the inspector: one edit changes every selected shape in one undo step, and fields where the shapes differ show "Mixed";
+  - align to six edges, distribute horizontally or vertically, bring forward, send backward, bring to front, send to back, group, ungroup, lock and hide;
+  - a layers panel beside the library: rows top first, with select, lock, hide, move up and move down;
+  - 16 new shortcut actions (41 in total), with defaults for group, ungroup, layer order, lock and hide.
+- Phase 8c Studio custom shapes (ADR 0014):
+  - a full-pane shape editor on the 24-unit grid with path, line, circle, polygon, rect, dot and catalog-shape parts, a parts list, properties and its own undo;
+  - a path editor to drag, add and delete points, curve segments and close paths, plus move, duplicate, flip, mirror, rotate, scale and layer order;
+  - unite, subtract, intersect and exclude on closed parts with paper.js 0.12.18, loaded on first use;
+  - radial and repeat arrays that can be unwrapped into parts;
+  - a "My shapes" library section saved in IndexedDB, with spec JSON export and import, edit and delete; designs embed the custom shapes they use.
+- Phase 8d Studio import, share links and export (ADR 0014):
+  - export of the selection or all visible shapes in all 23 formats, one file per shape, with several files packed into a ZIP; raster formats run resvg and jSquash as WebAssembly, allowed by `'wasm-unsafe-eval'` on the Studio pages only;
+  - `DataItem` in `@0xdolan/deq-exporters`: shapes given as validated spec data, so custom shapes export in every format;
+  - share links that hold the compressed design in the URL fragment (capped at 16,000 characters), with a copyable field when the clipboard is refused;
+  - Save and Open for design files, plus custom shape specs and SVG files, with Open, Save, Share and Export in the toolbar and on shortcuts;
+  - SVG import that rebuilds the file from an allowlist of geometry, fits it into the keylines and adds it to My shapes, leaving out gradients, text, images and effects with a notice;
+  - end-to-end tests for every export format, files, SVG import and share links on desktop and mobile.
+- Phase 9a Deq Leet and the pattern generator (ADR 0015):
+  - Leet tables for Latin and Kurmanji (50 characters, digits as dot counts) and Sorani (49 characters, RTL) in `spec/leet/`, with a schema, aliases and `deq-spec lint` rules for readability, canvas bounds and unique basic glyphs;
+  - `@0xdolan/deq-generator`: `leet` at the basic, advanced (seeded) and full levels with one layer per character, `decodeLeet` for basic output, and `pattern` for seeded bands, grids, rosettes and borders, all with capped plain-text input;
+  - `svgRoot` in `@0xdolan/deq-core` for scenes wider than one shape;
+  - 28 golden Leet and pattern fixtures in `spec/fixtures/leet/` for the ports, and the mapping chart `docs/design/leet-chart.svg`.
+- Phase 9b Leet and patterns in the ports and CLIs (ADR 0015):
+  - Python and Rust `deq-shapes` ports of `leet`, `decode_leet` and `pattern`, writing every Leet fixture byte for byte, with fdlibm `sin`/`cos` so rotations match V8;
+  - `deq leet` (with `--decode`) and `deq generate` in the Node, Python and Rust CLIs, exporting SVG, PNG, JPG or WebP, with 44 new shared CLI cases;
+  - `omit` in `spec/cli.json` to drop single flags from a shared flag set.
+- Phase 9c the Deq Leet font (ADR 0016):
+  - `DeqLeet-Regular.otf`, `.ttf` and `.woff2`, monospaced, drawn from the generator's glyphs, with `deq-leet.css`;
+  - normal Latin, Kurmanji and Sorani text shows the basic glyphs, including lower case, aliases and decomposed letters; `locl` picks the Sorani glyphs in Arabic-script text, `ss01`–`ss03` and `salt` the advanced alternatives and full motifs;
+  - a Private Use Area code point from U+F000 for every glyph in `fonts/leet-codepoints.json` and `docs/fonts/leet-codepoints.md`, so text copied as PUA keeps its exact glyphs;
+  - fontbakery with no FAIL in CI, and the generator's `font-data` script.
+- Phase 9d Leet and patterns on the site and in the Studio (ADR 0017):
+  - a `/leet` page with a live preview, level, script, seed, spacing and alignment, band or border frames, line guides, colours, export in every scene format, copy as Deq Leet font text (PUA) and reading basic Leet back;
+  - a `/generate` page for seeded bands, grids, rosettes and borders, with a random seed and a motif filter;
+  - "Leet" and "Patterns" tabs in the Studio that add text or a pattern as one editable group, with custom shapes for glyphs of several motifs;
+  - scene items in `@0xdolan/deq-exporters` (`leet`, `pattern` and `scene`), with one layer per glyph and `SCENE_UNSUPPORTED`; `prepareScene` in the generator, and `width` and `height` on core's prepared SVG;
+  - a Leet specimen with the stylistic sets on the Fonts page, user guides for Leet and patterns, and e2e tests on desktop and mobile.
+- Phase 10a story and sources (ADR 0018):
+  - a nine-chapter story of deq in en, ckb and kmr (`content/story/`), with every claim cited and every manifest image shown with its caption, credit, rights and alt text;
+  - a `/sources` page with the bibliography by group, status and archive links, a by-chapter index, image and video credits, and a contact note for rights holders;
+  - responsive AVIF and WebP images copied by a `media` integration, a lightbox, and click-to-load YouTube videos from `youtube-nocookie.com`;
+  - an internal link checker (`pnpm --filter @0xdolan/deq-site links`), `just media`, and content, e2e and Lighthouse checks for the new pages.
+- Phase 10b showcase (ADR 0019):
+  - a `/showcase` page in en, ckb and kmr with zimankit, Zimanyar, Roj, Tajdîn and tsroj: a screenshot, a click-to-load live preview in a sandboxed iframe (never with `allow-same-origin`), a description, the Deq shapes each one uses, and links;
+  - screenshots in `apps/site/public/showcase/`, written by `pnpm --filter @0xdolan/deq-site shots` with Playwright's Chromium;
+  - a fuller showcase issue template asking for shape ids and the owner's consent.
+- Phase 11a docs structure, user guides and screenshots (ADR 0020):
+  - the site's docs now come from the repository's `docs/` folder, with repository-relative links rewritten for the site, a sidebar built from frontmatter, and previous and next links between docs pages;
+  - nine user guides (getting started, Studio, exporting, custom shapes, Deq Leet, pattern generator, flag, fonts, installing and offline use) in en, with ckb and kmr drafts awaiting native review;
+  - screenshots in light and dark (and Sorani where layout differs) in `apps/site/public/screens/`, regenerated by `just screenshots`;
+  - a README Documentation section, `llms.txt` listing every English doc, and docs checks in `test/docs.test.ts`, e2e and Lighthouse.
+- Phase 11b developer docs and API references (ADR 0021):
+  - generated references in `docs/api/` for every npm package (`scripts/api-docs.ts`, TypeScript compiler API) and for `deq_shapes` (`deq-spec api-docs`, Python `ast`), checked fresh by tests and lint; `just api-docs` regenerates them;
+  - `docs/api/commands.md`, every `deq` command, option and exit code, generated from `spec/cli.json`;
+  - an overview of the Rust crates; the Rust workspace denies `missing_docs`, and lint and CI run `cargo doc` with warnings as errors;
+  - developer guides: architecture, codegen pipeline, shape spec, adding a shape, writing an exporter, font pipeline, testing, releasing and security;
+  - an "API reference" group in the site's sidebar, and `llms.txt` lists the references after the guides and developer pages.
+- Phase 11c designer docs and tool guides (ADR 0022):
+  - a Construction section on every icon page, built from the shape's spec: the grid with keylines and centre markers, the construction steps, the primitives and the metrics;
+  - designer pages: grid and keylines, strokes and dots, optical corrections, reading a construction, spacing and composition, colour and accessibility;
+  - guides for Inkscape (tested with 1.4.3), Illustrator, Photoshop, Figma, Affinity, Sketch, Canva and Blender, citing the vendor docs they rely on;
+  - ckb and kmr drafts of every designer and tool page awaiting native review, "Designers" and "Design tools" sidebar groups, and README, docs index and `llms.txt` links.
+- Phase 12 branding and marketing (ADR 0023):
+  - the wordmark, "Deq" in Noto Sans Bold and "دەق" in Vazirmatn Bold as outlines (`uv run deq-fonts wordmark`), and horizontal and stacked lockups in Latin and Sorani in five colourways (colour, reversed, mono, white, flag);
+  - brand proportions, minimum sizes and colours in HEX, RGB, HSL, OKLCH and CMYK with contrast in `assets/brand/brand.json`, `tokens.css` and `docs/design/brand-colors.md`, plus construction and clear-space drawings;
+  - the brand guide on `/brand` and in `docs/design/brand.md`: logo, lockups, construction, minimum sizes, colours, typography, iconography, voice and tone, do's and don'ts;
+  - the brand kit and press kit ZIPs, built with the site from the source files: every SVG, PNGs, the favicon pack (`favicon.ico`, SVG, app icons, manifest, head tags), the animation, a fact sheet with counts taken from the packages and screenshots;
+  - the animated logo (dots in, then the sun ring; CSS SVG that stays still with reduced motion) and its MP4 and WebM (`just brand-video`);
+  - README banners (light and dark), the social preview, OG cards with the lockup, the Figma cover, banners in the package READMEs, PWA store screenshots in the web app manifest (`just store`) and README feature clips as WebM and GIF (`just clips`);
+  - `/favicon.ico` with 16, 32 and 48 px images.
+- Phase 13 packaging and release (ADR 0024):
+  - `.github/workflows/release.yml`: a signed `v*` tag on `main` builds, tests, publishes to npm (with provenance), PyPI and crates.io through trusted publishing, creates the GitHub Release and deploys the site; run by hand it is a dry run;
+  - release files: `deq` binaries for Linux (static musl, x86_64 and aarch64), macOS and Windows, the fonts, icon SVG and PNG packs and the brand kit as ZIPs, `SHA256SUMS` signed with Sigstore, build provenance attestations and a CycloneDX SBOM;
+  - Debian packages `deq-cli` (static binary, man page, bash, zsh and fish completions) and `fonts-deq` (`just deb`), lintian-clean and installed on Ubuntu 24.04 and 26.04 in Docker in CI (`just deb-test`);
+  - the `deq(1)` man page, generated from `spec/cli.json` with the help texts;
+  - `just version` and `scripts/version.ts` to set and check the shared version (PEP 440 spelling for Python), and `scripts/release-notes.ts` for the release notes from this changelog.
+
+### Changed
+
+- `pages.yml` is called by the Release workflow instead of running on `release: published`, which a release made by a workflow never triggers.
+- The setup action takes `cache: "false"`, used by every release job.
+- `deq-cli` requires exactly its own version of `deq-shapes` (`=x.y.z`), and the font licence names the Deq Leet font.
+- `just brand` renders no PNGs with Inkscape any more: the site builds them at `/brand/<name>.png` with the exporters' resvg, and Studio ZIPs can hold folders (`zip(..., { folders: true })`, paths still checked).
+- The site serves Latin Extended-A text (ş, ğ, ı, İ) from a 15 KB subset of Noto Sans (`uv run deq-fonts ui-subset`, checked by `just fonts`) instead of Fontsource's 168 KB latin-ext file. One Turkish letter on `/story/revival/` was enough to fetch the large file, which made the page's Lighthouse performance score drop below 95 on CI now and then.
+- The icon fonts' code points are capped at U+E000–U+EFFF, leaving U+F000–U+F8FF to the Leet font.
+- The site's header logo, favicon, app icons, share-card mark and Brand page use the Dot rosette instead of the chin mark (concept A).
+- cargo-deny allows the IJG licence for the `jpeg-encoder` crate only (permissive and GPL-compatible).
+- The repository moved to the `kanilabs` organisation: repository, issue, badge and security links now point to `github.com/kanilabs/deq`, and the site, schema `$id`s and CSP allowlist to `kanilabs.github.io`. The npm scope stays `@0xdolan`.
+- CI scans for secrets with the pinned, checksum-verified gitleaks CLI instead of `gitleaks-action`, which needs a paid licence for organisation repositories.
+- Icon tiles and drawings on the site use dark glyphs in the light theme; they were drawn nearly white.
+- The site build declares `DEQ_REQUIRE_FONTS` and `DEQ_REQUIRE_MEDIA` to Turborepo, so the flags reach the build in strict env mode.
+- Studio: the dark canvas is dark (it was white), and modal dialogs are centred instead of sitting in the top-left corner.
+- Shape redesign after owner review: every shape is rebuilt from shared modules (circle, ring and bead radii, small and large dots, rays, small and large Vs drawn as two strokes, 45-degree pitch, teeth), with one layer and id per part, auto-centred. The modules are listed in `spec/grid.json`, and lint rejects circle or dot radii outside them.
+- Redrawn: `roj-half-sun` (open arc, 7 rays by default, dot on the base), `roj-sun-circle`, `tree-branch`, `spike`, `wheat-arrow`, `crossed-chevrons`, `triangle-dotted`, `dimlich`, `dot-quincunx`, `ring-stem`, `band-border`, `gazelle`, `doll` (the head now joins the body), `fish`, `darek` (the bar only), `drower-union`, `chevron`, `fork`, `comb`, `chevron-stack`, `dot-rosette`, `sandgrouse-foot`, `spindle`, and the compositions, which now place shapes at full size.
+- `kurdish-flag`: a `style` parameter (outline dividers broken symmetrically round the sun, or filled bands), with layers in flag-colour order.
+- 51 new shapes split out of multi-design images, including `arch-dot-column` (the lower part of Drower's darek), `sun-rays`, `sun-double-ring`, `sun-forked-rays`, `sun-bar`, `cup-rays` and `bird`; the catalog now lists 93 shapes (97 with the brand concepts).
+- Removed `hand-composition`, `foot-composition` and `vertical-stack`: each mixed several designs, which are now separate shapes.
+- uv now refuses releases younger than 7 days (`exclude-newer`). The relock moved pip, platformdirs, py-serializable, Ruff and zizmor back to their previous releases.
+- The repository ESLint run gets a 6 GB heap, and `.svelte-kit/` is ignored, for the extra TypeScript projects.
+- ESLint and Prettier ignore Astro's generated `.astro/` folder and Playwright output; `pnpm lint` runs `astro sync` first so the site's types exist on a clean checkout.
+- pnpm override `workbox-build>glob` to 14.0.4: glob 11 finds no files with the `minimatch` 11.0.3 override. Remove it when `workbox-build` depends on glob 14+.
+- `pnpm audit` and dependency review allow GHSA-fc5q-39xc-vjpf (picomatch ReDoS, no patched release, build tools only); remove when a fix ships (ADR 0004).
+- The CLIs accept integers of up to 10 digits (seeds up to 4294967295), and a list flag without choices may repeat items.
+
+[Unreleased]: https://github.com/kanilabs/deq/compare/v1.0.0-rc.1...HEAD
+[1.0.0-rc.1]: https://github.com/kanilabs/deq/releases/tag/v1.0.0-rc.1

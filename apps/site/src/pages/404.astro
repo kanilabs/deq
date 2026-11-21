@@ -1,0 +1,26 @@
+---
+/**
+ * The single 404 page GitHub Pages serves for every missing path. It is in English and
+ * links home in each language (a static host cannot pick the visitor's locale).
+ */
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+
+import { CATALOGS, LOCALE_INFO, LOCALES, localizedPath } from "../i18n/index.ts";
+
+const t = CATALOGS.en;
+---
+
+<StarlightPage frontmatter={{ title: t["notFound.title"], description: t["notFound.body"], template: "splash", pagefind: false }}>
+  <p>{t["notFound.body"]}</p>
+  <ul>
+    {
+      LOCALES.map((l) => (
+        <li>
+          <a href={localizedPath(l)} lang={LOCALE_INFO[l].lang} dir={LOCALE_INFO[l].dir}>
+            {CATALOGS[l]["notFound.home"]}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</StarlightPage>

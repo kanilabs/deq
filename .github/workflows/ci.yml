@@ -1,0 +1,290 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  guard:
+    name: Guard (forbidden files, secrets)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Forbidden files are not tracked
+        run: |
+          if git ls-files | grep -E '^(temp/|PRD$|PRD-detailed\.md$)'; then
+            echo "::error::Forbidden files are tracked"; exit 1
+          fi
+      - name: Scan history for secrets
+        # The gitleaks CLI (MIT) instead of gitleaks-action, which needs a paid licence
+        # for organisation repositories. Pinned version, checksum verified.
+        env:
+          GITLEAKS_VERSION: 8.30.1
+          GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+        run: |
+          archive="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl -fsSLo "$RUNNER_TEMP/$archive" \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/$archive"
+          echo "${GITLEAKS_SHA256}  $RUNNER_TEMP/$archive" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP" gitleaks
+          "$RUNNER_TEMP/gitleaks" git --redact --no-banner .
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - run: pnpm lint
+      - run: pnpm format:check
+      - run: uv run ruff check
+      - run: uv run ruff format --check
+      - run: cargo fmt --all --check
+      - run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - run: cargo doc --workspace --no-deps --locked
+        env:
+          RUSTDOCFLAGS: -D warnings
+      - name: actionlint
+        uses: docker://rhysd/actionlint@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667 # 1.7.12
+        with:
+          args: -color
+
+  zizmor:
+    name: Workflow security (zizmor)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # zizmor comes from uv.lock (hash-pinned, same version as `just lint`).
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: "0.13.5"
+          enable-cache: false
+      - name: Run zizmor (online audits)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: uv run --frozen --only-group dev zizmor --format github .github
+
+  test:
+    name: Typecheck and test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - run: pnpm typecheck
+      - run: uv run mypy
+      - run: pnpm test
+      - run: uv run pytest
+      - run: uv run deq-assets verify
+      - run: uv run deq-spec lint
+      - run: cargo test --workspace --locked
+
+  exporter-tools:
+    name: Exporters in Inkscape and Ghostscript
+    # Inkscape imports PDF layers (OCGs) from 1.4 on; Ubuntu 26.04 ships 1.4.3.
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:26.04@sha256:d66b366dac61b575bee2aef07e9c26e8070096fbe84a3d4d3eb0da069b5d76db
+    permissions:
+      contents: read
+    env:
+      # Fail instead of skipping when a tool is missing.
+      DEQ_REQUIRE_TOOLS: "1"
+    steps:
+      - name: Install Inkscape and Ghostscript
+        # The Azure mirror that GitHub's own runners use; archive.ubuntu.com has had outages.
+        # apt still checks the archive signatures, so the mirror needs no trust.
+        run: |
+          sed -i -E 's#http://(archive|security)\.ubuntu\.com#http://azure.archive.ubuntu.com#g' \
+            /etc/apt/sources.list.d/ubuntu.sources
+          apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 update
+          DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 \
+            install -y --no-install-recommends ca-certificates git inkscape ghostscript
+          inkscape --version
+          gs --version
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+        with:
+          rust: "false"
+          python: "false"
+      - run: pnpm exec turbo run test --filter=@0xdolan/deq-exporters
+
+  fonts:
+    name: Fonts (fontbakery, ots, fontconfig)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Install fontconfig
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends fontconfig
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+        with:
+          rust: "false"
+      - run: uv sync --frozen --group fonts
+      - run: pnpm exec turbo run build --filter=@0xdolan/deq-core --filter=@0xdolan/deq-generator
+      - run: pnpm --filter @0xdolan/deq-icons font-data fonts/build/geometry.json
+      - run: pnpm --filter @0xdolan/deq-generator font-data fonts/build/leet.json
+      - run: uv run --frozen deq-fonts codepoints --check
+      - run: uv run --frozen deq-fonts build
+      # One run per file: the static, variable, colour and Leet fonts are separate families.
+      # fontbakery 1.1.0's monospace check crashes on CFF fonts, so the Leet OTF skips it (ADR 0016).
+      - name: fontbakery (fails on any FAIL)
+        run: |
+          for f in fonts/dist/*.ttf fonts/dist/*.otf; do
+            skip=(); [[ "$f" == *DeqLeet-Regular.otf ]] && skip=(-x opentype/monospace)
+            uv run --frozen --group fonts fontbakery check-universal --loglevel WARN --succinct "${skip[@]}" "$f"
+          done
+      - run: uv run --frozen deq-fonts install-check
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: fonts-dist
+          path: fonts/dist/
+          if-no-files-found: error
+          retention-days: 1
+
+  deb:
+    name: Debian packages (lintian, Ubuntu LTS in Docker)
+    needs: fonts
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: fonts-dist
+          path: fonts/dist/
+      - name: Install lintian and cargo-deb
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends lintian
+          rustup show active-toolchain || rustup toolchain install
+          cargo install cargo-deb --version 3.8.0 --locked
+      - run: packaging/debian/build.sh
+      - run: lintian --fail-on warning target/deb/*.deb
+      - run: packaging/debian/test.sh
+
+  site:
+    name: Website (e2e, axe, offline, Lighthouse)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      DEQ_REQUIRE_FONTS: "1"
+      # The story pages need the image variants; fail instead of warning (ADR 0018).
+      DEQ_REQUIRE_MEDIA: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+        with:
+          rust: "false"
+      - run: pnpm exec turbo run build --filter=@0xdolan/deq-core --filter=@0xdolan/deq-generator
+      - run: pnpm --filter @0xdolan/deq-icons font-data fonts/build/geometry.json
+      - run: pnpm --filter @0xdolan/deq-generator font-data fonts/build/leet.json
+      - run: uv run --frozen deq-fonts build
+      - run: uv run --frozen deq-assets variants
+      - run: pnpm exec turbo run build --filter=@0xdolan/deq-site
+      - run: pnpm --filter @0xdolan/deq-site links
+      - run: pnpm --filter @0xdolan/deq-site exec playwright install --with-deps chromium
+      - run: pnpm --filter @0xdolan/deq-site e2e
+      - name: Lighthouse (every category at least 95)
+        working-directory: apps/site
+        run: |
+          pnpm exec astro preview --port 4321 --ignore-lock &
+          for _ in $(seq 30); do curl -sf -o /dev/null http://localhost:4321/deq/ && break; sleep 1; done
+          pnpm lighthouse
+      - if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: playwright-report
+          path: apps/site/playwright-report
+          retention-days: 7
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - run: pnpm build
+      - run: cargo build --workspace --locked
+      - run: uv build --all-packages --out-dir target/python-dist
+
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+        with:
+          rust: "false"
+      - run: pnpm audit --audit-level moderate
+      - run: uv run pip-audit --skip-editable --progress-spinner off
+      - uses: EmbarkStudios/cargo-deny-action@3c6349835b2b7b196a839186cb8b78e02f7b5f25 # v2.1.1
+        with:
+          command: check
+
+  dependency-review:
+    name: Dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: moderate
+          # Same exception as pnpm-workspace.yaml auditConfig (ADR 0004); remove together.
+          allow-ghsas: GHSA-fc5q-39xc-vjpf

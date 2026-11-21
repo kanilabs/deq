@@ -1,0 +1,344 @@
+---
+import { BASE } from "../../../lib/base.ts";
+import { render, type ShapeData } from "@0xdolan/deq-core";
+import { iconComponentName } from "@0xdolan/deq-icons";
+import { Code } from "@astrojs/starlight/components";
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+
+import { LOCALE_INFO, LOCALES, localeParam, localizedPath, type Locale } from "../../../i18n/index.ts";
+import { constructionOf, gridSvg } from "../../../lib/construction.ts";
+import { categoryKey, codepoint, SHAPES, shapeName } from "../../../lib/data.ts";
+import { pageContext } from "../../../lib/page.ts";
+
+export function getStaticPaths() {
+  return LOCALES.flatMap((locale) =>
+    SHAPES.map((shape, index) => ({
+      params: { locale: localeParam(locale), id: shape.id },
+      props: { shape, prev: SHAPES[index - 1], next: SHAPES[index + 1] },
+    })),
+  );
+}
+
+interface Props {
+  readonly shape: ShapeData;
+  readonly prev: ShapeData | undefined;
+  readonly next: ShapeData | undefined;
+}
+
+const { shape, prev, next } = Astro.props;
+const { locale, t } = pageContext(Astro.params.locale);
+const name = shapeName(shape, locale);
+const category = t(categoryKey(shape.category));
+const cp = codepoint(shape.id);
+const preview = render(shape.id, { size: 192 });
+const sizes = [16, 24, 32, 48].map((size) => ({ size, svg: render(shape.id, { size, title: "" }) }));
+const params = Object.entries(shape.parameters);
+const component = iconComponentName(shape.id);
+const usage = `// React (also Vue, Svelte)
+import { ${component} } from "@0xdolan/deq-react";
+<${component} size={32} />
+
+<!-- Any page -->
+<deq-icon name="${shape.id}" size="32"></deq-icon>
+
+# Command line
+deq render ${shape.id} --size 256 --format png`;
+const langOf = (l: Locale) => LOCALE_INFO[l].lang;
+const names = (["en", "ckb", "kmr"] as const).map((l) => {
+  const text = l === "en" ? shape.names.en : shape.names[l].text;
+  return { l, text, review: l !== "en" && text !== null && shape.names[l].status !== "verified" };
+});
+const nameTitle = name.text;
+const build = constructionOf(shape.id);
+const guide = gridSvg(build.markers, t("icon.construction.drawing", { name: nameTitle }));
+const box = (b: readonly number[]) => `x ${String(b[0])}, y ${String(b[1])}, ${String(b[2])} × ${String(b[3])}`;
+const metrics = [
+  ["icon.metrics.visualBox", box(build.metrics.visualBox)],
+  ["icon.metrics.bbox", box(build.metrics.bbox)],
+  ["icon.metrics.opticalCenter", `(${build.metrics.opticalCenter.join(", ")})`],
+  ["icon.metrics.strokeToSize", String(build.metrics.strokeToSize)],
+  ["icon.metrics.primitiveCount", String(build.metrics.primitiveCount)],
+] as const;
+---
+
+<StarlightPage
+  frontmatter={{
+    title: t("icon.title", { name: nameTitle }),
+    description: t("icon.description", { name: shape.names.en, category }),
+    tableOfContents: false,
+  }}
+>
+  <p><a href={localizedPath(locale, "icons/")}>{t("icon.back")}</a></p>
+
+  <div class="icon-detail not-content">
+    <figure class="preview" aria-label={t("icon.preview")}>
+      <div class="big" set:html={preview} />
+      <div class="sizes">
+        {sizes.map((s) => <span set:html={s.svg} title={`${String(s.size)} px`} />)}
+      </div>
+      <a class="download" href={`${BASE}svg/${shape.id}.svg`} download={`${shape.id}.svg`}>{t("icon.download")}</a>
+    </figure>
+
+    <dl class="facts">
+      <dt>{t("icon.id")}</dt>
+      <dd><code>{shape.id}</code></dd>
+      <dt>{t("icon.category")}</dt>
+      <dd>{category}</dd>
+      <dt>{t("icon.codepoint")}</dt>
+      <dd>{cp === undefined ? t("icon.none") : <code>{cp}</code>}</dd>
+      <dt>{t("icon.tags")}</dt>
+      <dd lang="en">{shape.tags.length > 0 ? shape.tags.join(", ") : t("icon.none")}</dd>
+      <dt>{t("icon.aliases")}</dt>
+      <dd lang="en">{shape.aliases.length > 0 ? shape.aliases.join(", ") : t("icon.none")}</dd>
+      <dt>{t("icon.layers")}</dt>
+      <dd lang="en">{shape.layers.join(", ")}</dd>
+      <dt>{t("icon.symmetry")}</dt>
+      <dd lang="en">{shape.symmetry}</dd>
+    </dl>
+  </div>
+
+  <h2>{t("icon.names")}</h2>
+  <table>
+    <tbody>
+      {
+        names.map((n) => (
+          <tr>
+            <th scope="row">{t(`icon.name.${n.l}`)}</th>
+            <td>
+              {n.text === null ? (
+                t("icon.name.unknown")
+              ) : (
+                <span lang={langOf(n.l)} dir={LOCALE_INFO[n.l].dir}>
+                  {n.text}
+                </span>
+              )}
+              {n.review && <span class="badge">{t("review.badge")}</span>}
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+
+  {
+    params.length > 0 && (
+      <>
+        <h2>{t("icon.parameters")}</h2>
+        <ul>
+          {params.map(([key, p]) => (
+            <li>
+              <code>{key}</code> ({t("icon.parameter.default", { value: String(p.default) })})
+              <span lang="en"> {p.description}</span>
+            </li>
+          ))}
+        </ul>
+      </>
+    )
+  }
+
+  <h2 id="construction">{t("icon.construction")}</h2>
+  <div class="construction not-content">
+    <figure class="grid-figure">
+      <div class="stack">
+        <Fragment set:html={guide} />
+        <div class="shape" set:html={render(shape.id, { size: 240, title: "" })} aria-hidden="true" />
+      </div>
+      <figcaption>{t("icon.construction.legend")}</figcaption>
+    </figure>
+    <div>
+      <h3>{t("icon.construction.steps")}</h3>
+      <ol lang="en">
+        {build.steps.map((step) => <li>{step}</li>)}
+      </ol>
+    </div>
+  </div>
+
+  <h3>{t("icon.construction.primitives")}</h3>
+  <div class="table-wrap">
+    <table lang="en">
+      <thead>
+        <tr>
+          <th scope="col">{t("icon.construction.part")}</th>
+          <th scope="col">{t("icon.layers")}</th>
+          <th scope="col">{t("icon.construction.type")}</th>
+          <th scope="col">{t("icon.construction.values")}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          build.rows.map((row) => (
+            <tr>
+              <td>{row.id === undefined ? "–" : <code>{row.id}</code>}</td>
+              <td>{row.layer}</td>
+              <td><code>{row.type}</code></td>
+              <td>
+                {row.values}
+                {row.when !== undefined && <span class="when"> ({t("icon.construction.when", { when: row.when })})</span>}
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h3>{t("icon.construction.metrics")}</h3>
+  <dl class="facts">
+    {
+      metrics.map(([key, value]) => (
+        <>
+          <dt>{t(key)}</dt>
+          <dd lang="en">{value}</dd>
+        </>
+      ))
+    }
+  </dl>
+  <p><a href={localizedPath(locale, "docs/designer/grid/")}>{t("icon.construction.more")}</a></p>
+
+  <h2>{t("icon.usage")}</h2>
+  <Code code={usage} lang="tsx" />
+
+  <nav class="pager" aria-label={t("nav.icons")}>
+    {prev && <a rel="prev" href={localizedPath(locale, `icons/${prev.id}/`)}>{t("icon.prev")}: {shapeName(prev, locale).text}</a>}
+    {next && <a rel="next" href={localizedPath(locale, `icons/${next.id}/`)}>{t("icon.next")}: {shapeName(next, locale).text}</a>}
+  </nav>
+</StarlightPage>
+
+<style>
+  .icon-detail {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: var(--deq-space-6);
+    margin-block: var(--deq-space-4);
+  }
+  .preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--deq-space-4);
+    margin: 0;
+    padding: var(--deq-space-6);
+    border: 1px solid var(--sl-color-hairline);
+    border-radius: var(--deq-radius);
+    background: var(--deq-surface);
+  }
+  .big {
+    color: var(--deq-icon);
+    display: flex;
+    max-width: 100%;
+  }
+  .big :global(svg) {
+    max-width: 100%;
+    height: auto;
+  }
+  .sizes {
+    display: flex;
+    align-items: end;
+    gap: var(--deq-space-4);
+    color: var(--deq-icon);
+  }
+  .sizes span {
+    display: inline-flex;
+  }
+  .download {
+    padding: var(--deq-space-2) var(--deq-space-4);
+    border-radius: var(--deq-radius);
+    background: var(--sl-color-bg-accent);
+    color: var(--sl-color-text-invert);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: var(--deq-space-2) var(--deq-space-4);
+    margin: 0;
+    align-content: start;
+  }
+  .facts dt {
+    color: var(--sl-color-gray-3);
+  }
+  .facts dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+  .badge {
+    margin-inline-start: var(--deq-space-2);
+    padding: 0 var(--deq-space-2);
+    border: 1px solid var(--sl-color-gray-4);
+    border-radius: 999px;
+    font-size: var(--sl-text-xs);
+    color: var(--sl-color-gray-2);
+  }
+  .construction {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: var(--deq-space-6);
+    align-items: start;
+  }
+  .grid-figure {
+    margin: 0;
+  }
+  .stack {
+    position: relative;
+    width: 100%;
+    max-width: 20rem;
+    aspect-ratio: 1;
+    border: 1px solid var(--sl-color-hairline);
+    background: var(--deq-surface);
+  }
+  .stack > :global(svg),
+  .stack .shape,
+  .stack .shape :global(svg) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .stack .shape {
+    color: var(--deq-icon);
+    opacity: 0.85;
+  }
+  .stack :global(.unit) {
+    stroke: var(--sl-color-gray-5);
+    stroke-width: 0.04;
+    fill: none;
+  }
+  .stack :global(.axis) {
+    stroke: var(--sl-color-gray-4);
+    stroke-width: 0.06;
+    fill: none;
+  }
+  .stack :global(.key) {
+    stroke: var(--sl-color-accent);
+    stroke-width: 0.08;
+    fill: none;
+  }
+  .stack :global(.live) {
+    stroke: var(--sl-color-gray-3);
+    stroke-width: 0.08;
+    stroke-dasharray: 0.4 0.3;
+    fill: none;
+  }
+  .stack :global(.mark) {
+    fill: var(--sl-color-accent-high);
+  }
+  .grid-figure figcaption {
+    margin-top: var(--deq-space-2);
+    font-size: var(--sl-text-sm);
+    color: var(--sl-color-gray-2);
+  }
+  .table-wrap {
+    overflow-x: auto;
+  }
+  .when {
+    color: var(--sl-color-gray-3);
+  }
+  .pager {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--deq-space-4);
+    margin-top: var(--deq-space-8);
+  }
+</style>
