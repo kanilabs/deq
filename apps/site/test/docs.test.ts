@@ -137,7 +137,7 @@ function md(dir: string): string[] {
 const published = [
   "index.md",
   ...LOCALES.map((l) => `${l}/index.md`),
-  ...["guide", "dev", ...LOCALES.map((l) => `${l}/guide`)].flatMap((d) =>
+  ...["guide", "dev", "api", ...LOCALES.map((l) => `${l}/guide`)].flatMap((d) =>
     md(d).map((f) => `${d}/${f}`),
   ),
 ].map((f) => `docs/${f}`);

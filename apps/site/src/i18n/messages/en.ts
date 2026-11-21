@@ -602,6 +602,7 @@ export const en = {
   "nav.docs.overview": "Overview",
   "nav.docs.guides": "Guides",
   "nav.docs.dev": "For developers",
+  "nav.docs.api": "API reference",
   "home.card.showcase": "Projects that use Deq motifs, with screenshots and live previews.",
   "showcase.title": "Showcase",
   "showcase.description":

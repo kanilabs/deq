@@ -110,6 +110,7 @@ describe("pages", () => {
     expect(full.endsWith("\n")).toBe(true);
     const docs = englishDocs([
       { id: "ckb/docs/guide/studio", data: { title: "ستودیۆ", sidebar: {} } },
+      { id: "docs/api/core", data: { title: "Core", sidebar: { order: 1 } } },
       { id: "docs/dev/cli", data: { title: "CLI", sidebar: { order: 2 } } },
       {
         id: "docs/guide/studio",
@@ -117,7 +118,12 @@ describe("pages", () => {
       },
       { id: "docs", data: { title: "Docs", sidebar: {} } },
     ]);
-    expect(docs.map((d) => d.path)).toEqual(["docs/", "docs/guide/studio/", "docs/dev/cli/"]);
+    expect(docs.map((d) => d.path)).toEqual([
+      "docs/",
+      "docs/guide/studio/",
+      "docs/dev/cli/",
+      "docs/api/core/",
+    ]);
     expect(llmsTxt("https://example.test/deq/", false, docs)).toContain(
       "- [Studio](https://example.test/deq/docs/guide/studio/): Design.",
     );

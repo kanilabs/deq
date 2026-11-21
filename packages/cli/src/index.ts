@@ -1,5 +1,5 @@
 /**
- * @0xdolan/deq-cli: the `deq` command-line tool for Node.js (PRD 8.9, ADR 0011).
+ * @0xdolan/deq-cli: the `deq` command-line tool for Node.js (ADR 0011).
  *
  * The executable is `deq`; `main` runs it in-process and returns the exit code.
  */

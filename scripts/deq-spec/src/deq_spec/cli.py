@@ -1,4 +1,4 @@
-"""``deq-spec``: lint, format, render, contact sheets and brand SVGs for spec/."""
+"""``deq-spec``: lint, format, render, contact sheets, brand SVGs and the Python API reference."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
-from deq_spec import SpecError, brand, jsonfmt, leet, lint, metrics, render, sheet
+from deq_spec import SpecError, apidocs, brand, jsonfmt, leet, lint, metrics, render, sheet
 from deq_spec.spec import ParamValue, expand, read_json
 
 SHEETS = {
@@ -97,6 +97,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     p_sheet.add_argument("--out", type=Path, help="default: the committed sheet under docs/design/")
     p_sheet.add_argument("--force", action="store_true")
     sub.add_parser("brand", help="write the brand SVGs in assets/brand/ from the Dot rosette")
+    sub.add_parser("api-docs", help="write the Python API reference docs/api/python.md")
     args = parser.parse_args(argv)
     root: Path = args.root.resolve()
 
@@ -114,6 +115,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                     )
             for stale in brand.stale(root):
                 report.add(stale, "stale or missing: run `uv run deq-spec brand`")
+            if apidocs.stale(root):
+                report.add(str(apidocs.API_DOC), "stale or missing: run `uv run deq-spec api-docs`")
             for e in report.errors:
                 print(e, file=sys.stderr)
             if report.errors:
@@ -135,6 +138,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                 sys.stdout.write(text)
             else:
                 _write(args.out, text, force=args.force)
+            return 0
+        if args.command == "api-docs":
+            print(apidocs.write(root).relative_to(root).as_posix())
             return 0
         if args.command == "brand":
             for path in brand.write(root):

@@ -12,7 +12,9 @@
  * @packageDocumentation
  */
 export * from "./generated/icons.js";
+/** Draws any catalog shape by id (`name`); props are `DeqIconByNameProps`. */
 export { default as DeqIcon } from "./DeqIcon.svelte";
+/** Draws icon data from `@0xdolan/deq-icons` (`icon`); props are `IconProps`. */
 export { default as Icon } from "./Icon.svelte";
 export type { DeqIconByNameProps, DeqIconProps, IconProps } from "./types.js";
 

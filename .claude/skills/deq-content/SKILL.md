@@ -54,4 +54,5 @@ description: Rules for writing Deq story, history, shape meanings and sources, a
 - Describe only what the UI does. Check labels in `src/i18n/messages/en.ts` and behaviour in the code. Never document a planned feature as shipped.
 - Use plain relative links to repository files; the site rewrites them. Embed screenshots with `<picture>` (dark `<source>`, light `<img>` with alt text, `width`, `height`, `loading="lazy"`), leaving a blank line after `</picture>`.
 - After a UI change, run `just screenshots [name ...]` and commit `apps/site/public/screens/*.webp`. `test/docs.test.ts` fails on unused or missing screenshots and on broken relative links.
+- Developer pages are `docs/dev/<slug>.md` (English only); verify every command, path and rule against the code. API references in `docs/api/` are generated (ADR 0021): edit the doc comments and run `just api-docs` (or `pnpm --filter @0xdolan/deq-cli generate` for `commands.md`); only `rust.md` is hand-written. Doc comments are public, so never cite the private PRD.
 - Tool guides (11c) say "Verified in Inkscape 1.4" or "Based on vendor docs, not tested here", and cite the vendor pages.

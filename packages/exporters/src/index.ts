@@ -61,6 +61,7 @@ export const FORMATS = [
   "spec-json",
 ] as const;
 
+/** One of the 23 export format ids in `FORMATS`. */
 export type ExportFormat = (typeof FORMATS)[number];
 
 /** Options for {@link exportShapes}. Options a format does not use are ignored. */

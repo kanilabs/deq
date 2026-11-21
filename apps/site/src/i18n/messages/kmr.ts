@@ -607,6 +607,7 @@ export const kmr = {
   "nav.docs.overview": "Nêrîna giştî",
   "nav.docs.guides": "Rêber",
   "nav.docs.dev": "Ji bo pêşdebiran",
+  "nav.docs.api": "Referansa API",
   "home.card.showcase":
     "Projeyên ku motîfên Deq bi kar tînin, bi dîmenên ekranê û pêşdîtinên zindî.",
   "showcase.title": "Pêşangeh",

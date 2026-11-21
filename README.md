@@ -55,7 +55,8 @@ Deq (Kurdish: دەق, also called _xal_) is the traditional tattoo art of the Ku
 The guides live in [`docs/`](docs/index.md) and are published on the website in English, Sorani and Kurmanji (the translations are drafts awaiting native review).
 
 - **Using Deq:** [getting started](docs/guide/getting-started.md), [the Studio](docs/guide/studio.md), [exporting](docs/guide/exporting.md), [custom shapes](docs/guide/custom-shapes.md), [Deq Leet](docs/guide/leet.md), [pattern generator](docs/guide/generate.md), [the flag](docs/guide/flag.md), [fonts](docs/guide/fonts.md), [install and offline use](docs/guide/pwa.md).
-- **Developers:** [packages](docs/dev/packages.md), [command line](docs/dev/cli.md), [development setup](docs/dev/setup.md), [API reference](docs/api/), [architecture decisions](docs/decisions/).
+- **Developers:** [packages](docs/dev/packages.md), [command line](docs/dev/cli.md), [development setup](docs/dev/setup.md), [architecture](docs/dev/architecture.md), [codegen](docs/dev/codegen.md), [shape spec](docs/dev/spec.md), [adding a shape](docs/dev/adding-a-shape.md), [writing an exporter](docs/dev/exporters.md), [font pipeline](docs/dev/fonts.md), [testing](docs/dev/testing.md), [releasing](docs/dev/releasing.md), [security](docs/dev/security.md), [architecture decisions](docs/decisions/).
+- **API reference:** [core](docs/api/core.md), [exporters](docs/api/exporters.md), [generator](docs/api/generator.md), [icons](docs/api/icons.md), [React](docs/api/react.md), [Vue](docs/api/vue.md), [Svelte](docs/api/svelte.md), [elements](docs/api/elements.md), [CLI package](docs/api/cli.md), [`deq` commands](docs/api/commands.md), [Python](docs/api/python.md), [Rust](docs/api/rust.md).
 - **Design:** [shape spec](docs/design/shape-spec.md), [Deq Leet tables](docs/design/leet.md), [fonts](docs/fonts/README.md).
 
 ## Packages

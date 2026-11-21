@@ -39,3 +39,5 @@ import { KurdishSun, RojHalfSun } from "@0xdolan/deq-react";
 ```
 
 Always pin an exact `VERSION` and take `HASH` from the package's `integrity.json`, so the browser refuses a changed file.
+
+The [API reference](../api/core.md) documents every export of every package, generated from the source.

@@ -2,6 +2,7 @@
  * Builds the data every `deq` CLI shares from `spec/cli.json` (ADR 0011): the resolved
  * command table, the help texts and the shell completions. Written to the Node package and
  * copied to the Python and Rust ports so the three print the same help and completions.
+ * Also writes the command reference `docs/api/commands.md` (ADR 0021).
  *
  *   node scripts/generate.ts           write the files
  *   node scripts/generate.ts --check   fail if a file is out of date
@@ -22,6 +23,7 @@ export const PORT_FILES = [
   join(ROOT, "python", "deq-shapes", "src", "deq_shapes", "data", "cli.json"),
   join(ROOT, "rust", "deq-cli", "data", "cli.json"),
 ];
+export const REFERENCE_FILE = join(ROOT, "docs", "api", "commands.md");
 const WIDTH = 80;
 
 interface RawFlag extends Omit<Flag, "choices"> {
@@ -359,10 +361,106 @@ function powershell(
   return out.join("\n");
 }
 
+// ---------------------------------------------------------------- reference
+
+const cell = (s: string): string => s.replaceAll("|", "\\|");
+const mdFlag = (f: Flag): string => {
+  const long = `--${f.name}${f.type === "bool" ? "" : ` <${f.value ?? f.name}>`}`;
+  return `\`${f.short ? `-${f.short}, ${long}` : long}\``;
+};
+const mdTable = (head: readonly [string, string], rows: readonly (readonly [string, string])[]) => [
+  `| ${head[0]} | ${head[1]} |`,
+  "| --- | --- |",
+  ...rows.map(([a, b]) => `| ${a} | ${cell(b)} |`),
+];
+
+/** The Markdown command reference, from the same data as the help texts. */
+function reference(spec: RawSpec, data: CliData): string {
+  const code = (words: readonly string[]): string => words.map((w) => `\`${w}\``).join(", ");
+  const out = [
+    "---",
+    `title: "${data.name} commands"`,
+    `description: Every command, argument, option and exit code of the ${data.name} command-line tool.`,
+    "sidebar:",
+    "  order: 12",
+    "---",
+    "",
+    "<!-- Generated from spec/cli.json by packages/cli/scripts/generate.ts; do not edit. -->",
+    "",
+    `${spec.summary} The Node.js, Python and Rust tools share this interface ([ADR 0011](../decisions/0011-ports-and-clis.md)); the [command line guide](../dev/cli.md) shows how to install them.`,
+    "",
+    "```text",
+    `${data.name} <command> [options]`,
+    "```",
+    "",
+    ...mdTable(
+      ["Command", "What it does"],
+      data.commands.map((c) => [`[\`${c.name}\`](#${data.name}-${c.name})`, c.summary]),
+    ),
+    "",
+    "## Options of every command",
+    "",
+    ...mdTable(
+      ["Option", "What it does"],
+      data.globalFlags.map((f) => [mdFlag(f), flagHelp(f)]),
+    ),
+  ];
+  for (const c of data.commands) {
+    out.push(
+      "",
+      `## ${data.name} ${c.name}`,
+      "",
+      c.summary,
+      "",
+      "```text",
+      [data.name, c.name, ...c.args.map(argLabel), "[options]"].join(" "),
+      "```",
+    );
+    if (c.args.length > 0) {
+      out.push(
+        "",
+        ...mdTable(
+          ["Argument", "What it is"],
+          c.args.map((a) => [`\`${argLabel(a)}\``, a.help]),
+        ),
+      );
+    }
+    if (c.flags.length > 0) {
+      out.push(
+        "",
+        ...mdTable(
+          ["Option", "What it does"],
+          c.flags.map((f) => [mdFlag(f), flagHelp(f)]),
+        ),
+      );
+    }
+  }
+  out.push(
+    "",
+    "## Formats",
+    "",
+    `The Node.js tool writes every format: ${code(data.formats.all)}.`,
+    "",
+    `The Python and Rust tools write ${code(data.formats.ports)} and exit with code 4 for the others.`,
+    "",
+    "## Exit codes",
+    "",
+    ...mdTable(
+      ["Code", "Meaning"],
+      data.exitCodes.map((e) => [String(e.code), e.meaning]),
+    ),
+  );
+  return `${out.join("\n")}\n`;
+}
+
 // ---------------------------------------------------------------- data
 
 /** Build the shared CLI data from `spec/cli.json`, the catalog and the package version. */
 export function buildData(): CliData {
+  return build().data;
+}
+
+function build(): { spec: RawSpec; data: CliData } {
   const spec = JSON.parse(readFileSync(SPEC, "utf8")) as RawSpec;
   const pkg = JSON.parse(readFileSync(join(here, "..", "package.json"), "utf8")) as {
     version: string;
@@ -391,7 +489,7 @@ export function buildData(): CliData {
   const formats = spec.formats;
   if (!formats["all"] || !formats["ports"])
     throw new Error("spec/cli.json: formats.all and formats.ports are required");
-  return {
+  const data: CliData = {
     name: spec.name,
     version: pkg.version,
     formats: { all: formats["all"], ports: formats["ports"] },
@@ -406,21 +504,27 @@ export function buildData(): CliData {
       powershell: powershell(...args),
     },
   };
+  return { spec, data };
 }
 
 /** Every generated file and its expected text. */
 export function generatedFiles(): [string, string][] {
-  const data = buildData();
+  const { spec, data } = build();
   const json = `${JSON.stringify({ $comment: "Generated from spec/cli.json by packages/cli/scripts/generate.ts. Do not edit: run `pnpm --filter @0xdolan/deq-cli generate`.", ...data }, null, 2)}\n`;
   const ts = [
     "// Generated from spec/cli.json by scripts/generate.ts.",
     "// Do not edit: run `pnpm --filter @0xdolan/deq-cli generate`.",
     'import type { CliData } from "../types.js";',
     "",
+    "/** The CLI interface from `spec/cli.json`: commands, flags, messages and exit codes. */",
     `export const CLI: CliData = ${JSON.stringify(data, null, 2)};`,
     "",
   ].join("\n");
-  return [[TS_FILE, ts], ...PORT_FILES.map((f): [string, string] => [f, json])];
+  return [
+    [TS_FILE, ts],
+    ...PORT_FILES.map((f): [string, string] => [f, json]),
+    [REFERENCE_FILE, reference(spec, data)],
+  ];
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

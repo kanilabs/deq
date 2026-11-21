@@ -27,6 +27,9 @@ async function walk(dir: string): Promise<string[]> {
 
 const decode = (s: string) => s.replaceAll("&amp;", "&");
 
+/** Code shows markup as text (an API example's `href="…"`), so it is not a link. */
+const CODE = /<(code|pre)\b[^>]*>[\s\S]*?<\/\1>/gu;
+
 async function fileFor(path: string): Promise<string | undefined> {
   const local = join(DIST, path.slice(BASE.length));
   const candidates = path.endsWith("/")
@@ -48,7 +51,7 @@ const pages = (await walk(DIST)).filter((f) => f.endsWith(".html"));
 const ids = new Map<string, Set<string>>();
 const html = new Map<string, string>();
 for (const page of pages) {
-  const text = await readFile(page, "utf8");
+  const text = (await readFile(page, "utf8")).replace(CODE, "");
   html.set(page, text);
   ids.set(page, new Set([...text.matchAll(ID)].map((m) => decode(m[1] ?? ""))));
 }
