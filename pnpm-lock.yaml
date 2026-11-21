@@ -293,8 +293,8 @@ importers:
         specifier: 2.6.2
         version: 2.6.2
       ag-psd:
-        specifier: 34.1.0
-        version: 34.1.0
+        specifier: 34.2.0
+        version: 34.2.0
       valibot:
         specifier: 1.5.0
         version: 1.5.0(typescript@6.0.3)
@@ -2592,8 +2592,8 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
 
-  ag-psd@34.1.0:
-    resolution: {integrity: sha512-OamTuun+q681j5NvK8LxMX8oRHS//Ah9+3Xmt0uGXVMdzMz2JpLqBvtXXQdGpucdLE3fs8EzwsPyB/vc1aVSvw==}
+  ag-psd@34.2.0:
+    resolution: {integrity: sha512-IoY6TdgsFBi+jrE85rZjXi726WQspwOckAWJk0/zua2B0QVxS4t6bh/tz0DPzUK+GYEfzGRcdDfY9Kz1u93qVQ==}
 
   ajv-draft-04@1.0.0:
     resolution: {integrity: sha512-mv00Te6nmYbRp5DCwclxtt7yV/joXJPGS7nM+97GdxvuttCOfgI3K4U25zboyeX0O+myI8ERluxQe5wljMmVIw==}
@@ -7585,7 +7585,7 @@ snapshots:
 
   acorn@8.19.0: {}
 
-  ag-psd@34.1.0:
+  ag-psd@34.2.0:
     dependencies:
       base64-js: 1.5.1
       pako: 2.1.0
