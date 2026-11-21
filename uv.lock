@@ -711,12 +711,14 @@ source = { editable = "scripts/deq-fonts" }
 dependencies = [
     { name = "fonttools", extra = ["woff"] },
     { name = "skia-pathops" },
+    { name = "uharfbuzz" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "fonttools", extras = ["woff"], specifier = "==4.68.0" },
     { name = "skia-pathops", specifier = "==0.9.2" },
+    { name = "uharfbuzz", specifier = "==0.57.0" },
 ]
 
 [[package]]

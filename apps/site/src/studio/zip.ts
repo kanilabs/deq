@@ -5,7 +5,7 @@
  */
 
 export interface ZipEntry {
-  /** A plain file name: no folders, no `..`. */
+  /** A plain file name (no `..`); folders only with `ZipOptions.folders`. */
   readonly name: string;
   readonly data: string | Uint8Array;
 }
@@ -49,16 +49,17 @@ function dosDateTime(date: Date): [number, number] {
   return [time, day];
 }
 
-function checkName(name: string): void {
-  if (
-    name.length === 0 ||
-    name.length > 255 ||
-    /[/\\:\0]/u.test(name) ||
-    name === "." ||
-    name === ".."
-  ) {
+function checkName(name: string, folders: boolean): void {
+  const bad = (part: string) =>
+    part.length === 0 || /[/\\:\0]/u.test(part) || part === "." || part === "..";
+  if (name.length > 255 || (folders ? name.split("/").some(bad) : bad(name))) {
     throw new ZipError(`zip: bad file name ${JSON.stringify(name.slice(0, 80))}`);
   }
+}
+
+export interface ZipOptions {
+  /** Allow `/`-separated folder names (each part is checked like a file name). Default false. */
+  readonly folders?: boolean;
 }
 
 /**
@@ -66,7 +67,11 @@ function checkName(name: string): void {
  *
  * @throws {ZipError} for an empty list, too many entries, bad or duplicate names.
  */
-export async function zip(entries: readonly ZipEntry[], date = new Date()): Promise<Uint8Array> {
+export async function zip(
+  entries: readonly ZipEntry[],
+  date = new Date(),
+  options: ZipOptions = {},
+): Promise<Uint8Array> {
   if (entries.length === 0 || entries.length > MAX_ZIP_ENTRIES) {
     throw new ZipError(`zip: give 1 to ${String(MAX_ZIP_ENTRIES)} files`);
   }
@@ -77,7 +82,7 @@ export async function zip(entries: readonly ZipEntry[], date = new Date()): Prom
   const centrals: Uint8Array[] = [];
   let offset = 0;
   for (const entry of entries) {
-    checkName(entry.name);
+    checkName(entry.name, options.folders ?? false);
     const key = entry.name.toLowerCase();
     if (seen.has(key)) throw new ZipError(`zip: duplicate file name ${entry.name}`);
     seen.add(key);

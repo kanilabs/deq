@@ -26,7 +26,7 @@ export function pwa(): AstroIntegration {
           globDirectory: out,
           globPatterns: ["**/*.{html,css,js,svg,png,woff2,webmanifest,txt}"],
           // Open Graph images are only for link previews; search indexes load on demand.
-          globIgnores: ["og/**", "pagefind/**", "sw.js"],
+          globIgnores: ["brand/**", "og/**", "pagefind/**", "sw.js"],
           swDest: `${out}/sw.js`,
           modifyURLPrefix: { "": base },
           maximumFileSizeToCacheInBytes: MAX_FILE,

@@ -7,7 +7,7 @@ import { render, renderFlag } from "@0xdolan/deq-core";
 import { encodeSvg } from "@0xdolan/deq-exporters";
 
 import logo from "../../../../assets/brand/logo.svg?raw";
-import markDark from "../../../../assets/brand/mark-small-dark.svg?raw";
+import lockup from "../../../../assets/brand/lockups/horizontal-reversed.svg?raw";
 import mark from "../../../../assets/brand/mark-small.svg?raw";
 
 const BG = "#17181c";
@@ -24,10 +24,22 @@ const place = (svg: string, x: number, y: number, size: number) =>
       `<svg $1x="${String(x)}" y="${String(y)}" width="${String(size)}" height="${String(size)}"`,
     );
 
+/** A brand SVG without its comment, `height` px tall with its top-right corner at (x, y). */
+const placeHeight = (svg: string, x: number, y: number, height: number) =>
+  svg
+    .replace(/^<!--[\s\S]*?-->\s*/u, "")
+    .replace(/<svg ([^>]*?)width="([\d.]+)" height="([\d.]+)"/u, (_m, rest: string, w, h) => {
+      const width = Math.round((Number(w) / Number(h)) * height * 100) / 100;
+      return `<svg ${rest}x="${String(x - width)}" y="${String(y)}" width="${String(width)}" height="${String(height)}"`;
+    });
+
 const nested = (svg: string, x: number, y: number) =>
   svg.replace("<svg ", `<svg x="${String(x)}" y="${String(y)}" `);
 
-/** A 1200 x 630 share card: a flag strip, the page's shape (`"flag"` for the flag) and the mark. */
+/**
+ * A 1200 x 630 share card: a flag strip, the page's shape (`"flag"` for the flag) and the
+ * reversed horizontal lockup in the corner.
+ */
 export async function ogImage(shapeId: string | undefined): Promise<Uint8Array<ArrayBuffer>> {
   const art =
     shapeId === "flag"
@@ -37,7 +49,7 @@ export async function ogImage(shapeId: string | undefined): Promise<Uint8Array<A
 <rect width="1200" height="630" fill="${BG}"/>
 <rect width="400" height="12" fill="#ED2024"/><rect x="400" width="400" height="12" fill="#FFFFFF"/><rect x="800" width="400" height="12" fill="#278E43"/>
 ${art}
-${place(markDark, 1080, 510, 72)}
+${placeHeight(lockup, 1152, 526, 56)}
 </svg>`;
   // Copied into a plain ArrayBuffer so it is a valid Response body.
   return new Uint8Array(await encodeSvg(svg, 1200, "png"));

@@ -1,5 +1,7 @@
 # @0xdolan/deq-elements
 
+<img src="https://kanilabs.github.io/deq/brand/banner.png" width="640" height="160" alt="Deq · دەق: the Dot rosette logo, traditional Kurdish tattoo shapes as an open, parametric design system.">
+
 `<deq-icon>`: the 93 Deq shapes as a custom element for any page or framework. It draws into the light DOM, so CSS `color`, `font-size` and selectors work as usual.
 
 ```sh
