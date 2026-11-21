@@ -89,12 +89,14 @@ screenshots *names: fonts media
     for _ in $(seq 30); do curl -sf -o /dev/null http://localhost:4321/deq/ && break; sleep 1; done
     pnpm screenshots {{names}}
 
-# Build the icon and Leet fonts into fonts/dist (checks that the code point tables are fresh)
+# Build the icon and Leet fonts into fonts/dist (checks that the code point tables and the
+# site's UI font subset are fresh)
 fonts:
     pnpm exec turbo run build --filter=@0xdolan/deq-core --filter=@0xdolan/deq-generator
     pnpm --filter @0xdolan/deq-icons font-data fonts/build/geometry.json
     pnpm --filter @0xdolan/deq-generator font-data fonts/build/leet.json
     uv run deq-fonts codepoints --check
+    uv run deq-fonts ui-subset --check
     uv run deq-fonts build
 
 # Check the fonts with fontbakery (including ots) and install them into a private fontconfig.

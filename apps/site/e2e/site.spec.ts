@@ -126,6 +126,20 @@ test("story figures open in the lightbox and close again", async ({ page }) => {
   expect(violations).toEqual([]);
 });
 
+test("Latin Extended-A text uses the small UI font subset", async ({ page }) => {
+  const fonts: string[] = [];
+  page.on("request", (req) => {
+    if (req.resourceType() === "font") fonts.push(new URL(req.url()).pathname);
+  });
+  // "Diyarbakır" and Kurmanji text need U+0100–U+017F only.
+  for (const path of ["story/revival/", "kmr/docs/"]) {
+    await page.goto(path);
+    await page.waitForLoadState("networkidle");
+  }
+  expect(fonts.some((f) => f.includes("noto-sans-latin-ext-a-wght-normal"))).toBe(true);
+  expect(fonts.filter((f) => f.includes("noto-sans-latin-ext-wght-normal"))).toEqual([]);
+});
+
 test("videos load from youtube-nocookie only after pressing play", async ({ page }) => {
   const violations = await watchCsp(page);
   const youtube: string[] = [];
