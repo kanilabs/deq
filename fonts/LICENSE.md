@@ -1,8 +1,8 @@
-# Deq Icons font license
+# Deq font license
 
 Copyright 2026 0xdolan and the Deq contributors.
 
-The Deq Icons fonts (`DeqIcons-Regular`, `DeqIcons[DOTS,wght]` and `DeqIconsColor-Regular`, in every format) are free software. You can redistribute them and/or modify them under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License or (at your option) any later version. The full text is in [`../LICENSE`](../LICENSE).
+The Deq Icons fonts (`DeqIcons-Regular`, `DeqIcons[DOTS,wght]` and `DeqIconsColor-Regular`) and the Deq Leet font (`DeqLeet-Regular`), in every format, are free software. You can redistribute them and/or modify them under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License or (at your option) any later version. The full text is in [`../LICENSE`](../LICENSE).
 
 SPDX: `GPL-3.0-or-later WITH Font-exception-2.0`
 

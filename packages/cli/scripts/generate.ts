@@ -24,6 +24,8 @@ export const PORT_FILES = [
   join(ROOT, "rust", "deq-cli", "data", "cli.json"),
 ];
 export const REFERENCE_FILE = join(ROOT, "docs", "api", "commands.md");
+/** The man page, installed by the `deq-cli` Debian package and attached to releases. */
+export const MAN_FILE = join(ROOT, "packaging", "man", "deq.1");
 const WIDTH = 80;
 
 interface RawFlag extends Omit<Flag, "choices"> {
@@ -453,6 +455,63 @@ function reference(spec: RawSpec, data: CliData): string {
   return `${out.join("\n")}\n`;
 }
 
+// ---------------------------------------------------------------- man page
+
+/** Escape text for roff: backslashes and a leading control character. */
+const roff = (s: string): string => s.replaceAll("\\", "\\e").replace(/^([.'])/, "\\&$1");
+const roffFlag = (f: Flag): string => {
+  const long = `\\fB\\-\\-${f.name.replaceAll("-", "\\-")}\\fR${f.type === "bool" ? "" : ` \\fI${roff(f.value ?? f.name)}\\fR`}`;
+  return f.short ? `\\fB\\-${f.short}\\fR, ${long}` : long;
+};
+const roffItems = (rows: readonly (readonly [string, string])[]): string[] =>
+  rows.flatMap(([term, text]) => [".TP", term, roff(text)]);
+
+/** The man page (section 1), from the same data as the help texts. No date, so builds repeat. */
+function manPage(spec: RawSpec, data: CliData): string {
+  const name = data.name;
+  const out = [
+    '.\\" Generated from spec/cli.json by packages/cli/scripts/generate.ts; do not edit.',
+    `.TH ${name.toUpperCase()} 1 "" "${name} ${data.version}" "User Commands"`,
+    ".SH NAME",
+    `${name} \\- ${roff(spec.summary.replace(/\.$/, ""))}`,
+    ".SH SYNOPSIS",
+    `.B ${name}`,
+    ".I command",
+    "[\\fIoptions\\fR]",
+    ".SH DESCRIPTION",
+    roff(spec.summary),
+    "The Node.js, Python and Rust tools share this interface.",
+    ".SH COMMANDS",
+    ...roffItems(data.commands.map((c) => [`.B ${c.name}`, c.summary])),
+    ".SH OPTIONS",
+    "These options work with every command.",
+    ...roffItems(data.globalFlags.map((f) => [roffFlag(f), flagHelp(f)])),
+  ];
+  for (const c of data.commands) {
+    out.push(
+      `.SS ${name} ${c.name}`,
+      roff(c.summary),
+      ".PP",
+      `\\fB${name} ${c.name}\\fR ${[...c.args.map(argLabel), "[options]"].map(roff).join(" ")}`,
+      ...roffItems(c.args.map((a) => [`\\fI${roff(argLabel(a))}\\fR`, a.help])),
+      ...roffItems(c.flags.map((f) => [roffFlag(f), flagHelp(f)])),
+    );
+  }
+  out.push(
+    ".SH FORMATS",
+    roff(`The Node.js tool writes every format: ${data.formats.all.join(", ")}.`),
+    ".PP",
+    roff(
+      `The Python and Rust tools write ${data.formats.ports.join(", ")} and exit with code 4 for the others.`,
+    ),
+    ".SH EXIT STATUS",
+    ...roffItems(data.exitCodes.map((e) => [`.B ${String(e.code)}`, e.meaning])),
+    ".SH SEE ALSO",
+    "https://kanilabs.github.io/deq/",
+  );
+  return `${out.join("\n")}\n`;
+}
+
 // ---------------------------------------------------------------- data
 
 /** Build the shared CLI data from `spec/cli.json`, the catalog and the package version. */
@@ -524,6 +583,7 @@ export function generatedFiles(): [string, string][] {
     [TS_FILE, ts],
     ...PORT_FILES.map((f): [string, string] => [f, json]),
     [REFERENCE_FILE, reference(spec, data)],
+    [MAN_FILE, manPage(spec, data)],
   ];
 }
 

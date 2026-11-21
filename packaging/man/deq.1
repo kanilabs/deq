@@ -1,0 +1,474 @@
+.\" Generated from spec/cli.json by packages/cli/scripts/generate.ts; do not edit.
+.TH DEQ 1 "" "deq 0.0.0" "User Commands"
+.SH NAME
+deq \- Draw Deq shapes, traditional Kurdish tattoo motifs, as SVG, PDF and images
+.SH SYNOPSIS
+.B deq
+.I command
+[\fIoptions\fR]
+.SH DESCRIPTION
+Draw Deq shapes, traditional Kurdish tattoo motifs, as SVG, PDF and images.
+The Node.js, Python and Rust tools share this interface.
+.SH COMMANDS
+.TP
+.B list
+List the shapes in the catalog.
+.TP
+.B info
+Show a shape's names, layers and parameters.
+.TP
+.B render
+Render shapes to files.
+.TP
+.B export
+Export shapes in several formats and sizes.
+.TP
+.B flag
+Draw the flag of Kurdistan.
+.TP
+.B leet
+Write text with Deq glyphs (Deq Leet), or read it back with --decode.
+.TP
+.B generate
+Generate a seeded pattern of Deq motifs.
+.TP
+.B validate
+Check a shape spec file and render every parameter variant.
+.TP
+.B completion
+Print a shell completion script.
+.SH OPTIONS
+These options work with every command.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Show help.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Print the version.
+.SS deq list
+List the shapes in the catalog.
+.PP
+\fBdeq list\fR [options]
+.TP
+\fB\-\-category\fR \fIid\fR
+Only shapes in this category.
+.TP
+\fB\-\-json\fR
+Print JSON.
+.SS deq info
+Show a shape's names, layers and parameters.
+.PP
+\fBdeq info\fR <shape> [options]
+.TP
+\fI<shape>\fR
+Shape id (see deq list).
+.TP
+\fB\-\-json\fR
+Print JSON.
+.SS deq render
+Render shapes to files.
+.PP
+\fBdeq render\fR <shape...> [options]
+.TP
+\fI<shape...>\fR
+Shape ids (see deq list).
+.TP
+\fB\-\-format\fR \fIformat\fR
+Output format. Default svg. Values: svg, svg-layered, svg-sprite, html, jsx, tsx, vue, svelte, data-uri, css-background, css-mask, pdf, ai, eps, png, jpg, webp, avif, ico, favicon, psd, figma, spec-json.
+.TP
+\fB\-\-size\fR \fIpx\fR
+Width and height in px, 1 to 8192. Default 24.
+.TP
+\fB\-\-layered\fR
+SVG with one Inkscape layer per shape layer (same as --format svg-layered).
+.TP
+\fB\-\-out\fR \fIpath\fR
+Output file, or a directory for several files; - writes one file to stdout. Default: the current directory.
+.TP
+\fB\-\-color\fR \fIcolor\fR
+Stroke and dot colour (any CSS colour). Default currentColor.
+.TP
+\fB\-\-stroke\-width\fR \fIn\fR
+Stroke width in grid units, 0.05 to 12. Default 2.
+.TP
+\fB\-\-absolute\-stroke\-width\fR
+Keep the stroke the same width in px at any size.
+.TP
+\fB\-\-fill\fR \fIcolor\fR
+Fill for closed outlines, or none. Default none.
+.TP
+\fB\-\-fill\-opacity\fR \fI0-1\fR
+Opacity of the fill. Default 1.
+.TP
+\fB\-\-stroke\-opacity\fR \fI0-1\fR
+Opacity of strokes and dots. Default 1.
+.TP
+\fB\-\-linecap\fR \fIlinecap\fR
+Line ends. Default round. Values: round, butt, square.
+.TP
+\fB\-\-linejoin\fR \fIlinejoin\fR
+Line corners. Default round. Values: round, miter, bevel.
+.TP
+\fB\-\-dot\-scale\fR \fIn\fR
+Multiply every dot radius, 0.1 to 4. Default 1.
+.TP
+\fB\-\-rotation\fR \fIdeg\fR
+Rotate clockwise about the centre. Default 0.
+.TP
+\fB\-\-flip\-x\fR
+Mirror left to right.
+.TP
+\fB\-\-flip\-y\fR
+Mirror top to bottom.
+.TP
+\fB\-\-padding\fR \fIn\fR
+Space around the 24 x 24 canvas in grid units, 0 to 24. Default 0.
+.TP
+\fB\-\-background\fR \fIcolor\fR
+Background colour, or none. Default none.
+.TP
+\fB\-\-layer\-color\fR \fIlayer=color\fR
+Colour of one layer, for example sun=#FEBD11 (repeatable).
+.TP
+\fB\-\-title\fR \fItext\fR
+Accessible title. Default the English name; "" marks the image decorative.
+.TP
+\fB\-\-param\fR \fIname=value\fR
+Shape parameter, for example rays=9 (repeatable; see deq info).
+.TP
+\fB\-\-current\-color\fR \fIcolor\fR
+What currentColor means in PDF and image formats. Default black.
+.TP
+\fB\-\-matte\fR \fIcolor\fR
+JPG background behind transparent pixels. Default white.
+.TP
+\fB\-\-quality\fR \fI0-100\fR
+JPG and WebP quality. Default 90.
+.TP
+\fB\-\-force\fR
+Overwrite existing files.
+.SS deq export
+Export shapes in several formats and sizes.
+.PP
+\fBdeq export\fR [<shape...>] [options]
+.TP
+\fI[<shape...>]\fR
+Shape ids; or use --all.
+.TP
+\fB\-\-all\fR
+Export every shape in the catalog.
+.TP
+\fB\-\-format\fR \fIlist\fR
+Comma-separated formats. Default svg. Values: svg, svg-layered, svg-sprite, html, jsx, tsx, vue, svelte, data-uri, css-background, css-mask, pdf, ai, eps, png, jpg, webp, avif, ico, favicon, psd, figma, spec-json.
+.TP
+\fB\-\-sizes\fR \fIlist\fR
+Comma-separated sizes in px. Default 24.
+.TP
+\fB\-\-out\fR \fIdir\fR
+Output directory; files go to <dir>/<format>/<size>/. Default the current directory.
+.TP
+\fB\-\-color\fR \fIcolor\fR
+Stroke and dot colour (any CSS colour). Default currentColor.
+.TP
+\fB\-\-stroke\-width\fR \fIn\fR
+Stroke width in grid units, 0.05 to 12. Default 2.
+.TP
+\fB\-\-absolute\-stroke\-width\fR
+Keep the stroke the same width in px at any size.
+.TP
+\fB\-\-fill\fR \fIcolor\fR
+Fill for closed outlines, or none. Default none.
+.TP
+\fB\-\-fill\-opacity\fR \fI0-1\fR
+Opacity of the fill. Default 1.
+.TP
+\fB\-\-stroke\-opacity\fR \fI0-1\fR
+Opacity of strokes and dots. Default 1.
+.TP
+\fB\-\-linecap\fR \fIlinecap\fR
+Line ends. Default round. Values: round, butt, square.
+.TP
+\fB\-\-linejoin\fR \fIlinejoin\fR
+Line corners. Default round. Values: round, miter, bevel.
+.TP
+\fB\-\-dot\-scale\fR \fIn\fR
+Multiply every dot radius, 0.1 to 4. Default 1.
+.TP
+\fB\-\-rotation\fR \fIdeg\fR
+Rotate clockwise about the centre. Default 0.
+.TP
+\fB\-\-flip\-x\fR
+Mirror left to right.
+.TP
+\fB\-\-flip\-y\fR
+Mirror top to bottom.
+.TP
+\fB\-\-padding\fR \fIn\fR
+Space around the 24 x 24 canvas in grid units, 0 to 24. Default 0.
+.TP
+\fB\-\-background\fR \fIcolor\fR
+Background colour, or none. Default none.
+.TP
+\fB\-\-layer\-color\fR \fIlayer=color\fR
+Colour of one layer, for example sun=#FEBD11 (repeatable).
+.TP
+\fB\-\-title\fR \fItext\fR
+Accessible title. Default the English name; "" marks the image decorative.
+.TP
+\fB\-\-param\fR \fIname=value\fR
+Shape parameter, for example rays=9 (repeatable; see deq info).
+.TP
+\fB\-\-current\-color\fR \fIcolor\fR
+What currentColor means in PDF and image formats. Default black.
+.TP
+\fB\-\-matte\fR \fIcolor\fR
+JPG background behind transparent pixels. Default white.
+.TP
+\fB\-\-quality\fR \fI0-100\fR
+JPG and WebP quality. Default 90.
+.TP
+\fB\-\-force\fR
+Overwrite existing files.
+.SS deq flag
+Draw the flag of Kurdistan.
+.PP
+\fBdeq flag\fR [options]
+.TP
+\fB\-\-variant\fR \fIvariant\fR
+Flag variant. Default full-color. Values: full-color, mono-black, mono-white, outline, high-contrast, square.
+.TP
+\fB\-\-width\fR \fIpx\fR
+Width in px, 1 to 8192; the height follows. Default 900.
+.TP
+\fB\-\-format\fR \fIformat\fR
+Output format. Default svg. Values: svg, png, jpg, webp.
+.TP
+\fB\-\-title\fR \fItext\fR
+Accessible title. Default "Flag of Kurdistan".
+.TP
+\fB\-\-current\-color\fR \fIcolor\fR
+What currentColor means in image formats. Default black.
+.TP
+\fB\-\-matte\fR \fIcolor\fR
+JPG background behind transparent pixels. Default white.
+.TP
+\fB\-\-quality\fR \fI0-100\fR
+JPG and WebP quality. Default 90.
+.TP
+\fB\-\-out\fR \fIpath\fR
+Output file or directory; - writes to stdout. Default: the current directory.
+.TP
+\fB\-\-force\fR
+Overwrite existing files.
+.SS deq leet
+Write text with Deq glyphs (Deq Leet), or read it back with --decode.
+.PP
+\fBdeq leet\fR [<text>] [options]
+.TP
+\fI[<text>]\fR
+Latin, Kurmanji or Sorani text, at most 1024 characters.
+.TP
+\fB\-\-decode\fR \fIfile\fR
+Print the text of a Deq Leet SVG written at the basic level; pass the render flags used to write it.
+.TP
+\fB\-\-level\fR \fIlevel\fR
+basic is readable and decodable, advanced mixes in seeded alternatives, full uses motifs. Default basic. Values: basic, advanced, full.
+.TP
+\fB\-\-script\fR \fIscript\fR
+Glyph table. Default sorani for Arabic-script text, else latin. Values: latin, sorani.
+.TP
+\fB\-\-seed\fR \fIn\fR
+Seed for the advanced level, 0 to 4294967295. Default 1.
+.TP
+\fB\-\-letter\-spacing\fR \fIn\fR
+Space between glyphs in grid units, 0 to 24. Default 2.
+.TP
+\fB\-\-line\-spacing\fR \fIn\fR
+Space between lines in grid units, 0 to 48. Default 6.
+.TP
+\fB\-\-align\fR \fIalign\fR
+Line alignment; start is the right edge for Sorani. Default start. Values: start, center, end.
+.TP
+\fB\-\-format\fR \fIformat\fR
+Output format. Default svg. Values: svg, png, jpg, webp.
+.TP
+\fB\-\-size\fR \fIpx\fR
+Size in px of one 24 x 24 cell, 1 to 8192. Default 24.
+.TP
+\fB\-\-colors\fR \fIlist\fR
+Comma-separated colours given to the glyphs in turn (1 to 16).
+.TP
+\fB\-\-title\fR \fItext\fR
+Accessible title. Default the normalised text; "" marks the image decorative.
+.TP
+\fB\-\-out\fR \fIpath\fR
+Output file or directory; - writes to stdout. Default: the current directory.
+.TP
+\fB\-\-color\fR \fIcolor\fR
+Stroke and dot colour (any CSS colour). Default currentColor.
+.TP
+\fB\-\-stroke\-width\fR \fIn\fR
+Stroke width in grid units, 0.05 to 12. Default 2.
+.TP
+\fB\-\-absolute\-stroke\-width\fR
+Keep the stroke the same width in px at any size.
+.TP
+\fB\-\-fill\fR \fIcolor\fR
+Fill for closed outlines, or none. Default none.
+.TP
+\fB\-\-fill\-opacity\fR \fI0-1\fR
+Opacity of the fill. Default 1.
+.TP
+\fB\-\-stroke\-opacity\fR \fI0-1\fR
+Opacity of strokes and dots. Default 1.
+.TP
+\fB\-\-linecap\fR \fIlinecap\fR
+Line ends. Default round. Values: round, butt, square.
+.TP
+\fB\-\-linejoin\fR \fIlinejoin\fR
+Line corners. Default round. Values: round, miter, bevel.
+.TP
+\fB\-\-dot\-scale\fR \fIn\fR
+Multiply every dot radius, 0.1 to 4. Default 1.
+.TP
+\fB\-\-padding\fR \fIn\fR
+Space around the 24 x 24 canvas in grid units, 0 to 24. Default 0.
+.TP
+\fB\-\-background\fR \fIcolor\fR
+Background colour, or none. Default none.
+.TP
+\fB\-\-current\-color\fR \fIcolor\fR
+What currentColor means in PDF and image formats. Default black.
+.TP
+\fB\-\-matte\fR \fIcolor\fR
+JPG background behind transparent pixels. Default white.
+.TP
+\fB\-\-quality\fR \fI0-100\fR
+JPG and WebP quality. Default 90.
+.TP
+\fB\-\-force\fR
+Overwrite existing files.
+.SS deq generate
+Generate a seeded pattern of Deq motifs.
+.PP
+\fBdeq generate\fR [options]
+.TP
+\fB\-\-kind\fR \fIkind\fR
+Pattern kind. Default band. Values: band, grid, rosette, border.
+.TP
+\fB\-\-seed\fR \fIn\fR
+Seed, 0 to 4294967295; the same seed gives the same pattern. Default 1.
+.TP
+\fB\-\-motifs\fR \fIlist\fR
+Comma-separated shape ids to choose from (1 to 64). Default every shape.
+.TP
+\fB\-\-count\fR \fIn\fR
+Band length, odd, 3 to 63. Default 9.
+.TP
+\fB\-\-cols\fR \fIn\fR
+Grid or border columns, 1 to 32 (border at least 3). Default 5 (grid), 7 (border).
+.TP
+\fB\-\-rows\fR \fIn\fR
+Grid or border rows, 1 to 32 (border at least 3). Default 5 (grid), 3 (border).
+.TP
+\fB\-\-petals\fR \fIn\fR
+Rosette petals, 3 to 24. Default 8.
+.TP
+\fB\-\-spacing\fR \fIn\fR
+Space between cells in grid units, 0 to 24. Default 2.
+.TP
+\fB\-\-format\fR \fIformat\fR
+Output format. Default svg. Values: svg, png, jpg, webp.
+.TP
+\fB\-\-size\fR \fIpx\fR
+Size in px of one 24 x 24 cell, 1 to 8192. Default 24.
+.TP
+\fB\-\-colors\fR \fIlist\fR
+Comma-separated colours given to the glyphs in turn (1 to 16).
+.TP
+\fB\-\-title\fR \fItext\fR
+Accessible title. Default "Deq <kind> pattern"; "" marks the image decorative.
+.TP
+\fB\-\-out\fR \fIpath\fR
+Output file or directory; - writes to stdout. Default: the current directory.
+.TP
+\fB\-\-color\fR \fIcolor\fR
+Stroke and dot colour (any CSS colour). Default currentColor.
+.TP
+\fB\-\-stroke\-width\fR \fIn\fR
+Stroke width in grid units, 0.05 to 12. Default 2.
+.TP
+\fB\-\-absolute\-stroke\-width\fR
+Keep the stroke the same width in px at any size.
+.TP
+\fB\-\-fill\fR \fIcolor\fR
+Fill for closed outlines, or none. Default none.
+.TP
+\fB\-\-fill\-opacity\fR \fI0-1\fR
+Opacity of the fill. Default 1.
+.TP
+\fB\-\-stroke\-opacity\fR \fI0-1\fR
+Opacity of strokes and dots. Default 1.
+.TP
+\fB\-\-linecap\fR \fIlinecap\fR
+Line ends. Default round. Values: round, butt, square.
+.TP
+\fB\-\-linejoin\fR \fIlinejoin\fR
+Line corners. Default round. Values: round, miter, bevel.
+.TP
+\fB\-\-dot\-scale\fR \fIn\fR
+Multiply every dot radius, 0.1 to 4. Default 1.
+.TP
+\fB\-\-padding\fR \fIn\fR
+Space around the 24 x 24 canvas in grid units, 0 to 24. Default 0.
+.TP
+\fB\-\-background\fR \fIcolor\fR
+Background colour, or none. Default none.
+.TP
+\fB\-\-current\-color\fR \fIcolor\fR
+What currentColor means in PDF and image formats. Default black.
+.TP
+\fB\-\-matte\fR \fIcolor\fR
+JPG background behind transparent pixels. Default white.
+.TP
+\fB\-\-quality\fR \fI0-100\fR
+JPG and WebP quality. Default 90.
+.TP
+\fB\-\-force\fR
+Overwrite existing files.
+.SS deq validate
+Check a shape spec file and render every parameter variant.
+.PP
+\fBdeq validate\fR <file> [options]
+.TP
+\fI<file>\fR
+Shape spec JSON file.
+.SS deq completion
+Print a shell completion script.
+.PP
+\fBdeq completion\fR <shell> [options]
+.TP
+\fI<shell>\fR
+bash, zsh, fish or powershell.
+.SH FORMATS
+The Node.js tool writes every format: svg, svg-layered, svg-sprite, html, jsx, tsx, vue, svelte, data-uri, css-background, css-mask, pdf, ai, eps, png, jpg, webp, avif, ico, favicon, psd, figma, spec-json.
+.PP
+The Python and Rust tools write svg, svg-layered, svg-sprite, pdf, png, jpg, webp, ico and exit with code 4 for the others.
+.SH EXIT STATUS
+.TP
+.B 0
+success
+.TP
+.B 1
+a shape, option or spec file is invalid
+.TP
+.B 2
+the command line is wrong
+.TP
+.B 3
+a file could not be read or written (or exists without --force)
+.TP
+.B 4
+the format is only available in the Node CLI
+.SH SEE ALSO
+https://kanilabs.github.io/deq/

@@ -1,0 +1,24 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: Deq
+Upstream-Contact: 0xdolan <0xdolan@gmail.com>
+Source: https://github.com/kanilabs/deq
+
+Files: *
+Copyright: 2026 0xdolan and the Deq contributors
+License: GPL-3+ with Font exception
+ The Deq Icons and Deq Leet fonts and the Deq shape files are free software:
+ you can redistribute them and/or modify them under the terms of the GNU
+ General Public License as published by the Free Software Foundation, either
+ version 3 of the License, or (at your option) any later version.
+ .
+ As a special exception, if you create a document which uses this font, and
+ embed this font or unaltered portions of this font into the document, this
+ font does not by itself cause the resulting document to be covered by the GNU
+ General Public License. This exception does not however invalidate any other
+ reasons why the document might be covered by the GNU General Public License.
+ If you modify this font, you may extend this exception to your version of the
+ font, but you are not obligated to do so. If you do not wish to do so, delete
+ this exception statement from your version.
+ .
+ On Debian systems, the full text of the GNU General Public License version 3
+ can be found in /usr/share/common-licenses/GPL-3.

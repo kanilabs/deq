@@ -1,3 +1,5 @@
+import re
+
 import deq_shapes
 
 
@@ -6,5 +8,5 @@ def test_distribution_name() -> None:
 
 
 def test_version_is_semver() -> None:
-    major, minor, patch = deq_shapes.__version__.split(".")
-    assert all(part.isdigit() for part in (major, minor, patch))
+    semver = r"(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(alpha|beta|rc)\.(0|[1-9]\d*))?"
+    assert re.fullmatch(semver, deq_shapes.__version__)

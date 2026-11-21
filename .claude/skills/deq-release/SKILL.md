@@ -10,9 +10,11 @@ description: Gitflow, commit, versioning, changelog and release procedure for De
 - `main`: released code, protected. `develop`: integration, protected.
 - New work: `git switch develop && git pull && git switch -c feature/<phase-or-topic>-<slug>`.
 - PR into `develop`; CI must pass; squash-merge.
-- Release: `release/x.y.z` off `develop` → bump the unified version, regenerate files that embed it (`pnpm --filter @0xdolan/deq-cli generate`, `just api-docs`), finalise `CHANGELOG.md` → PR into `main` (merge commit) → annotated tag `vX.Y.Z` on `main` → merge `main` back into `develop`.
-- Release artifacts: run `just fonts-check` on the tag and attach `deq-fonts-<version>.zip` (everything in `fonts/dist/` plus `fonts/LICENSE.md`) to the GitHub release. The font version comes from the root `package.json` (1.2.3 → 1.002).
-- Website: `.github/workflows/pages.yml` deploys `develop` as a preview while the repository variable `PAGES_PRODUCTION` is not `true`, and every published release to production. After the first release, ask the owner to set `PAGES_PRODUCTION=true`.
+- Release (ADR 0024, guide `docs/dev/releasing.md`): `release/x.y.z` off `develop` → `just version x.y.z` (writes every manifest, PEP 440 for Python, refreshes locks, CLI help/fixtures, man page, API docs) → move `[Unreleased]` under `## [x.y.z] - date` plus its link → run the Release workflow by hand on the branch (dry run) → PR into `main` (merge commit) → the owner pushes a signed annotated tag `vX.Y.Z` → `release.yml` checks tag/version/signature/main, builds binaries, `.deb`, ZIPs, publishes npm/PyPI/crates (skips versions already there), signs `SHA256SUMS` (cosign), attests provenance, attaches the SBOM, creates the GitHub Release (`--prerelease` for `-rc.N`, npm dist-tag `next`) and calls `pages.yml` → merge `main` back into `develop`.
+- Registries use trusted publishing from the `release` environment. First npm and crates.io publishes may use the `NPM_TOKEN`/`CARGO_REGISTRY_TOKEN` environment secrets; afterwards the owner adds trusted publishers and deletes them. PyPI uses a pending publisher.
+- Debian: `just deb` (cargo-deb 3.8.0 from a static musl binary, `dpkg-deb` for `fonts-deq`, lintian `--fail-on warning`), `just deb-test` (Ubuntu 24.04/26.04 in Docker, digests pinned). Never commit `target/deb/`.
+- Release jobs set `cache: "false"` on the setup action (cache poisoning). Keep `node scripts/version.ts --check` and `scripts/test/release.test.ts` green.
+- Website: `.github/workflows/pages.yml` deploys `develop` as a preview while the repository variable `PAGES_PRODUCTION` is not `true`, and production when `release.yml` calls it. After the first release, ask the owner to set `PAGES_PRODUCTION=true`.
 - Hotfix: `hotfix/x.y.z` off `main` → PR into `main` → tag → merge into `develop`.
 
 ## Commits
@@ -28,4 +30,4 @@ description: Gitflow, commit, versioning, changelog and release procedure for De
 ## Permissions
 
 - Pushing branches and opening PRs is allowed.
-- Ask the owner before: force-push, deleting branches or tags, publishing to registries, changing branch protection or visibility.
+- Ask the owner before: force-push, deleting branches or tags, pushing release tags, publishing to registries, changing branch protection, environments or visibility.

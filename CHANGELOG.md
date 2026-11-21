@@ -147,9 +147,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   - the animated logo (dots in, then the sun ring; CSS SVG that stays still with reduced motion) and its MP4 and WebM (`just brand-video`);
   - README banners (light and dark), the social preview, OG cards with the lockup, the Figma cover, banners in the package READMEs, PWA store screenshots in the web app manifest (`just store`) and README feature clips as WebM and GIF (`just clips`);
   - `/favicon.ico` with 16, 32 and 48 px images.
+- Phase 13 packaging and release (ADR 0024):
+  - `.github/workflows/release.yml`: a signed `v*` tag on `main` builds, tests, publishes to npm (with provenance), PyPI and crates.io through trusted publishing, creates the GitHub Release and deploys the site; run by hand it is a dry run;
+  - release files: `deq` binaries for Linux (static musl, x86_64 and aarch64), macOS and Windows, the fonts, icon SVG and PNG packs and the brand kit as ZIPs, `SHA256SUMS` signed with Sigstore, build provenance attestations and a CycloneDX SBOM;
+  - Debian packages `deq-cli` (static binary, man page, bash, zsh and fish completions) and `fonts-deq` (`just deb`), lintian-clean and installed on Ubuntu 24.04 and 26.04 in Docker in CI (`just deb-test`);
+  - the `deq(1)` man page, generated from `spec/cli.json` with the help texts;
+  - `just version` and `scripts/version.ts` to set and check the shared version (PEP 440 spelling for Python), and `scripts/release-notes.ts` for the release notes from this changelog.
 
 ### Changed
 
+- `pages.yml` is called by the Release workflow instead of running on `release: published`, which a release made by a workflow never triggers.
+- The setup action takes `cache: "false"`, used by every release job.
+- `deq-cli` requires exactly its own version of `deq-shapes` (`=x.y.z`), and the font licence names the Deq Leet font.
 - `just brand` renders no PNGs with Inkscape any more: the site builds them at `/brand/<name>.png` with the exporters' resvg, and Studio ZIPs can hold folders (`zip(..., { folders: true })`, paths still checked).
 - The site serves Latin Extended-A text (ş, ğ, ı, İ) from a 15 KB subset of Noto Sans (`uv run deq-fonts ui-subset`, checked by `just fonts`) instead of Fontsource's 168 KB latin-ext file. One Turkish letter on `/story/revival/` was enough to fetch the large file, which made the page's Lighthouse performance score drop below 95 on CI now and then.
 - The icon fonts' code points are capped at U+E000–U+EFFF, leaving U+F000–U+F8FF to the Leet font.

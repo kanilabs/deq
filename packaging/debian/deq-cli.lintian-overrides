@@ -1,0 +1,6 @@
+# Built for GitHub Releases, not uploaded to the Debian archive, so there is no ITP bug.
+deq-cli: initial-upload-closes-no-bugs
+# deq is a static-pie musl binary: it needs no shared libraries, so cargo-deb writes an empty
+# Depends field and lintian mistakes the PIE for a shared library without a NEEDED entry.
+deq-cli: empty-field Depends
+deq-cli: shared-library-lacks-prerequisites [usr/bin/deq]

@@ -8,7 +8,7 @@ from typing import Any
 
 import pytest
 
-from deq_shapes import DeqError
+from deq_shapes import DeqError, __version__
 from deq_shapes.cli import Io, join_path, main, param_value, run
 from deq_shapes.export import export_shapes, resolve_item, resolve_items, split_svg, to_figma_svg
 from deq_shapes.validate import MAX_SPEC_BYTES, check_spec, validate_spec, variants
@@ -320,7 +320,7 @@ def test_run_entry_point(
     with pytest.raises(SystemExit) as info:
         run()
     assert info.value.code == 0
-    assert capfdbinary.readouterr().out == b"deq 0.0.0\n"
+    assert capfdbinary.readouterr().out == f"deq {__version__}\n".encode()
 
 
 # ---------------------------------------------------------------- exporters

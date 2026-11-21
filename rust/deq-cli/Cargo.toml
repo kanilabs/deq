@@ -1,6 +1,6 @@
 [package]
 name = "deq-cli"
-description = "The `deq` command-line tool for Deq shapes."
+description = "Command-line tool (`deq`) for Deq shapes, traditional Kurdish tattoo motifs."
 readme = "README.md"
 keywords = ["deq", "kurdish", "icons", "svg", "cli"]
 categories = ["command-line-utilities", "graphics"]
@@ -19,8 +19,32 @@ name = "deq"
 path = "src/main.rs"
 
 [dependencies]
-deq-shapes = { path = "../deq-shapes", version = "0.0.0" }
+deq-shapes = { path = "../deq-shapes", version = "=0.0.0" }
 serde_json = { version = "=1.0.154", features = ["preserve_order"] }
 
 [lints]
 workspace = true
+
+# The Debian package (ADR 0024), built by `just deb` (packaging/debian/build.sh) after
+# `cargo build --release`; the script writes the completions and the changelog into target/deb/.
+[package.metadata.deb]
+name = "deq-cli"
+maintainer = "0xdolan <0xdolan@gmail.com>"
+section = "graphics"
+priority = "optional"
+depends = "$auto"
+extended-description = """\
+Draw Deq shapes, traditional Kurdish tattoo motifs, as SVG, PDF and images from the \
+command line: list and inspect the catalog, render and export shapes, draw the flag of \
+Kurdistan, write Deq Leet text and generate seeded patterns."""
+changelog = "../../target/deb/changelog"
+assets = [
+  ["target/release/deq", "usr/bin/", "755"],
+  ["../../packaging/man/deq.1", "usr/share/man/man1/deq.1", "644"],
+  ["../../target/deb/completions/deq", "usr/share/bash-completion/completions/deq", "644"],
+  ["../../target/deb/completions/_deq", "usr/share/zsh/vendor-completions/_deq", "644"],
+  ["../../target/deb/completions/deq.fish", "usr/share/fish/vendor_completions.d/deq.fish", "644"],
+  ["../../packaging/debian/copyright", "usr/share/doc/deq-cli/copyright", "644"],
+  ["README.md", "usr/share/doc/deq-cli/README.md", "644"],
+  ["../../packaging/debian/deq-cli.lintian-overrides", "usr/share/lintian/overrides/deq-cli", "644"],
+]
