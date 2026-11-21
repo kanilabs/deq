@@ -6,6 +6,7 @@ import { Code } from "@astrojs/starlight/components";
 import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
 
 import { LOCALE_INFO, LOCALES, localeParam, localizedPath, type Locale } from "../../../i18n/index.ts";
+import { constructionOf, gridSvg } from "../../../lib/construction.ts";
 import { categoryKey, codepoint, SHAPES, shapeName } from "../../../lib/data.ts";
 import { pageContext } from "../../../lib/page.ts";
 
@@ -48,6 +49,16 @@ const names = (["en", "ckb", "kmr"] as const).map((l) => {
   return { l, text, review: l !== "en" && text !== null && shape.names[l].status !== "verified" };
 });
 const nameTitle = name.text;
+const build = constructionOf(shape.id);
+const guide = gridSvg(build.markers, t("icon.construction.drawing", { name: nameTitle }));
+const box = (b: readonly number[]) => `x ${String(b[0])}, y ${String(b[1])}, ${String(b[2])} × ${String(b[3])}`;
+const metrics = [
+  ["icon.metrics.visualBox", box(build.metrics.visualBox)],
+  ["icon.metrics.bbox", box(build.metrics.bbox)],
+  ["icon.metrics.opticalCenter", `(${build.metrics.opticalCenter.join(", ")})`],
+  ["icon.metrics.strokeToSize", String(build.metrics.strokeToSize)],
+  ["icon.metrics.primitiveCount", String(build.metrics.primitiveCount)],
+] as const;
 ---
 
 <StarlightPage
@@ -125,6 +136,65 @@ const nameTitle = name.text;
     )
   }
 
+  <h2 id="construction">{t("icon.construction")}</h2>
+  <div class="construction not-content">
+    <figure class="grid-figure">
+      <div class="stack">
+        <Fragment set:html={guide} />
+        <div class="shape" set:html={render(shape.id, { size: 240, title: "" })} aria-hidden="true" />
+      </div>
+      <figcaption>{t("icon.construction.legend")}</figcaption>
+    </figure>
+    <div>
+      <h3>{t("icon.construction.steps")}</h3>
+      <ol lang="en">
+        {build.steps.map((step) => <li>{step}</li>)}
+      </ol>
+    </div>
+  </div>
+
+  <h3>{t("icon.construction.primitives")}</h3>
+  <div class="table-wrap">
+    <table lang="en">
+      <thead>
+        <tr>
+          <th scope="col">{t("icon.construction.part")}</th>
+          <th scope="col">{t("icon.layers")}</th>
+          <th scope="col">{t("icon.construction.type")}</th>
+          <th scope="col">{t("icon.construction.values")}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          build.rows.map((row) => (
+            <tr>
+              <td>{row.id === undefined ? "–" : <code>{row.id}</code>}</td>
+              <td>{row.layer}</td>
+              <td><code>{row.type}</code></td>
+              <td>
+                {row.values}
+                {row.when !== undefined && <span class="when"> ({t("icon.construction.when", { when: row.when })})</span>}
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h3>{t("icon.construction.metrics")}</h3>
+  <dl class="facts">
+    {
+      metrics.map(([key, value]) => (
+        <>
+          <dt>{t(key)}</dt>
+          <dd lang="en">{value}</dd>
+        </>
+      ))
+    }
+  </dl>
+  <p><a href={localizedPath(locale, "docs/designer/grid/")}>{t("icon.construction.more")}</a></p>
+
   <h2>{t("icon.usage")}</h2>
   <Code code={usage} lang="tsx" />
 
@@ -199,6 +269,70 @@ const nameTitle = name.text;
     border-radius: 999px;
     font-size: var(--sl-text-xs);
     color: var(--sl-color-gray-2);
+  }
+  .construction {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: var(--deq-space-6);
+    align-items: start;
+  }
+  .grid-figure {
+    margin: 0;
+  }
+  .stack {
+    position: relative;
+    width: 100%;
+    max-width: 20rem;
+    aspect-ratio: 1;
+    border: 1px solid var(--sl-color-hairline);
+    background: var(--deq-surface);
+  }
+  .stack > :global(svg),
+  .stack .shape,
+  .stack .shape :global(svg) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .stack .shape {
+    color: var(--deq-icon);
+    opacity: 0.85;
+  }
+  .stack :global(.unit) {
+    stroke: var(--sl-color-gray-5);
+    stroke-width: 0.04;
+    fill: none;
+  }
+  .stack :global(.axis) {
+    stroke: var(--sl-color-gray-4);
+    stroke-width: 0.06;
+    fill: none;
+  }
+  .stack :global(.key) {
+    stroke: var(--sl-color-accent);
+    stroke-width: 0.08;
+    fill: none;
+  }
+  .stack :global(.live) {
+    stroke: var(--sl-color-gray-3);
+    stroke-width: 0.08;
+    stroke-dasharray: 0.4 0.3;
+    fill: none;
+  }
+  .stack :global(.mark) {
+    fill: var(--sl-color-accent-high);
+  }
+  .grid-figure figcaption {
+    margin-top: var(--deq-space-2);
+    font-size: var(--sl-text-sm);
+    color: var(--sl-color-gray-2);
+  }
+  .table-wrap {
+    overflow-x: auto;
+  }
+  .when {
+    color: var(--sl-color-gray-3);
   }
   .pager {
     display: flex;

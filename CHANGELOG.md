@@ -134,6 +134,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   - an overview of the Rust crates; the Rust workspace denies `missing_docs`, and lint and CI run `cargo doc` with warnings as errors;
   - developer guides: architecture, codegen pipeline, shape spec, adding a shape, writing an exporter, font pipeline, testing, releasing and security;
   - an "API reference" group in the site's sidebar, and `llms.txt` lists the references after the guides and developer pages.
+- Phase 11c designer docs and tool guides (ADR 0022):
+  - a Construction section on every icon page, built from the shape's spec: the grid with keylines and centre markers, the construction steps, the primitives and the metrics;
+  - designer pages: grid and keylines, strokes and dots, optical corrections, reading a construction, spacing and composition, colour and accessibility;
+  - guides for Inkscape (tested with 1.4.3), Illustrator, Photoshop, Figma, Affinity, Sketch, Canva and Blender, citing the vendor docs they rely on;
+  - ckb and kmr drafts of every designer and tool page awaiting native review, "Designers" and "Design tools" sidebar groups, and README, docs index and `llms.txt` links.
 
 ### Changed
 

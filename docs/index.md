@@ -1,6 +1,6 @@
 ---
 title: Docs
-description: Guides for the Deq website, Studio, exports, fonts and tools, and the developer docs.
+description: Guides for the Deq website, Studio, exports and fonts, designer docs, design-tool guides and the developer docs.
 ---
 
 Deq draws traditional Kurdish tattoo (deq) motifs on one 24-unit grid, as icons, fonts and code. These pages explain how to use every part of it. They are the same files you can read on GitHub, in the `docs/` folder.
@@ -16,6 +16,19 @@ Deq draws traditional Kurdish tattoo (deq) motifs on one 24-unit grid, as icons,
 - [The flag](guide/flag.md): the flag of Kurdistan, its colours and variants.
 - [Installing the fonts](guide/fonts.md): the icon and Leet fonts on Linux, macOS and Windows.
 - [Install the site as an app](guide/pwa.md): use Deq offline.
+
+## For designers
+
+- [The grid and keylines](designer/grid.md): the 24-unit canvas, the live area and the keylines.
+- [Strokes, dots and modules](designer/strokes-and-dots.md): the parts every shape is built from.
+- [Optical corrections](designer/optical-corrections.md): why some shapes are moved or resized by eye.
+- [Construction](designer/construction.md): the coordinates and maths behind each shape.
+- [Spacing and composition](designer/composition.md): combining shapes into rows, borders and layouts.
+- [Colour and accessibility](designer/colour.md): the flag colours, contrast and accessible icons.
+
+## Design tools
+
+Step-by-step guides to import Deq shapes with their layers, recolour them, change the stroke and build compositions: [Inkscape](tools/inkscape.md), [Illustrator](tools/illustrator.md), [Photoshop](tools/photoshop.md), [Figma](tools/figma.md), [Affinity](tools/affinity.md), [Sketch](tools/sketch.md), [Canva](tools/canva.md), [Blender](tools/blender.md).
 
 ## For developers
 

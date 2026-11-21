@@ -20,8 +20,8 @@ const PUBLIC_DIR = "apps/site/public/";
 export const PUBLISHED = [
   "index.md",
   "{ckb,kmr}/index.md",
-  "{guide,dev,api}/**/*.md",
-  "{ckb,kmr}/guide/**/*.md",
+  "{guide,designer,tools,dev,api}/**/*.md",
+  "{ckb,kmr}/{guide,designer,tools}/**/*.md",
 ];
 
 /**
