@@ -31,7 +31,7 @@ dev = [
     "mypy>=1.15",
     "ruff>=0.11",
     "pip-audit>=2.9",
-    "zizmor>=1.16",
+    "zizmor>=1.32.0",
     "uharfbuzz==0.57.0",
 ]
 # Font QA (fontbakery, ots-sanitize): `uv run --group fonts fontbakery ...`.
