@@ -142,6 +142,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Changed
 
+- The site serves Latin Extended-A text (ş, ğ, ı, İ) from a 15 KB subset of Noto Sans (`uv run deq-fonts ui-subset`, checked by `just fonts`) instead of Fontsource's 168 KB latin-ext file. One Turkish letter on `/story/revival/` was enough to fetch the large file, which made the page's Lighthouse performance score drop below 95 on CI now and then.
 - The icon fonts' code points are capped at U+E000–U+EFFF, leaving U+F000–U+F8FF to the Leet font.
 - The site's header logo, favicon, app icons, share-card mark and Brand page use the Dot rosette instead of the chin mark (concept A).
 - cargo-deny allows the IJG licence for the `jpeg-encoder` crate only (permissive and GPL-compatible).

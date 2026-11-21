@@ -3,6 +3,7 @@
     deq-fonts codepoints [--check]    assign code points, write the code point tables
     deq-fonts build                   build every font, the CSS and the code point maps
     deq-fonts install-check [DIR]     install the fonts into a private fontconfig and list them
+    deq-fonts ui-subset [--check]     write the site's Latin Extended-A subset of Noto Sans
 
 The geometry comes from ``pnpm --filter @0xdolan/deq-icons font-data fonts/build/geometry.json``
 and ``pnpm --filter @0xdolan/deq-generator font-data fonts/build/leet.json`` (``just fonts``
@@ -31,6 +32,7 @@ from deq_fonts.leet import (
     load_leet,
     load_leet_codepoints,
 )
+from deq_fonts.ui import latin_ext_a
 from deq_fonts.web import assign, codepoints_json, css, load_codepoints, table
 
 ROOT = Path.cwd()
@@ -42,6 +44,10 @@ LEET_CODEPOINTS = Path("fonts/leet-codepoints.json")
 LEET_TABLE = Path("docs/fonts/leet-codepoints.md")
 DIST = Path("fonts/dist")
 EXPECTED = {"Deq Icons", "Deq Icons Color", "Deq Leet"}
+UI_SOURCE = Path(
+    "apps/site/node_modules/@fontsource-variable/noto-sans/files/noto-sans-latin-ext-wght-normal.woff2"
+)
+UI_SUBSET = Path("apps/site/src/styles/fonts/noto-sans-latin-ext-a-wght-normal.woff2")
 
 
 def load_shapes(path: Path) -> list[Shape]:
@@ -163,6 +169,21 @@ def cmd_install_check(fonts: Path) -> int:
     return 0
 
 
+def cmd_ui_subset(check: bool, source: Path, out: Path) -> int:
+    if not source.exists():
+        raise SystemExit(f"{source} not found: run `pnpm install`")
+    data = latin_ext_a(source)
+    if out.exists() and out.read_bytes() == data:
+        return 0
+    if check:
+        print(f"{out} is out of date: run `uv run deq-fonts ui-subset`", file=sys.stderr)
+        return 1
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_bytes(data)
+    print(f"wrote {out} ({len(data)} bytes)")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="deq-fonts", description=__doc__.splitlines()[0])
     sub = parser.add_subparsers(dest="command", required=True)
@@ -176,11 +197,17 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--out", type=Path, default=DIST)
     p = sub.add_parser("install-check", help="check that fontconfig finds the fonts")
     p.add_argument("fonts", nargs="?", type=Path, default=DIST)
+    p = sub.add_parser("ui-subset", help="write the site's Latin Extended-A UI font subset")
+    p.add_argument("--check", action="store_true", help="fail if the subset is out of date")
+    p.add_argument("--source", type=Path, default=UI_SOURCE)
+    p.add_argument("--out", type=Path, default=UI_SUBSET)
     args = parser.parse_args(argv)
     if args.command == "codepoints":
         return cmd_codepoints(args.check, args.geometry, args.leet)
     if args.command == "build":
         return cmd_build(args.geometry, args.leet, args.out)
+    if args.command == "ui-subset":
+        return cmd_ui_subset(args.check, args.source, args.out)
     return cmd_install_check(args.fonts)
 
 
