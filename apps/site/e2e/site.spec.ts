@@ -17,6 +17,7 @@ const PAGES = [
   "brand/",
   "about/",
   "docs/",
+  "docs/guide/studio/",
   "story/",
   "story/revival/",
   "story/screen/",

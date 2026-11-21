@@ -24,7 +24,7 @@ Deq Leet writes text as deq motifs. The tables in `spec/leet/` are the source; t
 
 ## On the site
 
-The `/leet` and `/generate` pages and the Studio tabs are described in [ADR 0017](../decisions/0017-leet-and-patterns-on-the-site.md), and for users in the site guides (`apps/site/src/content/docs/docs/leet.md`, `generate.md`). Frames and the font text are site features and never reach the fixtures.
+The `/leet` and `/generate` pages and the Studio tabs are described in [ADR 0017](../decisions/0017-leet-and-patterns-on-the-site.md), and for users in the guides [Deq Leet](../guide/leet.md) and [Patterns](../guide/generate.md). Frames and the font text are site features and never reach the fixtures.
 
 ## Changing a table
 

@@ -66,8 +66,8 @@ describe("addScriptSource", () => {
       "index.html",
       "icons/studio-x/index.html",
       "studio/x/index.html",
-      "docs/leet/index.html",
-      "ckb/docs/generate/index.html",
+      "docs/guide/leet/index.html",
+      "ckb/docs/guide/generate/index.html",
     ]) {
       expect(WASM_PAGES.test(file)).toBe(false);
     }

@@ -47,3 +47,11 @@ description: Rules for writing Deq story, history, shape meanings and sources, a
 - `shapes` lists spec ids the project visibly uses. Confirm them with the owner. Do not guess from a logo alone.
 - After adding or changing a project, run `pnpm --filter @0xdolan/deq-site shots <id>` and commit both WebP files.
 - Live previews stay click-to-load and sandboxed without `allow-same-origin`. Never add it, because the projects share this site's origin.
+
+## Docs (`docs/`, ADR 0020)
+
+- User guides are `docs/guide/<slug>.md` with `title`, `description` and `sidebar.order`. Every guide has ckb and kmr drafts with the same file name. Link every new page from the README Documentation section.
+- Describe only what the UI does. Check labels in `src/i18n/messages/en.ts` and behaviour in the code. Never document a planned feature as shipped.
+- Use plain relative links to repository files; the site rewrites them. Embed screenshots with `<picture>` (dark `<source>`, light `<img>` with alt text, `width`, `height`, `loading="lazy"`), leaving a blank line after `</picture>`.
+- After a UI change, run `just screenshots [name ...]` and commit `apps/site/public/screens/*.webp`. `test/docs.test.ts` fails on unused or missing screenshots and on broken relative links.
+- Tool guides (11c) say "Verified in Inkscape 1.4" or "Based on vendor docs, not tested here", and cite the vendor pages.

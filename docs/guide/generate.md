@@ -2,10 +2,15 @@
 title: Pattern generator
 description: Make seeded bands, grids, rosettes and borders of Deq motifs on the pattern page, in the Studio, in code or on the command line.
 sidebar:
-  order: 4
+  order: 6
 ---
 
 The pattern generator arranges Deq motifs from a seed. The same seed and settings always give the same pattern, in the website, the packages and the three command-line tools.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../../apps/site/public/screens/generate-en-dark.webp" />
+  <img src="../../apps/site/public/screens/generate-en-light.webp" alt="The pattern generator with a band of mirrored Deq motifs and its settings." width="1280" height="800" loading="lazy" />
+</picture>
 
 ## Kinds
 
@@ -18,11 +23,11 @@ The pattern generator arranges Deq motifs from a seed. The same seed and setting
 
 ## The pattern page
 
-The [pattern page](../../generate/) previews the pattern with the same style options as the Leet page and downloads it in every format that fits a scene, with one layer per cell. **New seed** picks a random seed. Write it down to make the same pattern again.
+The [pattern page](https://kanilabs.github.io/deq/generate/) previews the pattern with the same style options as the Leet page and downloads it in every format that fits a scene, with one layer per cell. **New seed** picks a random seed. Write it down to make the same pattern again.
 
 ## In the Studio
 
-The **Patterns** tab in the [Studio](../../studio/) adds the pattern to the canvas as one group with an item per cell.
+The **Patterns** tab in the [Studio](https://kanilabs.github.io/deq/studio/) adds the pattern to the canvas as one group with an item per cell.
 
 ## In code and on the command line
 

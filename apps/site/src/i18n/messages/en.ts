@@ -36,7 +36,7 @@ export const en = {
   "home.card.flag": "The flag of Kurdistan, built from its published specification.",
   "home.card.fonts": "Static, variable and colour icon fonts.",
   "home.card.brand": "The Deq mark, colours and usage rules.",
-  "home.card.docs": "Packages, the command-line tool, ports and the shape format.",
+  "home.card.docs": "Guides for the Studio, exports, fonts and tools, and the developer docs.",
   "home.card.about": "The project, the author, the licence and how to contribute.",
 
   "icons.title": "Icons",
@@ -599,6 +599,9 @@ export const en = {
   "sources.attribution.unknown": "Source unknown",
   "sources.animation": "Animation",
   "nav.showcase": "Showcase",
+  "nav.docs.overview": "Overview",
+  "nav.docs.guides": "Guides",
+  "nav.docs.dev": "For developers",
   "home.card.showcase": "Projects that use Deq motifs, with screenshots and live previews.",
   "showcase.title": "Showcase",
   "showcase.description":

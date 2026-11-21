@@ -1,6 +1,9 @@
-# Development setup
-
-[← README](../../README.md)
+---
+title: Development setup
+description: Install the tools, build every package and run the same checks as CI on your computer.
+sidebar:
+  order: 3
+---
 
 ## Tools
 

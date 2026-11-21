@@ -71,6 +71,17 @@ site-lighthouse:
     for _ in $(seq 30); do curl -sf -o /dev/null http://localhost:4321/deq/ && break; sleep 1; done
     pnpm lighthouse
 
+# Documentation screenshots into apps/site/public/screens (ADR 0020); pass names to redo some
+screenshots *names: fonts media
+    #!/usr/bin/env bash
+    set -euo pipefail
+    DEQ_REQUIRE_FONTS=1 DEQ_REQUIRE_MEDIA=1 pnpm exec turbo run build --filter=@0xdolan/deq-site
+    cd apps/site
+    pnpm exec astro preview --background --port 4321
+    trap 'pnpm exec astro preview stop' EXIT
+    for _ in $(seq 30); do curl -sf -o /dev/null http://localhost:4321/deq/ && break; sleep 1; done
+    pnpm screenshots {{names}}
+
 # Build the icon and Leet fonts into fonts/dist (checks that the code point tables are fresh)
 fonts:
     pnpm exec turbo run build --filter=@0xdolan/deq-core --filter=@0xdolan/deq-generator

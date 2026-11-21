@@ -411,7 +411,7 @@
     min-height: 0;
     display: grid;
     grid-template: "stage" 1fr / 1fr;
-    background: var(--deq-studio-canvas, var(--sl-color-gray-7, #f6f6f6));
+    background: var(--deq-studio-canvas, var(--deq-surface));
     color: var(--sl-color-white);
     overflow: hidden;
   }

@@ -13,12 +13,20 @@
 
 </div>
 
-> **Status: pre-alpha (Phase 7 of 14).** The shape spec, the renderer in TypeScript, Python and Rust, the exporters, icon packages, fonts, the CLIs and the website foundation are in place; Studio, the story and v1.0.0 come in later phases. See the [roadmap](#roadmap).
+> **Status: pre-alpha (Phase 11 of 14).** The shape spec, renderers in TypeScript, Python and Rust, 23 export formats, icon packages, fonts, the CLIs, the website with the Studio, Deq Leet, the pattern generator, the story and the showcase are in place. Packages are not published yet. See the [roadmap](#roadmap).
+
+**Website:** [kanilabs.github.io/deq](https://kanilabs.github.io/deq/) · **Docs:** [docs/](docs/index.md)
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="apps/site/public/screens/studio-en-dark.webp" />
+  <img src="apps/site/public/screens/studio-en-light.webp" alt="The Deq Studio with the shape library, four Deq motifs on the canvas and the inspector." width="1280" height="800" />
+</picture>
 
 ## Table of contents
 
 - [What is Deq?](#what-is-deq)
-- [What this project will provide](#what-this-project-will-provide)
+- [What Deq provides](#what-deq-provides)
+- [Documentation](#documentation)
 - [Packages](#packages)
 - [Repository layout](#repository-layout)
 - [Development](#development)
@@ -31,7 +39,7 @@
 
 Deq (Kurdish: دەق, also called _xal_) is the traditional tattoo art of the Kurds. Its geometric symbols (sun, moon, stars, combs, chevrons, diamonds, dots, trees) have been worn on faces and hands across Kurdistan and Mesopotamia for centuries. This project documents that history, with sources, and turns the symbols into a precise, open design system.
 
-## What this project will provide
+## What Deq provides
 
 - A canonical, documented **shape specification** with construction maths for every shape.
 - **Studio**: a responsive canvas editor to customise and export shapes (SVG, layered SVG, PDF, AI, PSD, PNG, JPG, favicon, JSX and more).
@@ -41,6 +49,14 @@ Deq (Kurdish: دەق, also called _xal_) is the traditional tattoo art of the Ku
 - **Deq Leet**: write text in Deq shapes, leetspeak-style.
 - The **Kurdish flag** and **Kurdish Sun** with exact colors, geometry and generators.
 - A **story** of Deq with every source cited, in English, Sorani and Kurmanji.
+
+## Documentation
+
+The guides live in [`docs/`](docs/index.md) and are published on the website in English, Sorani and Kurmanji (the translations are drafts awaiting native review).
+
+- **Using Deq:** [getting started](docs/guide/getting-started.md), [the Studio](docs/guide/studio.md), [exporting](docs/guide/exporting.md), [custom shapes](docs/guide/custom-shapes.md), [Deq Leet](docs/guide/leet.md), [pattern generator](docs/guide/generate.md), [the flag](docs/guide/flag.md), [fonts](docs/guide/fonts.md), [install and offline use](docs/guide/pwa.md).
+- **Developers:** [packages](docs/dev/packages.md), [command line](docs/dev/cli.md), [development setup](docs/dev/setup.md), [API reference](docs/api/), [architecture decisions](docs/decisions/).
+- **Design:** [shape spec](docs/design/shape-spec.md), [Deq Leet tables](docs/design/leet.md), [fonts](docs/fonts/README.md).
 
 ## Packages
 
@@ -88,10 +104,10 @@ Full guide: [docs/dev/setup.md](docs/dev/setup.md).
 | 5     | Icon packages and fonts                | ✅     |
 | 6     | Python and Rust ports, CLIs            | ✅     |
 | 7     | Website foundation (themes, i18n, PWA) | ✅     |
-| 8     | Studio                                 | ⏳     |
-| 9     | Deq Leet and pattern generator         | 🚧     |
-| 10    | Story, sources and showcase            | ⏳     |
-| 11    | Documentation and screenshots          | ⏳     |
+| 8     | Studio                                 | ✅     |
+| 9     | Deq Leet and pattern generator         | ✅     |
+| 10    | Story, sources and showcase            | ✅     |
+| 11    | Documentation and screenshots          | 🚧     |
 | 12    | Branding and marketing                 | ⏳     |
 | 13    | Packaging and v1.0.0                   | ⏳     |
 | 14    | Final audit and hardening              | ⏳     |
