@@ -180,3 +180,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - pnpm override `workbox-build>glob` to 14.0.4: glob 11 finds no files with the `minimatch` 11.0.3 override. Remove it when `workbox-build` depends on glob 14+.
 - `pnpm audit` and dependency review allow GHSA-fc5q-39xc-vjpf (picomatch ReDoS, no patched release, build tools only); remove when a fix ships (ADR 0004).
 - The CLIs accept integers of up to 10 digits (seeds up to 4294967295), and a list flag without choices may repeat items.
+
+### Removed
+
+- Dependabot: its configuration, alerts and security updates. Dependencies are updated by hand, keeping the 7-day minimum release age.

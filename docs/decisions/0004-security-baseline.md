@@ -8,7 +8,7 @@
 - **GitHub Actions**: every action pinned to a full commit SHA (with the version in a comment); `permissions: {}` at the top level and least privilege per job; `persist-credentials: false`; checked by **actionlint** and **zizmor**.
   - zizmor's `self-repository` rule is disabled: actionlint 1.7.12 does not yet support GitHub's `$/...` syntax for local actions. Revisit when upgrading actionlint.
   - CI runs zizmor from `uv.lock` (hash-pinned, same version as local) rather than `zizmor-action`, whose pinned release did not recognise zizmor 1.32.0.
-- **Supply chain**: lockfiles committed and installed with `--frozen-lockfile` / `--frozen` / `--locked`; pnpm `minimumReleaseAge` of 7 days and `onlyBuiltDependencies`; Dependabot with a 7-day cooldown, targeting `develop`.
+- **Supply chain**: lockfiles committed and installed with `--frozen-lockfile` / `--frozen` / `--locked`; pnpm `minimumReleaseAge` of 7 days and `onlyBuiltDependencies`; dependencies are updated by hand (Dependabot was removed on 2026-11-21 at the owner's request).
 - **Scanning**: CodeQL (actions, JS/TS, Python, Rust), OpenSSF Scorecard, gitleaks (pre-commit and CI), pnpm audit, pip-audit, cargo-deny, OSV-Scanner (scheduled), dependency review on PRs.
   - **cargo-deny** covers RustSec advisories, so a separate cargo-audit run is not needed.
   - **Trivy** image scanning is deferred until the project publishes a Docker image; the `ci` image is local-only.
@@ -19,4 +19,4 @@
 
 ## Consequences
 
-Updating an action or image means updating its SHA or digest; Dependabot does this automatically.
+Updating an action or image means updating its SHA or digest by hand, keeping the 7-day minimum age.
