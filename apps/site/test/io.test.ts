@@ -96,6 +96,16 @@ describe("zip", () => {
     ).rejects.toThrow(/duplicate/);
   });
 
+  it("allows folders only when asked, and still refuses traversal", async () => {
+    const data = await zip([{ name: "svg/a.svg", data: "a" }], new Date(), { folders: true });
+    expect(unzip(data).map((f) => f.name)).toEqual(["svg/a.svg"]);
+    for (const name of ["../x", "a//b", "/a", "a/", "a/../b", "a\\b/c"]) {
+      await expect(zip([{ name, data: "" }], new Date(), { folders: true })).rejects.toThrow(
+        ZipError,
+      );
+    }
+  });
+
   it("clamps dates before 1980", async () => {
     const data = await zip([{ name: "x", data: "x" }], new Date(1970, 0, 1));
     expect(new DataView(data.buffer).getUint16(12, true) >> 9).toBe(0);

@@ -1,5 +1,7 @@
 # @0xdolan/deq-core
 
+<img src="https://kanilabs.github.io/deq/brand/banner.png" width="640" height="160" alt="Deq · دەق: the Dot rosette logo, traditional Kurdish tattoo shapes as an open, parametric design system.">
+
 The reference renderer for Deq, the parametric design system of traditional Kurdish tattoo motifs. It is pure ESM with no DOM and no I/O, and it turns any of the 93 catalog shapes into minimal, deterministic, accessible SVG.
 
 ```ts

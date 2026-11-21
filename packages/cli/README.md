@@ -1,5 +1,7 @@
 # @0xdolan/deq-cli
 
+<img src="https://kanilabs.github.io/deq/brand/banner.png" width="640" height="160" alt="Deq · دەق: the Dot rosette logo, traditional Kurdish tattoo shapes as an open, parametric design system.">
+
 The `deq` command-line tool for Node.js: [Deq](https://github.com/kanilabs/deq) shapes, traditional Kurdish tattoo (deq) motifs, in every format of [`@0xdolan/deq-exporters`](../exporters). The Python (`pip install deq-shapes`) and Rust (`cargo install deq-cli`) CLIs share its interface, messages and exit codes and write a core subset of the formats ([ADR 0011](../../docs/decisions/0011-ports-and-clis.md)).
 
 ```sh

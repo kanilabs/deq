@@ -233,6 +233,43 @@ test("SEO files are served", async ({ request }) => {
   expect(og.headers()["content-type"]).toContain("image/png");
 });
 
+test("brand files are served: favicon.ico, kits, PNGs, video and store screenshots", async ({
+  page,
+  request,
+}) => {
+  const magic = async (path: string, bytes: readonly number[]) => {
+    const res = await request.get(path);
+    expect(res.status(), path).toBe(200);
+    expect([...(await res.body()).subarray(0, bytes.length)], path).toEqual(bytes);
+  };
+  await magic("favicon.ico", [0, 0, 1, 0, 3, 0]);
+  await magic("brand/deq-brand-kit.zip", [0x50, 0x4b, 3, 4]);
+  await magic("brand/deq-press-kit.zip", [0x50, 0x4b, 3, 4]);
+  await magic("brand/banner.png", [0x89, 0x50, 0x4e, 0x47]);
+  await magic("brand/logo-animated.mp4", [0, 0, 0]);
+  const manifest = (await (await request.get("manifest.webmanifest")).json()) as {
+    screenshots: { src: string; form_factor: string }[];
+  };
+  expect(new Set(manifest.screenshots.map((s) => s.form_factor))).toEqual(
+    new Set(["narrow", "wide"]),
+  );
+  for (const s of manifest.screenshots) {
+    const res = await request.get(s.src);
+    expect(res.status(), s.src).toBe(200);
+    expect((await res.body()).subarray(8, 12).toString(), s.src).toBe("WEBP");
+  }
+  // Every image on the brand page loads.
+  await page.goto("brand/");
+  await page.evaluate(() => {
+    for (const img of document.querySelectorAll("img")) img.loading = "eager";
+  });
+  await page.waitForLoadState("networkidle");
+  const broken = await page.$$eval("main img", (imgs) =>
+    imgs.filter((i) => !(i as HTMLImageElement).naturalWidth).map((i) => i.getAttribute("src")),
+  );
+  expect(broken).toEqual([]);
+});
+
 test("the site works offline after the service worker installs", async ({ page, context }) => {
   await page.goto("");
   await page.evaluate(async () => {

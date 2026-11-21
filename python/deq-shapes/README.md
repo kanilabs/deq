@@ -1,5 +1,7 @@
 # deq-shapes
 
+<img src="https://kanilabs.github.io/deq/brand/banner.png" width="640" height="160" alt="Deq · دەق: the Dot rosette logo, traditional Kurdish tattoo shapes as an open, parametric design system.">
+
 Python library and `deq` CLI for [Deq](https://github.com/kanilabs/deq) shapes: traditional Kurdish tattoo (deq) motifs drawn on a 24 × 24 grid. Its SVG and PDF output is byte for byte the output of `@0xdolan/deq-core`, checked against the shared golden fixtures, and the CLI shares its interface, messages and exit codes with the Node and Rust CLIs ([ADR 0011](https://github.com/kanilabs/deq/blob/main/docs/decisions/0011-ports-and-clis.md)).
 
 ```sh

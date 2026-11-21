@@ -1,5 +1,7 @@
 # @0xdolan/deq-svelte
 
+<img src="https://kanilabs.github.io/deq/brand/banner.png" width="640" height="160" alt="Deq · دەق: the Dot rosette logo, traditional Kurdish tattoo shapes as an open, parametric design system.">
+
 The 93 Deq shapes as typed Svelte 5 components (runes).
 
 ```sh

@@ -139,9 +139,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   - designer pages: grid and keylines, strokes and dots, optical corrections, reading a construction, spacing and composition, colour and accessibility;
   - guides for Inkscape (tested with 1.4.3), Illustrator, Photoshop, Figma, Affinity, Sketch, Canva and Blender, citing the vendor docs they rely on;
   - ckb and kmr drafts of every designer and tool page awaiting native review, "Designers" and "Design tools" sidebar groups, and README, docs index and `llms.txt` links.
+- Phase 12 branding and marketing (ADR 0023):
+  - the wordmark, "Deq" in Noto Sans Bold and "دەق" in Vazirmatn Bold as outlines (`uv run deq-fonts wordmark`), and horizontal and stacked lockups in Latin and Sorani in five colourways (colour, reversed, mono, white, flag);
+  - brand proportions, minimum sizes and colours in HEX, RGB, HSL, OKLCH and CMYK with contrast in `assets/brand/brand.json`, `tokens.css` and `docs/design/brand-colors.md`, plus construction and clear-space drawings;
+  - the brand guide on `/brand` and in `docs/design/brand.md`: logo, lockups, construction, minimum sizes, colours, typography, iconography, voice and tone, do's and don'ts;
+  - the brand kit and press kit ZIPs, built with the site from the source files: every SVG, PNGs, the favicon pack (`favicon.ico`, SVG, app icons, manifest, head tags), the animation, a fact sheet with counts taken from the packages and screenshots;
+  - the animated logo (dots in, then the sun ring; CSS SVG that stays still with reduced motion) and its MP4 and WebM (`just brand-video`);
+  - README banners (light and dark), the social preview, OG cards with the lockup, the Figma cover, banners in the package READMEs, PWA store screenshots in the web app manifest (`just store`) and README feature clips as WebM and GIF (`just clips`);
+  - `/favicon.ico` with 16, 32 and 48 px images.
 
 ### Changed
 
+- `just brand` renders no PNGs with Inkscape any more: the site builds them at `/brand/<name>.png` with the exporters' resvg, and Studio ZIPs can hold folders (`zip(..., { folders: true })`, paths still checked).
 - The site serves Latin Extended-A text (ş, ğ, ı, İ) from a 15 KB subset of Noto Sans (`uv run deq-fonts ui-subset`, checked by `just fonts`) instead of Fontsource's 168 KB latin-ext file. One Turkish letter on `/story/revival/` was enough to fetch the large file, which made the page's Lighthouse performance score drop below 95 on CI now and then.
 - The icon fonts' code points are capped at U+E000–U+EFFF, leaving U+F000–U+F8FF to the Leet font.
 - The site's header logo, favicon, app icons, share-card mark and Brand page use the Dot rosette instead of the chin mark (concept A).

@@ -80,6 +80,18 @@ api-docs:
 
 # Documentation screenshots into apps/site/public/screens (ADR 0020); pass names to redo some
 screenshots *names: fonts media
+    just _capture screenshots {{names}}
+
+# PWA store screenshots into apps/site/public/store (ADR 0023); pass names to redo some
+store *names: fonts media
+    just _capture store {{names}}
+
+# README feature clips (WebM and GIF, needs ffmpeg) into apps/site/public/clips (ADR 0023)
+clips *names: fonts media
+    just _capture clips {{names}}
+
+# Build the site, start a preview and run one of its capture scripts against it
+_capture script *names:
     #!/usr/bin/env bash
     set -euo pipefail
     DEQ_REQUIRE_FONTS=1 DEQ_REQUIRE_MEDIA=1 pnpm exec turbo run build --filter=@0xdolan/deq-site
@@ -87,7 +99,7 @@ screenshots *names: fonts media
     pnpm exec astro preview --background --port 4321
     trap 'pnpm exec astro preview stop' EXIT
     for _ in $(seq 30); do curl -sf -o /dev/null http://localhost:4321/deq/ && break; sleep 1; done
-    pnpm screenshots {{names}}
+    pnpm {{script}} {{names}}
 
 # Build the icon and Leet fonts into fonts/dist (checks that the code point tables and the
 # site's UI font subset are fresh)
@@ -97,6 +109,7 @@ fonts:
     pnpm --filter @0xdolan/deq-generator font-data fonts/build/leet.json
     uv run deq-fonts codepoints --check
     uv run deq-fonts ui-subset --check
+    uv run deq-fonts wordmark --check
     uv run deq-fonts build
 
 # Check the fonts with fontbakery (including ots) and install them into a private fontconfig.
@@ -116,13 +129,14 @@ build:
     cargo build --workspace --locked
     uv build --all-packages --out-dir target/python-dist --quiet
 
-# Brand SVGs from the Dot rosette, plus PNGs for GitHub and social media (needs Inkscape)
+# Brand SVGs from the Dot rosette and the wordmark outlines; the site builds PNGs and kits
 brand:
+    uv run deq-fonts wordmark
     uv run deq-spec brand
-    mkdir -p assets/.generated/brand
-    inkscape assets/brand/social-preview.svg -w 1280 -h 640 -o assets/.generated/brand/social-preview.png
-    inkscape assets/brand/logo.svg -w 1024 -h 1024 -o assets/.generated/brand/logo-1024.png
-    inkscape assets/brand/logo.svg -w 500 -h 500 -o assets/.generated/brand/logo-500.png
+
+# The animated logo as MP4 and WebM (needs ffmpeg) into apps/site/public/brand (ADR 0023)
+brand-video: brand
+    pnpm --filter @0xdolan/deq-site brand-video
 
 # Dependency audits (npm, PyPI, crates)
 audit:

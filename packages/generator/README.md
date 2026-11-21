@@ -1,5 +1,7 @@
 # @0xdolan/deq-generator
 
+<img src="https://kanilabs.github.io/deq/brand/banner.png" width="640" height="160" alt="Deq · دەق: the Dot rosette logo, traditional Kurdish tattoo shapes as an open, parametric design system.">
+
 Deq Leet writes text as deq motifs, and the pattern generator builds seeded bands, grids, rosettes and borders. The output is SVG with one layer per character or motif, and the Python and Rust ports match it byte for byte ([ADR 0015](../../docs/decisions/0015-deq-leet-and-pattern-generator.md)).
 
 ```ts

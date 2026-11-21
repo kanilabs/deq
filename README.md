@@ -1,10 +1,11 @@
 <div align="center">
 
-<img src="assets/brand/logo.svg" width="128" height="128" alt="Deq logo: the Dot rosette, a yellow ring with eight green dots, in a light disc">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/brand/banner-dark.svg" />
+  <img src="assets/brand/banner.svg" width="1280" height="320" alt="Deq · دەق: the Dot rosette logo, a yellow ring with eight green dots, beside the words Traditional Kurdish tattoo shapes as an open, parametric design system." />
+</picture>
 
 # Deq · دەق
-
-**Traditional Kurdish tattoo shapes as an open, parametric design system.**
 
 [![CI](https://github.com/kanilabs/deq/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/kanilabs/deq/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/kanilabs/deq/actions/workflows/codeql.yml/badge.svg?branch=develop)](https://github.com/kanilabs/deq/actions/workflows/codeql.yml)
@@ -13,7 +14,7 @@
 
 </div>
 
-> **Status: pre-alpha (Phase 11 of 14).** The shape spec, renderers in TypeScript, Python and Rust, 23 export formats, icon packages, fonts, the CLIs, the website with the Studio, Deq Leet, the pattern generator, the story and the showcase are in place. Packages are not published yet. See the [roadmap](#roadmap).
+> **Status: pre-alpha (Phase 12 of 14).** The shape spec, renderers in TypeScript, Python and Rust, 23 export formats, icon packages, fonts, the CLIs, the website with the Studio, Deq Leet, the pattern generator, the story, the showcase, the docs and the brand kit are in place. Packages are not published yet. See the [roadmap](#roadmap).
 
 **Website:** [kanilabs.github.io/deq](https://kanilabs.github.io/deq/) · **Docs:** [docs/](docs/index.md)
 
@@ -50,6 +51,12 @@ Deq (Kurdish: دەق, also called _xal_) is the traditional tattoo art of the Ku
 - The **Kurdish flag** and **Kurdish Sun** with exact colors, geometry and generators.
 - A **story** of Deq with every source cited, in English, Sorani and Kurmanji.
 
+### In motion
+
+| Studio                                                                                                                                                    | Deq Leet                                                                                                                                             | Patterns                                                                                                                                                                      |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <img src="apps/site/public/clips/studio.gif" width="800" height="450" alt="The Studio: four shapes selected in turn, nudged left and the move undone." /> | <img src="apps/site/public/clips/leet.gif" width="800" height="450" alt="Deq Leet: typing Roj baş, Kurdistan turns each letter into a deq motif." /> | <img src="apps/site/public/clips/patterns.gif" width="800" height="450" alt="The pattern generator cycling through a band, a grid, a rosette and a border with new seeds." /> |
+
 ## Documentation
 
 The guides live in [`docs/`](docs/index.md) and are published on the website in English, Sorani and Kurmanji (the translations are drafts awaiting native review).
@@ -59,7 +66,7 @@ The guides live in [`docs/`](docs/index.md) and are published on the website in 
 - **Design tools:** [Inkscape](docs/tools/inkscape.md), [Illustrator](docs/tools/illustrator.md), [Photoshop](docs/tools/photoshop.md), [Figma](docs/tools/figma.md), [Affinity](docs/tools/affinity.md), [Sketch](docs/tools/sketch.md), [Canva](docs/tools/canva.md), [Blender](docs/tools/blender.md).
 - **Developers:** [packages](docs/dev/packages.md), [command line](docs/dev/cli.md), [development setup](docs/dev/setup.md), [architecture](docs/dev/architecture.md), [codegen](docs/dev/codegen.md), [shape spec](docs/dev/spec.md), [adding a shape](docs/dev/adding-a-shape.md), [writing an exporter](docs/dev/exporters.md), [font pipeline](docs/dev/fonts.md), [testing](docs/dev/testing.md), [releasing](docs/dev/releasing.md), [security](docs/dev/security.md), [architecture decisions](docs/decisions/).
 - **API reference:** [core](docs/api/core.md), [exporters](docs/api/exporters.md), [generator](docs/api/generator.md), [icons](docs/api/icons.md), [React](docs/api/react.md), [Vue](docs/api/vue.md), [Svelte](docs/api/svelte.md), [elements](docs/api/elements.md), [CLI package](docs/api/cli.md), [`deq` commands](docs/api/commands.md), [Python](docs/api/python.md), [Rust](docs/api/rust.md).
-- **Design:** [shape spec](docs/design/shape-spec.md), [Deq Leet tables](docs/design/leet.md), [fonts](docs/fonts/README.md).
+- **Design:** [brand guide](docs/design/brand.md), [brand colours](docs/design/brand-colors.md), [shape spec](docs/design/shape-spec.md), [Deq Leet tables](docs/design/leet.md), [fonts](docs/fonts/README.md).
 
 ## Packages
 
@@ -110,8 +117,8 @@ Full guide: [docs/dev/setup.md](docs/dev/setup.md).
 | 8     | Studio                                 | ✅     |
 | 9     | Deq Leet and pattern generator         | ✅     |
 | 10    | Story, sources and showcase            | ✅     |
-| 11    | Documentation and screenshots          | 🚧     |
-| 12    | Branding and marketing                 | ⏳     |
+| 11    | Documentation and screenshots          | ✅     |
+| 12    | Branding and marketing                 | 🚧     |
 | 13    | Packaging and v1.0.0                   | ⏳     |
 | 14    | Final audit and hardening              | ⏳     |
 

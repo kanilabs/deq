@@ -1,5 +1,7 @@
 # @0xdolan/deq-exporters
 
+<img src="https://kanilabs.github.io/deq/brand/banner.png" width="640" height="160" alt="Deq · دەق: the Dot rosette logo, traditional Kurdish tattoo shapes as an open, parametric design system.">
+
 Export Deq shapes, the parametric design system of traditional Kurdish tattoo motifs, to 23 formats from one call: SVG, layered SVG, sprites, HTML, React, Vue and Svelte components, data URIs and CSS, PDF, AI, EPS, PNG, JPG, WebP, AVIF, ICO, a favicon pack, PSD, Figma SVG and spec JSON. Named layers are kept wherever the format has them.
 
 It runs in Node and in browsers, with no DOM and no native modules. Raster formats use WASM (resvg and the jSquash codecs).

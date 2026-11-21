@@ -7,16 +7,19 @@
   "author": "0xdolan <0xdolan@gmail.com>",
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
+    "brand-video": "node e2e/brand-video.ts",
     "build": "astro build",
-    "preview": "astro preview",
-    "typecheck": "astro check --minimumSeverity warning && svelte-check --threshold warning",
-    "test": "vitest run --coverage",
+    "clips": "node e2e/clips.ts",
+    "dev": "astro dev",
     "e2e": "playwright test",
     "lighthouse": "node e2e/lighthouse.ts",
     "links": "node e2e/links.ts",
+    "preview": "astro preview",
     "screenshots": "node e2e/screenshots.ts",
-    "shots": "node e2e/shots.ts"
+    "shots": "node e2e/shots.ts",
+    "store": "node e2e/store.ts",
+    "test": "vitest run --coverage",
+    "typecheck": "astro check --minimumSeverity warning && svelte-check --threshold warning"
   },
   "dependencies": {
     "@0xdolan/deq-core": "workspace:*",

@@ -3,6 +3,7 @@ import type { APIRoute } from "astro";
 
 import { CATALOGS } from "../i18n/index.ts";
 import { BASE } from "../lib/base.ts";
+import { STORE_SHOTS } from "../lib/brandkit.ts";
 
 const t = CATALOGS.en;
 
@@ -31,6 +32,14 @@ export const GET: APIRoute = () => {
       },
       { src: `${BASE}favicon.svg`, sizes: "any", type: "image/svg+xml", purpose: "any" },
     ],
+    // The install dialog shows these (Chrome and Edge); the light theme, phone and desktop.
+    screenshots: STORE_SHOTS.filter((s) => s.theme === "light").map((s) => ({
+      src: `${BASE}${s.file}`,
+      sizes: s.form === "phone" ? "780x1688" : "1920x1200",
+      type: "image/webp",
+      form_factor: s.form === "phone" ? "narrow" : "wide",
+      label: t[`brand.store.${s.name}`],
+    })),
     shortcuts: [
       {
         name: t["nav.icons"],

@@ -1,5 +1,7 @@
 # @0xdolan/deq-icons
 
+<img src="https://kanilabs.github.io/deq/brand/banner.png" width="640" height="160" alt="Deq · دەق: the Dot rosette logo, traditional Kurdish tattoo shapes as an open, parametric design system.">
+
 All 93 Deq shapes, the motifs of traditional Kurdish tattoo (deq), as framework-free icon data, SVG strings, static SVG files and a sprite. Default output matches `render(id)` from `@0xdolan/deq-core` byte for byte.
 
 ```sh

@@ -34,6 +34,7 @@ from deq_fonts.leet import (
 )
 from deq_fonts.ui import latin_ext_a
 from deq_fonts.web import assign, codepoints_json, css, load_codepoints, table
+from deq_fonts.wordmark import FONTS, wordmark
 
 ROOT = Path.cwd()
 GEOMETRY = Path("fonts/build/geometry.json")
@@ -48,6 +49,7 @@ UI_SOURCE = Path(
     "apps/site/node_modules/@fontsource-variable/noto-sans/files/noto-sans-latin-ext-wght-normal.woff2"
 )
 UI_SUBSET = Path("apps/site/src/styles/fonts/noto-sans-latin-ext-a-wght-normal.woff2")
+WORDMARK = Path("assets/brand/wordmark.json")
 
 
 def load_shapes(path: Path) -> list[Shape]:
@@ -184,6 +186,19 @@ def cmd_ui_subset(check: bool, source: Path, out: Path) -> int:
     return 0
 
 
+def cmd_wordmark(check: bool, fonts: Path, out: Path) -> int:
+    text = wordmark(fonts)
+    if out.exists() and out.read_text(encoding="utf-8") == text:
+        return 0
+    if check:
+        print(f"{out} is out of date: run `uv run deq-fonts wordmark`", file=sys.stderr)
+        return 1
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(text, encoding="utf-8", newline="\n")
+    print(f"wrote {out}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="deq-fonts", description=__doc__.splitlines()[0])
     sub = parser.add_subparsers(dest="command", required=True)
@@ -201,6 +216,10 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--check", action="store_true", help="fail if the subset is out of date")
     p.add_argument("--source", type=Path, default=UI_SOURCE)
     p.add_argument("--out", type=Path, default=UI_SUBSET)
+    p = sub.add_parser("wordmark", help="write the wordmark and brand lines as outlines")
+    p.add_argument("--check", action="store_true", help="fail if the file is out of date")
+    p.add_argument("--fonts", type=Path, default=FONTS)
+    p.add_argument("--out", type=Path, default=WORDMARK)
     args = parser.parse_args(argv)
     if args.command == "codepoints":
         return cmd_codepoints(args.check, args.geometry, args.leet)
@@ -208,6 +227,8 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_build(args.geometry, args.leet, args.out)
     if args.command == "ui-subset":
         return cmd_ui_subset(args.check, args.source, args.out)
+    if args.command == "wordmark":
+        return cmd_wordmark(args.check, args.fonts, args.out)
     return cmd_install_check(args.fonts)
 
 

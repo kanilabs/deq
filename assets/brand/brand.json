@@ -1,0 +1,322 @@
+{
+  "generated": "uv run deq-spec brand. Do not edit.",
+  "proportions": {
+    "latinCapHeight": 0.5,
+    "soraniHeight": 0.75,
+    "gap": 0.25,
+    "stackedGap": 0.2,
+    "clearSpace": 0.25,
+    "note": "Fractions of the mark's diameter."
+  },
+  "minSize": {
+    "mark": 16,
+    "horizontal": 120,
+    "stacked": 64,
+    "smallMarkBelow": 64,
+    "unit": "px"
+  },
+  "colors": [
+    {
+      "name": "Deq green",
+      "hex": "#1D4A2E",
+      "rgb": [
+        29,
+        74,
+        46
+      ],
+      "hsl": [
+        142.7,
+        43.7,
+        20.2
+      ],
+      "oklch": [
+        0.369,
+        0.07,
+        153.8
+      ],
+      "cmyk": [
+        61,
+        0,
+        38,
+        71
+      ],
+      "use": "Dots of the mark; brand accent on light",
+      "onWhite": 10.14,
+      "onDark": 1.75
+    },
+    {
+      "name": "Sun yellow",
+      "hex": "#FEBD11",
+      "rgb": [
+        254,
+        189,
+        17
+      ],
+      "hsl": [
+        43.5,
+        99.2,
+        53.1
+      ],
+      "oklch": [
+        0.836,
+        0.169,
+        83.1
+      ],
+      "cmyk": [
+        0,
+        26,
+        93,
+        0
+      ],
+      "use": "Ring of the mark; the flag's sun",
+      "onWhite": 1.68,
+      "onDark": 10.56
+    },
+    {
+      "name": "Badge face",
+      "hex": "#F8F8F8",
+      "rgb": [
+        248,
+        248,
+        248
+      ],
+      "hsl": [
+        0.0,
+        0.0,
+        97.3
+      ],
+      "oklch": [
+        0.979,
+        0.0,
+        0.0
+      ],
+      "cmyk": [
+        0,
+        0,
+        0,
+        3
+      ],
+      "use": "Disc of the badge; light surfaces",
+      "onWhite": 1.06,
+      "onDark": 16.7
+    },
+    {
+      "name": "Ink",
+      "hex": "#1E1E1E",
+      "rgb": [
+        30,
+        30,
+        30
+      ],
+      "hsl": [
+        0.0,
+        0.0,
+        11.8
+      ],
+      "oklch": [
+        0.235,
+        0.0,
+        0.0
+      ],
+      "cmyk": [
+        0,
+        0,
+        0,
+        88
+      ],
+      "use": "Wordmark, badge outline and text on light",
+      "onWhite": 16.67,
+      "onDark": 1.06
+    },
+    {
+      "name": "Deq green, dark",
+      "hex": "#8FDBA5",
+      "rgb": [
+        143,
+        219,
+        165
+      ],
+      "hsl": [
+        137.4,
+        51.4,
+        71.0
+      ],
+      "oklch": [
+        0.827,
+        0.107,
+        152.7
+      ],
+      "cmyk": [
+        35,
+        0,
+        25,
+        14
+      ],
+      "use": "Dots and accent on dark",
+      "onWhite": 1.64,
+      "onDark": 10.85
+    },
+    {
+      "name": "Night",
+      "hex": "#17181C",
+      "rgb": [
+        23,
+        24,
+        28
+      ],
+      "hsl": [
+        228.0,
+        9.8,
+        10.0
+      ],
+      "oklch": [
+        0.21,
+        0.008,
+        274.5
+      ],
+      "cmyk": [
+        18,
+        14,
+        0,
+        89
+      ],
+      "use": "Dark surfaces",
+      "onWhite": 17.74,
+      "onDark": 1.0
+    },
+    {
+      "name": "Flag red",
+      "hex": "#ED2024",
+      "rgb": [
+        237,
+        32,
+        36
+      ],
+      "hsl": [
+        358.8,
+        85.1,
+        52.7
+      ],
+      "oklch": [
+        0.605,
+        0.233,
+        27.3
+      ],
+      "cmyk": [
+        0,
+        86,
+        85,
+        7
+      ],
+      "use": "Flag of Kurdistan",
+      "onWhite": 4.35,
+      "onDark": 4.08
+    },
+    {
+      "name": "Flag white",
+      "hex": "#FFFFFF",
+      "rgb": [
+        255,
+        255,
+        255
+      ],
+      "hsl": [
+        0.0,
+        0.0,
+        100.0
+      ],
+      "oklch": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "cmyk": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "use": "Flag of Kurdistan",
+      "onWhite": 1.0,
+      "onDark": 17.74
+    },
+    {
+      "name": "Flag green",
+      "hex": "#278E43",
+      "rgb": [
+        39,
+        142,
+        67
+      ],
+      "hsl": [
+        136.3,
+        56.9,
+        35.5
+      ],
+      "oklch": [
+        0.571,
+        0.145,
+        148.3
+      ],
+      "cmyk": [
+        73,
+        0,
+        53,
+        44
+      ],
+      "use": "Flag of Kurdistan",
+      "onWhite": 4.17,
+      "onDark": 4.25
+    },
+    {
+      "name": "Flag yellow",
+      "hex": "#FEBD11",
+      "rgb": [
+        254,
+        189,
+        17
+      ],
+      "hsl": [
+        43.5,
+        99.2,
+        53.1
+      ],
+      "oklch": [
+        0.836,
+        0.169,
+        83.1
+      ],
+      "cmyk": [
+        0,
+        26,
+        93,
+        0
+      ],
+      "use": "Flag of Kurdistan (the sun)",
+      "onWhite": 1.68,
+      "onDark": 10.56
+    }
+  ],
+  "typography": [
+    {
+      "family": "Noto Sans",
+      "use": "Latin wordmark (Bold), UI and English lines",
+      "license": "OFL-1.1"
+    },
+    {
+      "family": "Vazirmatn",
+      "use": "Sorani wordmark (Bold) and UI",
+      "license": "OFL-1.1"
+    },
+    {
+      "family": "Deq Leet",
+      "use": "Deq Leet text",
+      "license": "GPL-3.0-or-later WITH Font-exception-2.0"
+    }
+  ],
+  "animation": {
+    "seconds": 1.7,
+    "dotStep": 0.12,
+    "ringStart": 1.0
+  }
+}

@@ -1,5 +1,7 @@
 # deq-cli
 
+<img src="https://kanilabs.github.io/deq/brand/banner.png" width="640" height="160" alt="Deq · دەق: the Dot rosette logo, traditional Kurdish tattoo shapes as an open, parametric design system.">
+
 The `deq` command-line tool for [Deq](https://github.com/kanilabs/deq) shapes: traditional Kurdish tattoo (deq) motifs as SVG, PDF and images. It is built on the [`deq-shapes`](https://crates.io/crates/deq-shapes) crate and shares its interface, messages and exit codes with the Node and Python CLIs ([ADR 0011](https://github.com/kanilabs/deq/blob/main/docs/decisions/0011-ports-and-clis.md)).
 
 ```sh
