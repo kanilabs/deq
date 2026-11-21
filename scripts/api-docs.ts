@@ -98,14 +98,15 @@ function members(sym: ts.Symbol, checker: ts.TypeChecker): string[] {
 function intro(source: string, npm: string): { description: string; body: string } {
   const comment = /^\/\*\*([\s\S]*?)\*\//u.exec(source)?.[1];
   if (comment === undefined) throw new Error(`${npm}: src/index.ts has no leading doc comment`);
-  const body = comment
+  const text = comment
     .split("\n")
     .map((line) => line.replace(/^\s*\* ?/u, ""))
     .filter((line) => !line.startsWith("@packageDocumentation"))
     .join("\n")
     .replace(/\{@link\s+([^}\s]+)\s*\}/gu, "`$1`")
-    .trim()
-    .replace(new RegExp(`^${npm.replace(/[/.]/gu, "\\$&")}: `, "u"), "");
+    .trim();
+  const prefix = `${npm}: `;
+  const body = text.startsWith(prefix) ? text.slice(prefix.length) : text;
   const first = oneLine(body.split("\n\n")[0] ?? "");
   const sentence = /^.*?[.!?](?=\s|$)/u.exec(first)?.[0] ?? first;
   const description = sentence.charAt(0).toUpperCase() + sentence.slice(1);
