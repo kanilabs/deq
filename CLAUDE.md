@@ -28,6 +28,7 @@ Deq turns traditional Kurdish tattoo (deq) motifs into an open, parametric desig
 | Icon data and components              | `pnpm --filter @0xdolan/deq-{icons,react,vue,svelte} generate`                         |
 | Fonts (icons and Leet)                | `just fonts`; `just fonts-check` adds fontbakery, ots and a fontconfig install check   |
 | New shape or Leet code points         | `uv run deq-fonts codepoints` (never change or reuse one)                              |
+| Site UI font subset (Fontsource bump) | `uv run deq-fonts ui-subset` (commit `apps/site/src/styles/fonts/`)                    |
 | Leet font geometry                    | `pnpm --filter @0xdolan/deq-generator font-data fonts/build/leet.json` (ADR 0016)      |
 | Leet tables, fixtures and chart       | `pnpm --filter @0xdolan/deq-generator {generate,fixtures}` (ADR 0015)                  |
 | CLI help/completions, CLI cases       | `pnpm --filter @0xdolan/deq-cli {generate,fixtures}` (ADR 0011)                        |
