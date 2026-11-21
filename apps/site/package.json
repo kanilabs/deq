@@ -31,7 +31,7 @@
     "@fontsource-variable/vazirmatn": "5.3.0",
     "@resvg/resvg-wasm": "2.6.2",
     "astro": "7.4.10",
-    "paper": "0.12.18",
+    "paper": "0.17.0",
     "svelte": "5.57.3",
     "valibot": "1.5.0",
     "workbox-window": "7.4.1"
