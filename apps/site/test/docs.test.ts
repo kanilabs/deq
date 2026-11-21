@@ -134,12 +134,18 @@ function md(dir: string): string[] {
     : [];
 }
 
+/** Docs folders that have Sorani and Kurmanji drafts. */
+const USER_DIRS = ["guide", "designer", "tools"];
+
 const published = [
   "index.md",
   ...LOCALES.map((l) => `${l}/index.md`),
-  ...["guide", "dev", "api", ...LOCALES.map((l) => `${l}/guide`)].flatMap((d) =>
-    md(d).map((f) => `${d}/${f}`),
-  ),
+  ...[
+    ...USER_DIRS,
+    "dev",
+    "api",
+    ...LOCALES.flatMap((l) => USER_DIRS.map((d) => `${l}/${d}`)),
+  ].flatMap((d) => md(d).map((f) => `${d}/${f}`)),
 ].map((f) => `docs/${f}`);
 
 /** Relative link targets of a Markdown file, outside code. */
@@ -172,8 +178,12 @@ describe("docs in the repository", () => {
     expect(missing).toEqual([]);
   });
 
-  it("has the same guides in English, Sorani and Kurmanji", () => {
-    for (const locale of LOCALES) expect(md(`${locale}/guide`)).toEqual(md("guide"));
+  it("has the same guides, designer pages and tool guides in English, Sorani and Kurmanji", () => {
+    for (const dir of USER_DIRS) {
+      expect(md(dir).length, dir).toBeGreaterThan(0);
+      for (const locale of LOCALES)
+        expect(md(`${locale}/${dir}`), `${locale}/${dir}`).toEqual(md(dir));
+    }
   });
 
   it.each(LOCALES)("marks the %s docs as drafts and links the localized site", (locale) => {

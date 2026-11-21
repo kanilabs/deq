@@ -22,7 +22,7 @@ The format reference is `docs/design/shape-spec.md`, and the decision record is 
 
 1. Draw from a reference image in `assets/source-manifest.json` (its `motifs` list), never from a name alone.
 2. Edit or add `spec/shapes/<id>.json`. Use generators (`repeat`, `radial`, `concentric`) instead of copied geometry, and `use` for compositions.
-3. Record the maths in `construction`: radii, angles, intersections, and why each number was chosen.
+3. Record the maths in `construction`: radii, angles, intersections, and why each number was chosen. These steps, the primitives and the metrics are published on the shape's icon page (ADR 0022), so write them for designers to read.
 4. Run `uv run deq-spec fmt`, then `uv run deq-spec sheet --set shapes --force` (and `--set concepts` for brand concepts).
 5. Run `uv run deq-spec lint`; it must pass. Render the sheet to PNG (`inkscape … -o x.png`) and look at it, especially the small variants.
 6. List a new id in `spec/catalog.json`. Ids never change; bump `version` when the geometry changes.

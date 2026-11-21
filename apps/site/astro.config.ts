@@ -88,6 +88,8 @@ export default defineConfig({
           items: [
             { ...label("nav.docs.overview"), link: "/docs/" },
             { ...label("nav.docs.guides"), items: docsLinks("guide") },
+            { ...label("nav.docs.designer"), items: docsLinks("designer") },
+            { ...label("nav.docs.tools"), items: docsLinks("tools") },
             { ...label("nav.docs.dev"), items: docsLinks("dev") },
             { ...label("nav.docs.api"), items: docsLinks("api") },
           ],

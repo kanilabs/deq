@@ -19,6 +19,19 @@ description: ڕێنمایی بۆ ماڵپەڕی دەق، ستۆدیۆ، هەنا
 - [فۆنتەکان](guide/fonts.md): فۆنتەکانی ئایکۆن و لیت لەسەر Linux، macOS و Windows.
 - [دامەزراندن و بەکارهێنانی بێ ئینتەرنێت](guide/pwa.md): دەق بێ ئینتەرنێت بەکاربهێنە.
 
+## بۆ دیزاینەران
+
+- [تۆڕ و هێڵە سەرەکییەکان](designer/grid.md): تابلۆی ٢٤ یەکەیی، ناوچەی زیندوو و هێڵە سەرەکییەکان.
+- [هێڵ، خاڵ و پێکهاتەکان](designer/strokes-and-dots.md): ئەو بەشانەی هەموو شێوەیەکیان لێ دروست دەکرێت.
+- [ڕاستکردنەوەی بینایی](designer/optical-corrections.md): بۆچی هەندێک شێوە بە چاو دەجوڵێنرێن یان قەبارەیان دەگۆڕدرێت.
+- [دروستکردن](designer/construction.md): پێوانە و بیرکاریی پشت هەر شێوەیەک.
+- [بۆشایی و پێکهێنان](designer/composition.md): کۆکردنەوەی شێوەکان بۆ ڕیز، لێوار و دیزاین.
+- [ڕەنگ و دەستڕاگەیشتن](designer/colour.md): ڕەنگەکانی ئاڵا، جیاوازیی ڕەنگ و ئایکۆنی دەستڕاگەیشتوو.
+
+## ئامرازەکانی دیزاین
+
+ڕێنمایی هەنگاو بە هەنگاو بۆ هێنانی شێوەکانی دەق لەگەڵ چینەکانیان، گۆڕینی ڕەنگ و هێڵ و دروستکردنی پێکهێنان: [Inkscape](tools/inkscape.md)، [Illustrator](tools/illustrator.md)، [Photoshop](tools/photoshop.md)، [Figma](tools/figma.md)، [Affinity](tools/affinity.md)، [Sketch](tools/sketch.md)، [Canva](tools/canva.md)، [Blender](tools/blender.md).
+
 ## بۆ گەشەپێدەران (بە ئینگلیزی)
 
 - [پاکێجەکان](../dev/packages.md): پاکێجەکانی JavaScript، Python و Rust.

@@ -12,7 +12,7 @@ export interface DocLink {
 }
 
 /** The sidebar groups of the docs, in order. */
-const GROUPS = ["docs/guide/", "docs/dev/", "docs/api/"];
+const GROUPS = ["docs/guide/", "docs/designer/", "docs/tools/", "docs/dev/", "docs/api/"];
 
 function rank(id: string): number {
   if (id === "docs") return 0;
@@ -20,7 +20,7 @@ function rank(id: string): number {
   return group === -1 ? GROUPS.length + 1 : group + 1;
 }
 
-/** The English docs (ids `docs` and `docs/...`) in sidebar order: overview, guides, developer pages, API references. */
+/** The English docs (ids `docs` and `docs/...`) in sidebar order: overview, guides, designer pages, tool guides, developer pages, API references. */
 export function englishDocs(
   entries: readonly {
     id: string;

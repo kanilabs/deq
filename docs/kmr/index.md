@@ -19,6 +19,19 @@ Deq motîfên kevneşopî yên deqa kurdî li ser yek tora 24 yekîneyî xêz di
 - [Font](guide/fonts.md): fontên îkonan û Leetê li ser Linux, macOS û Windowsê.
 - [Sazkirin û bikaranîna bê înternet](guide/pwa.md): Deqê bê înternet bi kar bîne.
 
+## Ji bo sêwiraran
+
+- [Tor û xetên sereke](designer/grid.md): kanvasa 24 yekîneyî, qada zindî û xetên sereke.
+- [Xet, xal û modul](designer/strokes-and-dots.md): parçeyên ku her şikl ji wan tê avakirin.
+- [Rastkirinên dîtinî](designer/optical-corrections.md): çima hin şikl bi çavan tên livandin an mezinkirin.
+- [Avakirin](designer/construction.md): koordînat û matematîka li pişt her şiklî.
+- [Navber û pêkhatin](designer/composition.md): berhevkirina şiklan di rêz, kenar û sêwiranan de.
+- [Reng û gihîştinbarî](designer/colour.md): rengên alayê, berevajî û îkonên gihîştinbar.
+
+## Amûrên sêwiranê
+
+Rêberên gav bi gav ji bo anîna şiklên Deqê bi qatên wan, guhertina reng û xetê û avakirina pêkhatinan: [Inkscape](tools/inkscape.md), [Illustrator](tools/illustrator.md), [Photoshop](tools/photoshop.md), [Figma](tools/figma.md), [Affinity](tools/affinity.md), [Sketch](tools/sketch.md), [Canva](tools/canva.md), [Blender](tools/blender.md).
+
 ## Ji bo pêşdebiran (bi îngilîzî)
 
 - [Pakêt](../dev/packages.md): pakêtên JavaScript, Python û Rust.
