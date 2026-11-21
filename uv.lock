@@ -695,7 +695,7 @@ wheels = [
 
 [[package]]
 name = "deq-assets"
-version = "0.0.0"
+version = "1.0.0rc1"
 source = { editable = "scripts/deq-assets" }
 dependencies = [
     { name = "pillow" },
@@ -706,7 +706,7 @@ requires-dist = [{ name = "pillow", specifier = "==13.0.0" }]
 
 [[package]]
 name = "deq-fonts"
-version = "0.0.0"
+version = "1.0.0rc1"
 source = { editable = "scripts/deq-fonts" }
 dependencies = [
     { name = "fonttools", extra = ["woff"] },
@@ -723,7 +723,7 @@ requires-dist = [
 
 [[package]]
 name = "deq-shapes"
-version = "0.0.0"
+version = "1.0.0rc1"
 source = { editable = "python/deq-shapes" }
 dependencies = [
     { name = "pillow" },
@@ -738,7 +738,7 @@ requires-dist = [
 
 [[package]]
 name = "deq-spec"
-version = "0.0.0"
+version = "1.0.0rc1"
 source = { editable = "scripts/deq-spec" }
 dependencies = [
     { name = "jsonschema" },
@@ -749,7 +749,7 @@ requires-dist = [{ name = "jsonschema", specifier = "==4.26.0" }]
 
 [[package]]
 name = "deq-workspace"
-version = "0.0.0"
+version = "1.0.0rc1"
 source = { virtual = "." }
 
 [package.dev-dependencies]

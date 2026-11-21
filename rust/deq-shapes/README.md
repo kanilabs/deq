@@ -6,7 +6,7 @@ Rust renderer for [Deq](https://github.com/kanilabs/deq) shapes: traditional Kur
 
 ```toml
 [dependencies]
-deq-shapes = "0.0.0"
+deq-shapes = "1.0.0-rc.1"
 ```
 
 ```rust

@@ -1,6 +1,6 @@
 [project]
 name = "deq-shapes"
-version = "0.0.0"
+version = "1.0.0rc1"
 description = "Deq: traditional Kurdish tattoo shapes as an open, parametric design system (Python library and CLI)."
 readme = "README.md"
 requires-python = ">=3.12"

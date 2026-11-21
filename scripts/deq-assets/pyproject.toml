@@ -1,6 +1,6 @@
 [project]
 name = "deq-assets"
-version = "0.0.0"
+version = "1.0.0rc1"
 description = "Internal tool: inventory, process and verify Deq source images and animations. Not published."
 requires-python = ">=3.12"
 license = "GPL-3.0-or-later"

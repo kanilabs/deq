@@ -5,6 +5,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [1.0.0-rc.1] - 2026-11-21
+
+The first release candidate of Deq.
+
 ### Added
 
 - Phase 0 foundation: pnpm + Turborepo, Cargo and uv workspaces with placeholder packages (`@0xdolan/deq-*`, `deq-shapes`, `deq-cli`).
@@ -180,3 +184,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - pnpm override `workbox-build>glob` to 14.0.4: glob 11 finds no files with the `minimatch` 11.0.3 override. Remove it when `workbox-build` depends on glob 14+.
 - `pnpm audit` and dependency review allow GHSA-fc5q-39xc-vjpf (picomatch ReDoS, no patched release, build tools only); remove when a fix ships (ADR 0004).
 - The CLIs accept integers of up to 10 digits (seeds up to 4294967295), and a list flag without choices may repeat items.
+
+[Unreleased]: https://github.com/kanilabs/deq/compare/v1.0.0-rc.1...HEAD
+[1.0.0-rc.1]: https://github.com/kanilabs/deq/releases/tag/v1.0.0-rc.1
