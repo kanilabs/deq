@@ -12,7 +12,7 @@ vi.mock("node:fs/promises", async (importOriginal) => {
   return {
     ...actual,
     readFile: (path: string, ...rest: []) =>
-      [...missing].some((m) => path.endsWith(m))
+      [...missing].some((m) => path.replaceAll("\\", "/").endsWith(m))
         ? Promise.reject(new Error("ENOENT"))
         : actual.readFile(path, ...rest),
   };
