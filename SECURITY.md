@@ -18,6 +18,6 @@ In scope: the npm, PyPI and crates.io packages, the CLIs, the fonts, the website
 
 - Strict typing and input validation in all languages; imported SVG is sanitised.
 - GitHub Actions pinned to commit SHAs, least-privilege permissions, checked by actionlint and zizmor.
-- Dependency audits (pnpm audit, pip-audit, cargo-deny, OSV-Scanner), Dependabot with a 7-day cooldown, and pnpm's 7-day minimum release age.
+- Dependency audits (pnpm audit, pip-audit, cargo-deny, OSV-Scanner), and pnpm's 7-day minimum release age.
 - CodeQL, OpenSSF Scorecard, and gitleaks secret scanning on commit and in CI.
 - Signed releases with provenance and SBOMs (from the first release).
