@@ -3,8 +3,9 @@ name: Release
 # Publishes a release (ADR 0024). Pushing a signed tag vX.Y.Z (from `main`) runs every job:
 # verify → build (assets, CLI binaries, .deb) → publish to npm, PyPI and crates.io → GitHub
 # Release with checksums, a Sigstore signature, build provenance and a CycloneDX SBOM → Pages.
-# Running it by hand (workflow_dispatch) is a dry run on any branch: it builds and checks
-# everything, runs the registries' dry runs and publishes nothing.
+# Pull requests into `main` (the release/* and hotfix/* branches) and runs by hand
+# (workflow_dispatch) are dry runs: they build and check everything, run the registries' dry
+# runs and publish nothing.
 #
 # Registries use trusted publishing (OIDC) from the `release` environment. npm and crates.io
 # only trust packages that exist, so the first release may use the NPM_TOKEN and
@@ -12,6 +13,8 @@ name: Release
 on:
   push:
     tags: ["v[0-9]+.[0-9]+.[0-9]+", "v[0-9]+.[0-9]+.[0-9]+-*"]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions: {}

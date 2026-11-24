@@ -1,6 +1,6 @@
 {
   "name": "@0xdolan/deq-example-elements",
-  "version": "0.0.0",
+  "version": "1.0.0-rc.1",
   "private": true,
   "description": "Example: the <deq-icon> custom element on a plain page.",
   "license": "GPL-3.0-or-later",

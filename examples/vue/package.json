@@ -1,6 +1,6 @@
 {
   "name": "@0xdolan/deq-example-vue",
-  "version": "0.0.0",
+  "version": "1.0.0-rc.1",
   "private": true,
   "description": "Example: Deq icons in a Vue app.",
   "license": "GPL-3.0-or-later",

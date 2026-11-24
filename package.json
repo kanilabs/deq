@@ -1,6 +1,6 @@
 {
   "name": "deq-monorepo",
-  "version": "0.0.0",
+  "version": "1.0.0-rc.1",
   "private": true,
   "description": "Deq: traditional Kurdish tattoo shapes as an open, parametric design system.",
   "license": "GPL-3.0-or-later",

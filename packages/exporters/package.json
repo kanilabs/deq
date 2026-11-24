@@ -1,6 +1,6 @@
 {
   "name": "@0xdolan/deq-exporters",
-  "version": "0.0.0",
+  "version": "1.0.0-rc.1",
   "description": "Export Deq shapes to SVG, PDF, AI, PSD, PNG, ICO, JSX and more.",
   "license": "GPL-3.0-or-later",
   "author": "0xdolan <0xdolan@gmail.com>",

@@ -1,6 +1,6 @@
 {
   "name": "@0xdolan/deq-site",
-  "version": "0.0.0",
+  "version": "1.0.0-rc.1",
   "private": true,
   "description": "The Deq website: icons, flag, fonts, brand and docs in English, Sorani and Kurmanji.",
   "license": "GPL-3.0-or-later",
