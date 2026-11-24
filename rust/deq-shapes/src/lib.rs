@@ -61,8 +61,15 @@ mod tests {
 
     #[test]
     fn version_is_semver() {
-        let parts: Vec<&str> = VERSION.split('.').collect();
+        let digits = |p: &str| !p.is_empty() && p.chars().all(|c| c.is_ascii_digit());
+        let (core, pre) = VERSION.split_once('-').unwrap_or((VERSION, ""));
+        let parts: Vec<&str> = core.split('.').collect();
         assert_eq!(parts.len(), 3);
-        assert!(parts.iter().all(|p| p.chars().all(|c| c.is_ascii_digit())));
+        assert!(parts.iter().all(|p| digits(p)));
+        if !pre.is_empty() {
+            let (tag, n) = pre.split_once('.').unwrap_or((pre, ""));
+            assert!(["alpha", "beta", "rc"].contains(&tag), "pre-release {pre}");
+            assert!(digits(n), "pre-release {pre}");
+        }
     }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@0xdolan/deq-elements",
-  "version": "0.0.0",
+  "version": "1.0.0-rc.1",
   "description": "The <deq-icon> custom element for Deq shapes.",
   "license": "GPL-3.0-or-later",
   "author": "0xdolan <0xdolan@gmail.com>",

@@ -52,8 +52,8 @@ Pre-releases go to the `next` dist-tag on npm and are marked as pre-releases on 
 
 1. Branch `release/x.y.z` off `develop`.
 2. Run `just version x.y.z`, move the `[Unreleased]` changelog entries under `## [x.y.z] - YYYY-MM-DD` and add its link at the bottom.
-3. Run the Release workflow by hand on the branch (Actions → Release → Run workflow). Without a tag it is a dry run: it builds and tests everything, installs the `.deb` packages and runs every registry's dry run, and publishes nothing.
-4. Open a pull request into `main` and merge it with a merge commit once CI passes.
+3. Open a pull request into `main`. The Release workflow runs on it as a dry run: it builds and tests everything, installs the `.deb` packages and runs every registry's dry run, and publishes nothing. (It can also be run by hand from the Actions tab once it is on `main`.)
+4. Merge the pull request with a merge commit once CI and the dry run pass.
 5. Tag the merge commit with a signed, annotated tag and push it:
 
    ```sh
