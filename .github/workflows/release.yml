@@ -346,6 +346,11 @@ jobs:
           out=release
           mkdir -p "$out"
           cp artifacts/release-assets/* artifacts/deb-*/*.deb "$out/"
+          # GitHub renames "~" to "." in asset names (1.0.0~rc.1), so name the files that way
+          # before the checksums; the version inside each package keeps the "~".
+          for f in "$out"/*~*; do
+            if [[ -e "$f" ]]; then mv -- "$f" "${f//\~/.}"; fi
+          done
           for dir in artifacts/bin-*; do
             target=${dir#artifacts/bin-}
             stage="deq-$VERSION-$target"

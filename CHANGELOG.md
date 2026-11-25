@@ -5,6 +5,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Fixed
+
+- Release: pre-release `.deb` assets are named with `.` instead of `~` (as GitHub stores them) before `SHA256SUMS` is written, so `sha256sum -c` matches every downloaded file.
+
 ### Removed
 
 - Dependabot: its configuration, alerts and security updates. Dependencies are updated by hand, keeping the 7-day minimum release age.
