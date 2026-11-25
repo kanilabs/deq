@@ -5,6 +5,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-11-24
+
+The first stable release of Deq. It is [1.0.0-rc.1](https://github.com/kanilabs/deq/releases/tag/v1.0.0-rc.1), whose notes list everything Deq includes, with the changes below.
+
 ### Fixed
 
 - Release: pre-release `.deb` assets are named with `.` instead of `~` (as GitHub stores them) before `SHA256SUMS` is written, so `sha256sum -c` matches every downloaded file.
@@ -193,5 +197,6 @@ The first release candidate of Deq.
 - `pnpm audit` and dependency review allow GHSA-fc5q-39xc-vjpf (picomatch ReDoS, no patched release, build tools only); remove when a fix ships (ADR 0004).
 - The CLIs accept integers of up to 10 digits (seeds up to 4294967295), and a list flag without choices may repeat items.
 
-[Unreleased]: https://github.com/kanilabs/deq/compare/v1.0.0-rc.1...HEAD
+[Unreleased]: https://github.com/kanilabs/deq/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/kanilabs/deq/compare/v1.0.0-rc.1...v1.0.0
 [1.0.0-rc.1]: https://github.com/kanilabs/deq/releases/tag/v1.0.0-rc.1

@@ -439,7 +439,7 @@ Most flat items one render may produce.
 ### `__version__`
 
 ```python
-__version__: Final = '1.0.0-rc.1'
+__version__: Final = '1.0.0'
 ```
 
 ## Types

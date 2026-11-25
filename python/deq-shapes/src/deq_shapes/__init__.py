@@ -77,5 +77,5 @@ __all__ = [
     "svg_root",
 ]
 
-__version__: Final = "1.0.0-rc.1"
+__version__: Final = "1.0.0"
 DISTRIBUTION_NAME: Final = "deq-shapes"

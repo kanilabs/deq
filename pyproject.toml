@@ -1,7 +1,7 @@
 # uv workspace root (not a package). See python/ for members.
 [project]
 name = "deq-workspace"
-version = "1.0.0rc1"
+version = "1.0.0"
 requires-python = ">=3.12"
 license = "GPL-3.0-or-later"
 
