@@ -1,6 +1,6 @@
 [project]
 name = "deq-spec"
-version = "1.0.0rc1"
+version = "1.0.0"
 description = "Internal tool: validate, format and preview the Deq shape spec. Not published."
 requires-python = ">=3.12"
 license = "GPL-3.0-or-later"

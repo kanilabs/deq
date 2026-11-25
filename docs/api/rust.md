@@ -9,7 +9,7 @@ The Rust crate [`deq-shapes`](../../rust/deq-shapes/) is a port of `@0xdolan/deq
 
 ```toml
 [dependencies]
-deq-shapes = "1.0.0-rc.1"
+deq-shapes = "1.0.0"
 ```
 
 ```rust

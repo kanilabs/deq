@@ -1,6 +1,6 @@
 {
   "name": "@0xdolan/deq-react",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0",
   "description": "Deq shapes as typed, tree-shakable React components.",
   "license": "GPL-3.0-or-later",
   "author": "0xdolan <0xdolan@gmail.com>",

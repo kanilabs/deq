@@ -31,7 +31,10 @@ Every npm package, the PyPI package, both crates, the fonts and the Debian packa
 | npm, crates.io, git tag     | `1.0.0-rc.1` (`v1.0.0-rc.1`) |
 | PyPI (PEP 440)              | `1.0.0rc1`                   |
 | Debian                      | `1.0.0~rc.1-1`               |
+| `.deb` file names           | `1.0.0.rc.1-1`               |
 | Fonts (`head.fontRevision`) | `1.000`                      |
+
+GitHub turns `~` into `.` in release asset names, so the workflow names the `.deb` files that way before writing `SHA256SUMS`; the version inside each package keeps the `~`, so `1.0.0` upgrades over a release candidate.
 
 `just version 1.0.0-rc.1` writes the version into every manifest (`scripts/version.ts`), refreshes `Cargo.lock` and `uv.lock`, and regenerates the files that print it: the CLI help and fixtures, the man page and the API references. `node scripts/version.ts --check` fails when two manifests disagree; the unit tests run it too.
 

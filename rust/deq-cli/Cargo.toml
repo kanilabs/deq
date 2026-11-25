@@ -19,7 +19,7 @@ name = "deq"
 path = "src/main.rs"
 
 [dependencies]
-deq-shapes = { path = "../deq-shapes", version = "=1.0.0-rc.1" }
+deq-shapes = { path = "../deq-shapes", version = "=1.0.0" }
 serde_json = { version = "=1.0.154", features = ["preserve_order"] }
 
 [lints]

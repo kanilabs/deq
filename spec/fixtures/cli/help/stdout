@@ -1,4 +1,4 @@
-deq 1.0.0-rc.1: Draw Deq shapes, traditional Kurdish tattoo motifs, as SVG, PDF and images.
+deq 1.0.0: Draw Deq shapes, traditional Kurdish tattoo motifs, as SVG, PDF and images.
 
 Usage: deq <command> [options]
 
